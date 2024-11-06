@@ -95,5 +95,23 @@ CREATE TABLE text
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS announcement;
+CREATE TABLE announcement
+(
+    id         INT PRIMARY KEY AUTO_INCREMENT,
+    text_id    VARCHAR(50) NOT NULL,
+    sequence   INTEGER     NOT NULL DEFAULT 0, -- 排序編號
+    created_at TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS tasks;
+CREATE TABLE tasks
+(
+    id        INT PRIMARY KEY AUTO_INCREMENT,
+    title     VARCHAR(50),
+    completed BOOLEAN NOT NULL DEFAULT false
+);
+
 
 
