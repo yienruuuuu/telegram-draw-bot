@@ -1,10 +1,10 @@
 package io.github.yienruuuuu.adapter.out.repository.repository;
 
-import io.github.yienruuuuu.use_case.port.in.Task;
+import io.github.yienruuuuu.use_case.port.in.task.Task;
 import io.github.yienruuuuu.adapter.out.repository.entity.TaskEntity;
 import io.github.yienruuuuu.adapter.out.repository.mapper.TaskMapper;
-import io.github.yienruuuuu.use_case.port.out.TaskRepository;
-import io.github.yienruuuuu.use_case.port.out.TaskRepositoryJpa;
+import io.github.yienruuuuu.use_case.port.out.task.TaskRepository;
+import io.github.yienruuuuu.use_case.port.out.task.TaskRepositoryJpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

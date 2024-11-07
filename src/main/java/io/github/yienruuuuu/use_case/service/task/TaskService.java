@@ -1,7 +1,7 @@
-package io.github.yienruuuuu.use_case.service;
+package io.github.yienruuuuu.use_case.service.task;
 
-import io.github.yienruuuuu.use_case.port.in.Task;
-import io.github.yienruuuuu.use_case.port.out.TaskRepository;
+import io.github.yienruuuuu.use_case.port.in.task.Task;
+import io.github.yienruuuuu.use_case.port.out.task.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

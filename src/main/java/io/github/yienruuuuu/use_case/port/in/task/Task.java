@@ -1,4 +1,4 @@
-package io.github.yienruuuuu.use_case.port.in;
+package io.github.yienruuuuu.use_case.port.in.task;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

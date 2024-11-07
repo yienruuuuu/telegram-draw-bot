@@ -1,6 +1,6 @@
 package io.github.yienruuuuu.adapter.out.repository.mapper;
 
-import io.github.yienruuuuu.use_case.port.in.Task;
+import io.github.yienruuuuu.use_case.port.in.task.Task;
 import io.github.yienruuuuu.adapter.out.repository.entity.TaskEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

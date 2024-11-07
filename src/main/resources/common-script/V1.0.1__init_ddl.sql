@@ -19,16 +19,17 @@ CREATE TABLE language
 DROP TABLE IF EXISTS user;
 CREATE TABLE user
 (
-    id               INT PRIMARY KEY AUTO_INCREMENT,             -- 表ID
-    role             VARCHAR(50)         NOT NULL,               -- 身分
-    telegram_user_id VARCHAR(50)         NOT NULL,               -- telegram id
-    first_name       varchar(50),                                -- 名字
-    language_id      VARCHAR(20),                                -- 語系代碼（例如：'zh-hant', 'en'）
-    is_block         boolean             NOT NULL DEFAULT FALSE, -- 是否為黑名單
-    free_points      INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
-    purchased_points INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
-    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id                  INT PRIMARY KEY AUTO_INCREMENT,             -- 表ID
+    role                VARCHAR(50)         NOT NULL,               -- 身分
+    telegram_user_id    VARCHAR(50)         NOT NULL,               -- telegram id
+    first_name          varchar(50),                                -- 名字
+    language_id         VARCHAR(20),                                -- 語系代碼（例如：'zh-hant', 'en'）
+    is_block            boolean             NOT NULL DEFAULT FALSE, -- 是否為黑名單
+    free_points         INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
+    purchased_points    INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
+    last_pick_rare_time TIMESTAMP,                                  -- 上次抽稀有卡時間
+    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS resource;

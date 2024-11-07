@@ -1,7 +1,7 @@
 package io.github.yienruuuuu.adapter.in.presentation.controller;
 
-import io.github.yienruuuuu.use_case.service.TaskService;
-import io.github.yienruuuuu.use_case.port.in.Task;
+import io.github.yienruuuuu.use_case.service.task.TaskService;
+import io.github.yienruuuuu.use_case.port.in.task.Task;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

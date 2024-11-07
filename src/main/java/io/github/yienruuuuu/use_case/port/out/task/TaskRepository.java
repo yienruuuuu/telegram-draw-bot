@@ -1,6 +1,6 @@
-package io.github.yienruuuuu.use_case.port.out;
+package io.github.yienruuuuu.use_case.port.out.task;
 
-import io.github.yienruuuuu.use_case.port.in.Task;
+import io.github.yienruuuuu.use_case.port.in.task.Task;
 
 import java.util.List;
 

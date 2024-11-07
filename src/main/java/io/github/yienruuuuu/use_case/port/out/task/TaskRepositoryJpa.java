@@ -1,4 +1,4 @@
-package io.github.yienruuuuu.use_case.port.out;
+package io.github.yienruuuuu.use_case.port.out.task;
 
 import io.github.yienruuuuu.adapter.out.repository.entity.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
