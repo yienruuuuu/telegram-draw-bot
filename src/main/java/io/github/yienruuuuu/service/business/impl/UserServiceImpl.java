@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language) {
+    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language,Integer initialFreePoint) {
         Optional<User> user = userRepository.findByTelegramUserId(telegramId);
         if (user.isPresent()) {
             return user.get();
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(firstName)
                 .language(language)
                 .isBlock(false)
-                .freePoints(0)
+                .freePoints(initialFreePoint)
                 .purchasedPoints(0)
                 .build();
         userRepository.save(newUser);
@@ -54,5 +54,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByTelegramUserId(String telegramId) {
         return userRepository.findByTelegramUserId(telegramId).orElse(null);
+    }
+
+    @Override
+    public boolean existsByTelegramUserId(String telegramId) {
+        return userRepository.existsByTelegramUserId(telegramId);
     }
 }

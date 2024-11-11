@@ -1,5 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher;
 
+import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 命令類適配收到的telegram命令並執行(execute())相對應的功能
+ *
  * @author Eric.Lee
  * Date: 2024/11/8
  */
@@ -24,12 +27,12 @@ public class CommandDispatcher {
         }
     }
 
-    public void dispatch(Update update) {
+    public void dispatch(Update update, Bot mainBotEntity) {
         String messageText = update.getMessage().getText();
         MainBotCommand command = commandMap.get(messageText.split(" ")[0]);
 
         if (command != null) {
-            command.execute(update);
+            command.execute(update, mainBotEntity);
         }
     }
 }

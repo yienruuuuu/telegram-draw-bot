@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -25,4 +27,17 @@ public class Language {
     @NotNull
     @Column(name = "language_name", nullable = false, length = 50)
     private String languageName;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Language language = (Language) o;
+        return Objects.equals(languageCode, language.languageCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(languageCode);
+    }
 }

@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business;
 
 import io.github.yienruuuuu.bean.entity.Announcement;
+import io.github.yienruuuuu.bean.enums.AnnouncementType;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface AnnouncementService {
     Announcement findById(int id);
 
     void delete(int id);
+
+    Announcement findAnnouncementByType(AnnouncementType type);
 }

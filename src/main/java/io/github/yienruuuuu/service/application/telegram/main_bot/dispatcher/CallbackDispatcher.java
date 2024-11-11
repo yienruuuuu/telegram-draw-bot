@@ -1,5 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher;
 
+import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,12 +19,12 @@ public class CallbackDispatcher {
     public CallbackDispatcher() {
     }
 
-    public void dispatch(Update update) {
+    public void dispatch(Update update, Bot mainBotEntity) {
         String callbackData = update.getCallbackQuery().getData();
         MainBotCommand command = callbackMap.get(callbackData);
 
         if (command != null) {
-            command.execute(update);
+            command.execute(update, mainBotEntity);
         }
     }
 }

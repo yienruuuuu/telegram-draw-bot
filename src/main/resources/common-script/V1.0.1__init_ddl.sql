@@ -1,12 +1,13 @@
 DROP TABLE IF EXISTS bot;
 CREATE TABLE bot
 (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    type        VARCHAR(50) NOT NULL DEFAULT 'MAIN',
-    bot_token   VARCHAR(512),
-    description VARCHAR(512),
-    created_at  TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id                     INT AUTO_INCREMENT PRIMARY KEY,
+    type                   VARCHAR(50) NOT NULL DEFAULT 'MAIN',
+    bot_token              VARCHAR(512),
+    description            VARCHAR(512),
+    bot_telegram_user_name VARCHAR(50), -- 機器人的telegram用戶名
+    created_at             TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at             TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS user;
@@ -103,8 +104,8 @@ DROP TABLE IF EXISTS text;
 CREATE TABLE text
 (
     id          INT PRIMARY KEY AUTO_INCREMENT,
-    language_id INT NOT NULL,
-    content     TEXT        NOT NULL,
+    language_id INT  NOT NULL,
+    content     TEXT NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

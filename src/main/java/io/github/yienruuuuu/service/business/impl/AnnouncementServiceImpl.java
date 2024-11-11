@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business.impl;
 
 import io.github.yienruuuuu.bean.entity.Announcement;
+import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.repository.AnnouncementRepository;
 import io.github.yienruuuuu.service.business.AnnouncementService;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,10 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Override
     public void delete(int id) {
         announcementRepository.deleteById(id);
+    }
+
+    @Override
+    public Announcement findAnnouncementByType(AnnouncementType type) {
+        return announcementRepository.findAnnouncementByType(type);
     }
 }

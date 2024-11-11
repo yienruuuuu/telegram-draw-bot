@@ -31,4 +31,6 @@ public class Bot extends BaseEntity {
     @Column(name = "description", length = 512)
     private String description;
 
+    @Column(name = "bot_telegram_user_name")
+    private String botTelegramUserName;
 }

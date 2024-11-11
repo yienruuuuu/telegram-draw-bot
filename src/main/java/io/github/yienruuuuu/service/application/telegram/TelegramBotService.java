@@ -9,6 +9,8 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
+import org.telegram.telegrambots.meta.api.methods.GetMe;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
@@ -23,14 +25,18 @@ public class TelegramBotService {
     private final MainBotConsumer mainBotConsumer;
     //Repo
     private final BotRepository botRepository;
+    //client
+    private final TelegramBotClient telegramBotClient;
 
-    public TelegramBotService(MainBotConsumer mainBotConsumer, BotRepository botRepository) {
+    public TelegramBotService(MainBotConsumer mainBotConsumer, BotRepository botRepository, TelegramBotClient telegramBotClient) {
         this.mainBotConsumer = mainBotConsumer;
         this.botRepository = botRepository;
+        this.telegramBotClient = telegramBotClient;
     }
 
     @PostConstruct
     public void registerBot() {
+        //BOT註冊
         Bot mainBotEntity = botRepository.findBotByType(BotType.MAIN);
         try {
             botsApplication = new TelegramBotsLongPollingApplication();
@@ -38,6 +44,10 @@ public class TelegramBotService {
         } catch (TelegramApiException e) {
             log.error("機器人註冊發生錯誤 , 錯誤訊息 : ", e);
         }
+        //更新資料庫BOT資料設定
+        User botData = telegramBotClient.send(GetMe.builder().build(), mainBotEntity);
+        mainBotEntity.setBotTelegramUserName(botData.getUserName());
+        botRepository.save(mainBotEntity);
     }
 
     @PreDestroy
