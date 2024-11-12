@@ -1,9 +1,12 @@
 package io.github.yienruuuuu.bean.enums;
 
+import lombok.Getter;
+
 /**
  * @author Eric.Lee
  * Date: 2024/11/8
  */
+@Getter
 public enum Role {
     MANAGER(999),
     VIP(2),
@@ -13,10 +16,6 @@ public enum Role {
 
     Role(int level) {
         this.level = level;
-    }
-
-    public int getLevel() {
-        return level;
     }
 
     public boolean hasPermission(Role requiredRole) {

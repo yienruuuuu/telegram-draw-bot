@@ -18,13 +18,13 @@ VALUES (1, '
 歡迎使用Yuki的抽卡機器人 🤖🥰
 /start - 打印帮助信息
 /invite - 邀請用戶，獲取積分
-/mystat - 查看你的帳號資訊
+/my_status - 查看你的帳號資訊
 /getcredit - 如何獲得積分'),
        (2, '
 Welcome to Yuki''s Gacha Bot 🤖🥰
 /start - Display help information
 /invite - Invite users to earn points
-/mystat - Check your account information
+/my_status - Check your account information
 /getcredit - Learn how to earn points');
 
 -- 關聯繁體中文的公告文字
@@ -61,8 +61,7 @@ VALUES
 
     -- INVITE_MESSAGE_SUFFIX 的公告文字（ID 3 對應此公告類型）
     (3, 5), -- 繁體中文
-    (3, 6);
--- 英文
+    (3, 6); -- 英文
 
 
 -- 新增公告類型 NOT_REGISTERED
@@ -84,4 +83,34 @@ VALUES
     -- NOT_REGISTERED 的公告文字（ID 4 對應此公告類型）
     (4, 7), -- 繁體中文
     (4, 8); -- 英文
+
+
+-- 新增公告類型 NOT_REGISTERED
+INSERT INTO announcement (type, sequence)
+VALUES ('USER_STATUS_QUERY', 1);
+
+-- 新增繁體中文和英文的 USER_STATUS_QUERY 說明
+INSERT INTO text (language_id, content)
+VALUES
+    -- 繁體中文的 USER_STATUS_QUERY
+    (1, '
+👤玩家ID:{USER_ID}
+👑玩家身分:{USER_ROLE}
+🏧免費積分:{FREE_POINT}
+🔱付費積分:{PAID_POINT}
+📆註冊時間:{REGISTER_TIME}'),
+    -- 英文的 USER_STATUS_QUERY
+    (2, '
+👤User ID: {USER_ID}
+👑User Role: {USER_ROLE}
+🏧Free Points: {FREE_POINT}
+🔱Paid Points: {PAID_POINT}
+📆Registration Date: {REGISTER_TIME}');
+
+-- 關聯繁體中文和英文的 USER_STATUS_QUERY 文字
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES
+    -- NOT_REGISTERED 的公告文字（ID 4 對應此公告類型）
+    (5, 9), -- 繁體中文
+    (5, 10); -- 英文
 

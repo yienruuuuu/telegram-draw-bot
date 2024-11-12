@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendPaidMedia;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -85,6 +86,19 @@ public class TelegramBotClient {
             handleException(e, "getFile");
             return null;
         }
+    }
+
+    /**
+     * send Video
+     */
+    public Message send(SendVideo video, Bot bot) {
+        TelegramClient telegramClient = getOrCreateTelegramClient(bot);
+        try {
+            return telegramClient.execute(video);
+        } catch (TelegramApiException e) {
+            handleException(e, "傳送Video");
+        }
+        return null;
     }
 
     /**

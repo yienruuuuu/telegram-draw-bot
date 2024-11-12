@@ -34,7 +34,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     @Override
     public void consume(Update update) {
-        JsonUtils.parseJsonAndPrintLog("收到Update訊息", update);
+        JsonUtils.parseJsonAndPrintLog("MAIN BOT CONSUMER收到Update訊息", update);
         Bot mainBotEntity = botRepository.findBotByType(BotType.MAIN);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -42,7 +42,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
         } else if (update.hasCallbackQuery()) {
             callbackDispatcher.dispatch(update, mainBotEntity);
         } else {
-            log.warn("收到不支援的更新類型");
+            log.warn("MAIN BOT CONSUMER收到不支援的更新類型");
         }
     }
 }

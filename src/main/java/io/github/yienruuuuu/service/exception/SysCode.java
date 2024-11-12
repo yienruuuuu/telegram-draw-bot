@@ -18,6 +18,7 @@ public enum SysCode implements ErrorCode {
 
     //7000 資料錯誤
     NOT_FOUND(7000, "Data not found"),
+    ANNOUNCE_UNEXPECTED_ERROR(7001, "預期外錯誤發生，發生於文本查詢過程中"),
 
     //9000 未知錯誤
     UNEXPECTED_ERROR(9999, "Unexpected error");
