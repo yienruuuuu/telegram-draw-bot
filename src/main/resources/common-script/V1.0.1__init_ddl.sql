@@ -14,10 +14,10 @@ DROP TABLE IF EXISTS user;
 CREATE TABLE user
 (
     id                  INT PRIMARY KEY AUTO_INCREMENT,             -- 表ID
-    role                VARCHAR(50)         NOT NULL,               -- 身分
-    telegram_user_id    VARCHAR(50)         NOT NULL,               -- telegram id
-    first_name          varchar(50),                                -- 名字
-    language_id         VARCHAR(20),                                -- 語系代碼（例如：'zh-hant', 'en'）
+    role                VARCHAR(16)         NOT NULL,               -- 身分
+    telegram_user_id    VARCHAR(16)         NOT NULL,               -- telegram id
+    first_name          varchar(25),                                -- 名字
+    language_id         INT,                                        -- 語系代碼（例如：'zh-hant', 'en'）
     is_block            boolean             NOT NULL DEFAULT FALSE, -- 是否為黑名單
     free_points         INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
     purchased_points    INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
@@ -31,27 +31,28 @@ CREATE TABLE language
 (
     id            INT PRIMARY KEY AUTO_INCREMENT, -- 表ID
     language_code VARCHAR(20) NOT NULL,           -- 語系代碼（例如：'zh-hant', 'en'）
-    language_name VARCHAR(50) NOT NULL            -- 語系名稱（例如：'繁體中文', 'English')
+    language_name VARCHAR(20) NOT NULL            -- 語系名稱（例如：'繁體中文', 'English')
 );
 
 DROP TABLE IF EXISTS resource;
 CREATE TABLE resource
 (
     id                 INT PRIMARY KEY AUTO_INCREMENT,
-    type               VARCHAR(50) NOT NULL,
-    rarity_level       VARCHAR(50) NOT NULL DEFAULT 'NORMAL',
-    file_id_main_bot   TEXT        NOT NULL,
-    file_id_manage_bot TEXT        NOT NULL,
-    created_at         TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
-    updated_at         TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    file_type          VARCHAR(16)  NOT NULL DEFAULT 'OTHER',
+    rarity_type        VARCHAR(16)  NOT NULL DEFAULT 'NORMAL',
+    file_id_main_bot   VARCHAR(128) NOT NULL,
+    file_id_manage_bot VARCHAR(128) NOT NULL,
+    tags               VARCHAR(255), -- 資源標籤
+    created_at         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS resource_text;
 CREATE TABLE resource_text
 (
-    id          INT PRIMARY KEY AUTO_INCREMENT,
     resource_id INT NOT NULL, -- 外鍵，對應 resource 表
-    text_id     INT NOT NULL  -- 外鍵，對應 text 表
+    text_id     INT NOT NULL, -- 外鍵，對應 text 表
+    PRIMARY KEY (resource_id, text_id)
 );
 
 DROP TABLE IF EXISTS user_card;
@@ -79,7 +80,8 @@ DROP TABLE IF EXISTS card_pool_text;
 CREATE TABLE card_pool_text
 (
     card_pool_id INT NOT NULL, -- 卡池id
-    text_id      INT NOT NULL  -- 文字ID
+    text_id      INT NOT NULL, -- 文字ID
+    PRIMARY KEY (card_pool_id, text_id)
 );
 
 DROP TABLE IF EXISTS card;
@@ -91,14 +93,6 @@ CREATE TABLE card
     drop_rate    DECIMAL(5, 2) DEFAULT 1.00, -- 抽卡機率，以百分比表示但以權重計算
     resource_id  INT NOT NULL                -- 資源ID
 );
-
-DROP TABLE IF EXISTS card_text;
-CREATE TABLE card_text
-(
-    card_id INT NOT NULL, -- 卡id
-    text_id INT NOT NULL  -- 文字ID
-);
-
 
 DROP TABLE IF EXISTS text;
 CREATE TABLE text
@@ -124,7 +118,8 @@ DROP TABLE IF EXISTS announcement_text;
 CREATE TABLE announcement_text
 (
     announcement_id INT NOT NULL, -- 公告id
-    text_id         INT NOT NULL  -- 文字ID
+    text_id         INT NOT NULL, -- 文字ID
+    PRIMARY KEY (announcement_id, text_id)
 );
 
 

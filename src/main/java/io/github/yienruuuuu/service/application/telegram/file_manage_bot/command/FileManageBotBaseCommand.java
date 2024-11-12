@@ -1,4 +1,4 @@
-package io.github.yienruuuuu.service.application.telegram.main_bot.command;
+package io.github.yienruuuuu.service.application.telegram.file_manage_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Language;
@@ -22,14 +22,14 @@ import java.util.Optional;
  * Date: 2024/11/8
  */
 @Component
-public class BaseCommand {
+public class FileManageBotBaseCommand {
     protected final UserService userService;
     protected final LanguageService languageService;
     protected final TelegramBotClient telegramBotClient;
     protected final AnnouncementService announcementService;
 
 
-    public BaseCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
+    public FileManageBotBaseCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
         this.userService = userService;
         this.languageService = languageService;
         this.telegramBotClient = telegramBotClient;
@@ -42,11 +42,10 @@ public class BaseCommand {
     protected void checkUserIfExists(Update update, Bot mainBotEntity) {
         String userId = String.valueOf(update.getMessage().getFrom().getId());
         User user = userService.findByTelegramUserId(userId);
-        //已註冊則返回
         if (user != null) {
             return;
         }
-        //未註冊則發送註冊提示且拋錯
+
         Long chatId = update.getMessage().getChatId();
         String languageCode = update.getMessage().getFrom().getLanguageCode();
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
