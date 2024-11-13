@@ -23,11 +23,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 @Component
 public class StartCommand extends BaseCommand implements MainBotCommand {
-    private final TelegramBotClient botClient;
 
-    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, TelegramBotClient botClient) {
+    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
         super(userService, languageService, telegramBotClient, announcementService);
-        this.botClient = botClient;
     }
 
 
@@ -46,7 +44,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         User user = registerUser(inviteeUserId, userFirstName, languageCode, initialFreePoints);
         // start訊息響應
         SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, chatId);
-        botClient.send(msgToTelegram, mainBotEntity);
+        telegramBotClient.send(msgToTelegram, mainBotEntity);
     }
 
     @Override

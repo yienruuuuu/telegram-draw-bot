@@ -7,6 +7,6 @@ package io.github.yienruuuuu.bean.enums;
 public enum FileType {
     VIDEO,
     GIF,
-    PIC,
+    PHOTO,
     OTHER
 }

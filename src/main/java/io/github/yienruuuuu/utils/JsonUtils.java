@@ -1,7 +1,11 @@
 package io.github.yienruuuuu.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -10,7 +14,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class JsonUtils {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper;
+
+    static {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     private JsonUtils() {
         // 拋出異常了防止透過反射呼叫私有建構子
@@ -38,5 +48,13 @@ public class JsonUtils {
             log.error("將更新物件解析為 json 字串時出錯", e);
         }
         return null;
+    }
+
+    public static <T> T parseJsonToTargetDto(String json, Class<T> targetType) {
+        try {
+            return objectMapper.readValue(json, targetType);
+        } catch (Exception e) {
+            throw new ApiException(SysCode.UNEXPECTED_ERROR, e);
+        }
     }
 }

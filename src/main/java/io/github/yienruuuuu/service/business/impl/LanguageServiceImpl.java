@@ -6,6 +6,8 @@ import io.github.yienruuuuu.repository.LanguageRepository;
 import io.github.yienruuuuu.service.business.LanguageService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Eric.Lee
  * Date: 2024/11/8
@@ -26,5 +28,10 @@ public class LanguageServiceImpl implements LanguageService {
                 languageRepository.findByLanguageCode(key)
                         .orElseGet(() -> languageRepository.findByLanguageCode("en").orElse(null))
         );
+    }
+
+    @Override
+    public List<Language> findAllLanguages() {
+        return languageRepository.findAll();
     }
 }

@@ -1,7 +1,6 @@
 package io.github.yienruuuuu.bean.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,9 +18,7 @@ public class Text {
     @JoinColumn(name = "language_id")
     private Language language;
 
-    @NotNull
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
-
 }

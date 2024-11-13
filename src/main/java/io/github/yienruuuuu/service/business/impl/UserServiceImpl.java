@@ -2,7 +2,7 @@ package io.github.yienruuuuu.service.business.impl;
 
 import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
-import io.github.yienruuuuu.bean.enums.Role;
+import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.repository.UserRepository;
 import io.github.yienruuuuu.service.business.UserService;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
         }
         User newUser = User.builder()
                 .telegramUserId(telegramId)
-                .role(Role.NORMAL)
+                .role(RoleType.NORMAL)
                 .firstName(firstName)
                 .language(language)
                 .isBlock(false)

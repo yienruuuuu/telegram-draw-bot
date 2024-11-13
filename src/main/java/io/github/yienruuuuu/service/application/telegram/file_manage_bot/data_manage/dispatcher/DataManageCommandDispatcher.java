@@ -1,7 +1,7 @@
-package io.github.yienruuuuu.service.application.telegram.file_manage_bot.dispatcher;
+package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.dispatcher;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.service.application.telegram.file_manage_bot.FileManageBotCommand;
+import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,20 +17,19 @@ import java.util.Map;
  * Date: 2024/11/8
  */
 @Component
-public class FileManageBotCommandDispatcher {
-    private final Map<String, FileManageBotCommand> commandMap = new HashMap<>();
+public class DataManageCommandDispatcher {
+    private final Map<String, DataManageCommand> commandMap = new HashMap<>();
 
     @Autowired
-    public FileManageBotCommandDispatcher(List<FileManageBotCommand> commands) {
-        for (FileManageBotCommand command : commands) {
+    public DataManageCommandDispatcher(List<DataManageCommand> commands) {
+        for (DataManageCommand command : commands) {
             commandMap.put(command.getCommandName(), command);
         }
     }
 
     public void dispatch(Update update, Bot fileManageBotEntity) {
         String messageText = update.getMessage().getText();
-        FileManageBotCommand command = commandMap.get(messageText.split(" ")[0]);
-
+        DataManageCommand command = commandMap.get(messageText.split(" ")[0]);
         if (command != null) {
             command.execute(update, fileManageBotEntity);
         }

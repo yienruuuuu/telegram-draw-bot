@@ -7,18 +7,18 @@ import lombok.Getter;
  * Date: 2024/11/8
  */
 @Getter
-public enum Role {
+public enum RoleType {
     MANAGER(999),
     VIP(2),
     NORMAL(1);
 
     private final int level;
 
-    Role(int level) {
+    RoleType(int level) {
         this.level = level;
     }
 
-    public boolean hasPermission(Role requiredRole) {
-        return this.level >= requiredRole.level;
+    public boolean hasPermission(RoleType requiredRoleType) {
+        return this.level >= requiredRoleType.level;
     }
 }

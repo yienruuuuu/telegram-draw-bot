@@ -1,6 +1,6 @@
 package io.github.yienruuuuu.bean.entity;
 
-import io.github.yienruuuuu.bean.enums.Role;
+import io.github.yienruuuuu.bean.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 50)
-    private Role role;
+    private RoleType role;
 
     @Size(max = 50)
     @NotNull
