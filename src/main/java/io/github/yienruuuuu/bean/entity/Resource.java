@@ -48,6 +48,10 @@ public class Resource extends BaseEntity {
     @Column(name = "unique_id")
     private String uniqueId;
 
+    @NotNull
+    @Column(name = "has_been_card_before")
+    private boolean hasBeenCardBefore;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "resource_text",

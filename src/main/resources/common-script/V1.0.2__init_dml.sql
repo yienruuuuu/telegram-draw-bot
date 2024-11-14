@@ -61,7 +61,8 @@ VALUES
 
     -- INVITE_MESSAGE_SUFFIX 的公告文字（ID 3 對應此公告類型）
     (3, 5), -- 繁體中文
-    (3, 6); -- 英文
+    (3, 6);
+-- 英文
 
 
 -- 新增公告類型 NOT_REGISTERED
@@ -82,7 +83,8 @@ INSERT INTO announcement_text (announcement_id, text_id)
 VALUES
     -- NOT_REGISTERED 的公告文字（ID 4 對應此公告類型）
     (4, 7), -- 繁體中文
-    (4, 8); -- 英文
+    (4, 8);
+-- 英文
 
 
 -- 新增公告類型 NOT_REGISTERED
@@ -109,8 +111,27 @@ VALUES
 
 -- 關聯繁體中文和英文的 USER_STATUS_QUERY 文字
 INSERT INTO announcement_text (announcement_id, text_id)
-VALUES
-    -- NOT_REGISTERED 的公告文字（ID 4 對應此公告類型）
-    (5, 9), -- 繁體中文
-    (5, 10); -- 英文
+VALUES (5, 9),
+       (5, 10);
+
+
+-- 新增公告
+INSERT INTO announcement (type, sequence)
+VALUES ('FILE_MANAGE_START_MESSAGE', 1);
+
+-- 繁體中文的公告說明
+INSERT INTO text (language_id, content)
+    VALUE (1, '
+歡迎使用資源操作機器人🤖
+/start - 打印操作幫助
+/edit_resource - 編輯資源
+/list_resource_by_time_desc - 查看資源
+/add_card_pool - 新增卡池');
+
+-- 關聯繁體中文的公告文字
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (6, 11);
+
+
+
 

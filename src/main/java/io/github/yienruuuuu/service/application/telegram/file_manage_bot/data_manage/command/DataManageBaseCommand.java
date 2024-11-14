@@ -1,6 +1,5 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.Text;
@@ -17,6 +16,9 @@ import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,7 +27,6 @@ import java.util.Optional;
  */
 @Component
 public class DataManageBaseCommand {
-    protected final ObjectMapper objectMapper;
     protected final UserService userService;
     protected final LanguageService languageService;
     protected final TelegramBotClient telegramBotClient;
@@ -33,8 +34,7 @@ public class DataManageBaseCommand {
     protected final ResourceService resourceService;
 
 
-    public DataManageBaseCommand(ObjectMapper objectMapper, UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
-        this.objectMapper = objectMapper;
+    public DataManageBaseCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
         this.userService = userService;
         this.languageService = languageService;
         this.telegramBotClient = telegramBotClient;
@@ -66,5 +66,27 @@ public class DataManageBaseCommand {
                 .filter(text -> text.getLanguage().equals(language))
                 .findFirst()
                 .map(Text::getContent);
+    }
+
+    /**
+     * 將 DTO 內的 texts 轉換為 Text 實體
+     */
+    protected List<Text> convertToTextEntities(List<Map<String, String>> dtoTexts) {
+        List<Text> texts = new ArrayList<>();
+        for (Map<String, String> dtoText : dtoTexts) {
+            // 假設只有一個 key-value 對（例如 {"zh-hant": "內容"}）
+            String languageCode = dtoText.keySet().iterator().next();
+            String content = dtoText.get(languageCode);
+
+            // 查詢 Language 實體
+            Language language = languageService.findLanguageByCodeOrDefault(languageCode);
+
+            // 創建 Text 實體
+            Text text = new Text();
+            text.setLanguage(language);
+            text.setContent(content);
+            texts.add(text);
+        }
+        return texts;
     }
 }

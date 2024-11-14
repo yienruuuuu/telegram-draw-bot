@@ -4,6 +4,8 @@ import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.bean.enums.FileType;
 import io.github.yienruuuuu.repository.ResourceRepository;
 import io.github.yienruuuuu.service.business.ResourceService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +31,11 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<Resource> findAll() {
         return resourceRepository.findAll();
+    }
+
+    @Override
+    public Page<Resource> findAllByPage(Pageable pageable) {
+        return resourceRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     @Override

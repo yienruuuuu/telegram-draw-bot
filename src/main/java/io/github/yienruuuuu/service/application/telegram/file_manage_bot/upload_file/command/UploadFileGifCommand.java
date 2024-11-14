@@ -8,7 +8,6 @@ import io.github.yienruuuuu.bean.enums.RarityType;
 import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.upload_file.UploadFileCommand;
-import io.github.yienruuuuu.service.business.AnnouncementService;
 import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.ResourceService;
 import io.github.yienruuuuu.service.business.UserService;
@@ -28,9 +27,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class UploadFileGifCommand extends UploadFileBaseCommand implements UploadFileCommand {
 
-
-    public UploadFileGifCommand(UserService userService, TelegramBotClient telegramBotClient, ResourceService resourceService, AppConfig appConfig, AnnouncementService announcementService, LanguageService languageService) {
-        super(userService, telegramBotClient, resourceService, appConfig, announcementService, languageService);
+    public UploadFileGifCommand(UserService userService, TelegramBotClient telegramBotClient, ResourceService resourceService, AppConfig appConfig, LanguageService languageService) {
+        super(userService, telegramBotClient, resourceService, appConfig, languageService);
     }
 
     @Override
@@ -41,6 +39,7 @@ public class UploadFileGifCommand extends UploadFileBaseCommand implements Uploa
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())
+                .hasBeenCardBefore(false)
                 .build();
         Resource newResource = resourceService.save(resource);
         SendAnimation sendAnimation = SendAnimation.builder()

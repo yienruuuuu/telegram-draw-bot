@@ -37,16 +37,17 @@ CREATE TABLE language
 DROP TABLE IF EXISTS resource;
 CREATE TABLE resource
 (
-    id                 INT PRIMARY KEY AUTO_INCREMENT,
-    file_type          VARCHAR(16)  NOT NULL DEFAULT 'OTHER',
-    rarity_type        VARCHAR(16)  NOT NULL DEFAULT 'NORMAL',
-    file_id_main_bot   VARCHAR(128),          -- 主BOT的file_id
-    file_id_manage_bot VARCHAR(128),          -- 資源控管Bot的file_id
-    tags               VARCHAR(255),          -- 資源標籤
-    unique_id          VARCHAR(52) NOT NULL, -- telegram資源的唯一識別碼
-    created_at         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    updated_at         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY idx_unique_id (unique_id)      -- 唯一索引
+    id                   INT PRIMARY KEY AUTO_INCREMENT,
+    file_type            VARCHAR(16) NOT NULL DEFAULT 'OTHER',
+    rarity_type          VARCHAR(16) NOT NULL DEFAULT 'NORMAL',
+    file_id_main_bot     VARCHAR(128),                       -- 主BOT的file_id
+    file_id_manage_bot   VARCHAR(128),                       -- 資源控管Bot的file_id
+    tags                 VARCHAR(255),                       -- 資源標籤
+    unique_id            VARCHAR(52) NOT NULL,               -- telegram資源的唯一識別碼
+    has_been_card_before boolean     NOT NULL DEFAULT FALSE, -- 是否已成為卡片過
+    created_at           TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY idx_unique_id (unique_id)                     -- 唯一索引
 );
 
 DROP TABLE IF EXISTS resource_text;
@@ -69,13 +70,13 @@ CREATE TABLE user_card
 DROP TABLE IF EXISTS card_pool;
 CREATE TABLE card_pool
 (
-    id               INT PRIMARY KEY AUTO_INCREMENT,
-    start_at         TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    end_at           TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    is_open          boolean NOT NULL DEFAULT FALSE,
-    is_limit_edition boolean NOT NULL DEFAULT FALSE,
-    created_at       TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    start_at    TIMESTAMP,
+    end_at      TIMESTAMP,
+    is_open     boolean NOT NULL DEFAULT FALSE,
+    resource_id INT,
+    created_at  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS card_pool_text;

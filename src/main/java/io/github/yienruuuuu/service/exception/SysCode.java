@@ -16,6 +16,7 @@ public enum SysCode implements ErrorCode {
     PARAMETER_ERROR(2002, "Parameter error"),
     NOT_REGISTER_ERROR(2003, "使用者尚未註冊"),
     PERMISSION_DENIED_ERROR(2004, "權限不足，禁止執行此操作"),
+    RESOURCE_HAS_BEEN_CARD(2005, "資源已被壓製成卡牌"),
 
     //3000 系統錯誤
     CREATE_TEMPLATE_ERROR(3000, "建立模板失敗"),

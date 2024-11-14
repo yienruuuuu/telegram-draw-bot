@@ -6,13 +6,12 @@ import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
-import io.github.yienruuuuu.service.business.AnnouncementService;
 import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.ResourceService;
 import io.github.yienruuuuu.service.business.UserService;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
-import io.github.yienruuuuu.utils.ResourceTemplateGenerator;
+import io.github.yienruuuuu.utils.TemplateGenerator;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -26,16 +25,14 @@ public class UploadFileBaseCommand {
     protected final TelegramBotClient telegramBotClient;
     protected final ResourceService resourceService;
     protected final AppConfig appConfig;
-    protected final AnnouncementService announcementService;
     protected final LanguageService languageService;
 
 
-    public UploadFileBaseCommand(UserService userService, TelegramBotClient telegramBotClient, ResourceService resourceService, AppConfig appConfig, AnnouncementService announcementService, LanguageService languageService) {
+    public UploadFileBaseCommand(UserService userService, TelegramBotClient telegramBotClient, ResourceService resourceService, AppConfig appConfig, LanguageService languageService) {
         this.userService = userService;
         this.telegramBotClient = telegramBotClient;
         this.resourceService = resourceService;
         this.appConfig = appConfig;
-        this.announcementService = announcementService;
         this.languageService = languageService;
     }
 
@@ -58,10 +55,11 @@ public class UploadFileBaseCommand {
      * 傳送完善resource的json模板
      */
     protected void sendEditResourceTemplate(Resource newResource, String chatId, Bot fileBotEntity) {
-        String template = ResourceTemplateGenerator.generateTemplateWithData(newResource, languageService.findAllLanguages());
+        String template = TemplateGenerator.generateResourceTemplate(newResource, languageService.findAllLanguages());
         SendMessage askForCompleteResourceSetting = SendMessage.builder()
                 .chatId(chatId)
-                .text("/edit_resource " + template)
+                .text("`/edit_resource " + template + "`")
+                .parseMode("MarkdownV2")
                 .build();
         telegramBotClient.send(askForCompleteResourceSetting, fileBotEntity);
     }

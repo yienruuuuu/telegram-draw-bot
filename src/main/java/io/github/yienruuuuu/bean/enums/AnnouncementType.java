@@ -7,6 +7,7 @@ package io.github.yienruuuuu.bean.enums;
 public enum AnnouncementType {
     //開始訊息
     START_MESSAGE,
+    FILE_MANAGE_START_MESSAGE,
     //邀請訊息前後綴
     INVITE_MESSAGE_PREFIX,
     INVITE_MESSAGE_SUFFIX,
