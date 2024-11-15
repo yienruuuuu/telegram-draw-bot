@@ -44,7 +44,7 @@ public class ListResourceByTimeDescCommand extends DataManageBaseCommand impleme
         checkUsersPermission(userId, chatId, fileManageBot);
 
         // 提取分頁參數，默認為第 1 頁
-        int pageNumber = extractPageNumber(update.getMessage().getText()) - 1; // Pageable 的頁碼從 0 開始
+        int pageNumber = super.extractPageNumber(update.getMessage().getText()) - 1; // Pageable 的頁碼從 0 開始
         int pageSize = 10;
 
         Page<Resource> resourcePage = resourceService.findAllByPage(PageRequest.of(pageNumber, pageSize));
@@ -79,19 +79,6 @@ public class ListResourceByTimeDescCommand extends DataManageBaseCommand impleme
     @Override
     public String getCommandName() {
         return "/list_resource_by_time_desc";
-    }
-
-    /**
-     * 提取分頁號碼，默認返回 1
-     */
-    private int extractPageNumber(String commandText) {
-        try {
-            String[] parts = commandText.split(" ");
-            return parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
-        } catch (NumberFormatException e) {
-            log.warn("Invalid page number provided in command: {}", commandText, e);
-            return 1;
-        }
     }
 
     /**

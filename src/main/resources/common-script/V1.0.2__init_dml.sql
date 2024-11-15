@@ -126,7 +126,8 @@ INSERT INTO text (language_id, content)
 /start - 打印操作幫助
 /edit_resource - 編輯資源
 /list_resource_by_time_desc - 查看資源
-/add_card_pool - 新增卡池');
+/add_card_pool - 新增卡池
+/list_card_pool_by_time_desc - 查看卡池');
 
 -- 關聯繁體中文的公告文字
 INSERT INTO announcement_text (announcement_id, text_id)

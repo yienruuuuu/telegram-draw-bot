@@ -13,6 +13,7 @@ import io.github.yienruuuuu.service.business.ResourceService;
 import io.github.yienruuuuu.service.business.UserService;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -26,6 +27,7 @@ import java.util.Optional;
  * Date: 2024/11/8
  */
 @Component
+@Slf4j
 public class DataManageBaseCommand {
     protected final UserService userService;
     protected final LanguageService languageService;
@@ -88,5 +90,19 @@ public class DataManageBaseCommand {
             texts.add(text);
         }
         return texts;
+    }
+
+
+    /**
+     * 提取分頁號碼，默認返回 1
+     */
+    protected int extractPageNumber(String commandText) {
+        try {
+            String[] parts = commandText.split(" ");
+            return parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
+        } catch (NumberFormatException e) {
+            log.warn("Invalid page number provided in command: {}", commandText, e);
+            return 1;
+        }
     }
 }

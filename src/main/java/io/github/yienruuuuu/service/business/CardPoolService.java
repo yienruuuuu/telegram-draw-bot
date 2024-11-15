@@ -1,6 +1,8 @@
 package io.github.yienruuuuu.service.business;
 
 import io.github.yienruuuuu.bean.entity.CardPool;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Eric.Lee
@@ -8,4 +10,6 @@ import io.github.yienruuuuu.bean.entity.CardPool;
  */
 public interface CardPoolService {
     CardPool save(CardPool cardPool);
+
+    Page<CardPool> findAllByPage(Pageable pageable);
 }
