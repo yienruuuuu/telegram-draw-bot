@@ -29,6 +29,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public Optional<Resource> findById(Integer id) {
+        return resourceRepository.findById(id);
+    }
+
+    @Override
     public List<Resource> findAll() {
         return resourceRepository.findAll();
     }

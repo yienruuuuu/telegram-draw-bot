@@ -22,7 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 /**
- * start指令處理器
+ * 查詢resources_按時間倒序指令處理器
  *
  * @author Eric.Lee
  * Date: 2024/11/8
@@ -52,7 +52,7 @@ public class ListResourceByTimeDescCommand extends DataManageBaseCommand impleme
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()
                     .chatId(chatId)
-                    .text("No more resources to display.")
+                    .text("沒有更多資源可顯示。")
                     .build(), fileManageBot);
             return;
         }
@@ -71,7 +71,7 @@ public class ListResourceByTimeDescCommand extends DataManageBaseCommand impleme
         // 傳送當前頁數及下頁按鈕
         telegramBotClient.send(SendMessage.builder()
                 .chatId(chatId)
-                .text("Page :" + pageInfo)
+                .text("頁數 :" + pageInfo)
                 .replyMarkup(keyboard)
                 .build(), fileManageBot);
     }

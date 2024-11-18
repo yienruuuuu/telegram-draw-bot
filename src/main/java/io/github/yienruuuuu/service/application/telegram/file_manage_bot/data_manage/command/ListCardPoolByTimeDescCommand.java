@@ -1,11 +1,13 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
+import io.github.yienruuuuu.bean.dto.AddCardPoolPicDto;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -51,7 +52,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
 
         // 提取分頁參數，默認為第 1 頁
         int pageNumber = super.extractPageNumber(update.getMessage().getText()) - 1; // Pageable 的頁碼從 0 開始
-        int pageSize = 10;
+        int pageSize = 5;
 
         Page<CardPool> cardPoolPage = cardPoolService.findAllByPage(PageRequest.of(pageNumber, pageSize));
 
@@ -101,8 +102,6 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                 "啟用狀態 : " + cardPool.isOpen(),
                 "資源id : " + (cardPool.getResource() == null ? "N/A" : cardPool.getResource().getId())
         );
-        //TODO 創建INLINE按鈕行和鍵盤
-
 
         if (cardPoolMedia != null) {
             switch (cardPoolMedia.getFileType()) {
@@ -111,7 +110,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                                 .chatId(chatId)
                                 .photo(new InputFile(cardPoolMedia.getFileIdManageBot()))
                                 .caption(cardPoolDetail)
-                                .replyMarkup(ReplyKeyboardRemove.builder().build())
+                                .replyMarkup(createInlineKeyBoard(cardPool))
                                 .build(),
                         fileManageBot
                 );
@@ -120,6 +119,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                                 .chatId(chatId)
                                 .video(new InputFile(cardPoolMedia.getFileIdManageBot()))
                                 .caption(cardPoolDetail)
+                                .replyMarkup(createInlineKeyBoard(cardPool))
                                 .build(),
                         fileManageBot
                 );
@@ -128,6 +128,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                                 .chatId(chatId)
                                 .animation(new InputFile(cardPoolMedia.getFileIdManageBot()))
                                 .caption(cardPoolDetail)
+                                .replyMarkup(createInlineKeyBoard(cardPool))
                                 .build(),
                         fileManageBot
                 );
@@ -138,6 +139,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                     SendMessage.builder()
                             .chatId(chatId)
                             .text(cardPoolDetail)
+                            .replyMarkup(createInlineKeyBoard(cardPool))
                             .build(), fileManageBot);
         }
     }
@@ -146,21 +148,26 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
      * 創建並返回卡池功能按鈕行
      */
     private InlineKeyboardMarkup createInlineKeyBoard(CardPool cardPool) {
-        InlineKeyboardButton deleteCardPoolButton = InlineKeyboardButton.builder()
-                .text("刪除卡池")
-                .callbackData("/delete_card_pool " + cardPool.getId()).build();
-        InlineKeyboardButton editCardPoolButton = InlineKeyboardButton.builder()
-                .text("修改卡池資訊")
-                .callbackData("/edit_card_pool " + cardPool.getId()).build();
-        InlineKeyboardButton quickEditOpenStatusButton = InlineKeyboardButton.builder()
-                .text("啟用/停用卡池")
-                .callbackData("/quick_edit_card_pool_status " + cardPool.getId()).build();
+        InlineKeyboardButton addCardPoolPic =
+                super.createInlineButton("新增卡池照片", "/add_pool_pic " + JsonUtils.parseJson(new AddCardPoolPicDto(cardPool.getId(), 1, "")));
+        InlineKeyboardButton deleteCardPoolButton =
+                super.createInlineButton("刪除卡池", "/delete_card_pool " + cardPool.getId());
+        InlineKeyboardButton editCardPoolButton =
+                super.createInlineButton("修改卡池資訊", "/edit_card_pool " + cardPool.getId());
+        InlineKeyboardButton quickEditOpenStatusButton =
+                super.createInlineButton("啟用/停用卡池", "/quick_edit_card_pool_status " + cardPool.getId());
+        InlineKeyboardButton editCardsInPoolButton =
+                super.createInlineButton("編輯卡池內卡牌", "/edit_cards_in_card_pool " + cardPool.getId());
 
-        InlineKeyboardRow rowInline = new InlineKeyboardRow();
-        rowInline.add("");
-
+        // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();
-        rows.add(rowInline);
+        rows.add(new InlineKeyboardRow(addCardPoolPic));
+        rows.add(new InlineKeyboardRow(deleteCardPoolButton));
+        rows.add(new InlineKeyboardRow(editCardPoolButton));
+        rows.add(new InlineKeyboardRow(quickEditOpenStatusButton));
+        rows.add(new InlineKeyboardRow(editCardsInPoolButton));
+
+        // 返回四列的 InlineKeyboardMarkup
         return new InlineKeyboardMarkup(rows);
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * @author Eric.Lee
  * Date: 2024/11/14
@@ -27,5 +29,15 @@ public class CardPoolServiceImpl implements CardPoolService {
     @Override
     public Page<CardPool> findAllByPage(Pageable pageable) {
         return cardPoolRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    @Override
+    public Optional<CardPool> findById(Integer id) {
+        return cardPoolRepository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        cardPoolRepository.deleteById(id);
     }
 }

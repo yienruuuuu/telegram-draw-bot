@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface ResourceService {
     Optional<Resource> findByUniqueId(String uniqueId);
 
+    Optional<Resource> findById(Integer id);
+
     List<Resource> findAll();
 
     Page<Resource> findAllByPage(Pageable pageable);

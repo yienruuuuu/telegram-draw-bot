@@ -1,9 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
-import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Language;
-import io.github.yienruuuuu.bean.entity.Text;
-import io.github.yienruuuuu.bean.entity.User;
+import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
@@ -15,7 +12,12 @@ import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,5 +106,14 @@ public class DataManageBaseCommand {
             log.warn("Invalid page number provided in command: {}", commandText, e);
             return 1;
         }
+    }
+
+    /**
+     * 創建 InlineKeyboardButton
+     */
+    protected InlineKeyboardButton createInlineButton(String text, String callBackData) {
+        return InlineKeyboardButton.builder()
+                .text(text)
+                .callbackData(callBackData).build();
     }
 }

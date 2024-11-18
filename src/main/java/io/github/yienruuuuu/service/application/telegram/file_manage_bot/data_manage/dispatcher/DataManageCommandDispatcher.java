@@ -2,6 +2,7 @@ package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_m
 
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @author Eric.Lee
  * Date: 2024/11/8
  */
+@Slf4j
 @Component
 public class DataManageCommandDispatcher {
     private final Map<String, DataManageCommand> commandMap = new HashMap<>();
@@ -30,6 +32,13 @@ public class DataManageCommandDispatcher {
     public void dispatch(Update update, Bot fileManageBotEntity) {
         String messageText = update.getMessage().getText();
         DataManageCommand command = commandMap.get(messageText.split(" ")[0]);
+        if (command != null) {
+            command.execute(update, fileManageBotEntity);
+        }
+    }
+
+    public void dispatchForCallback(Update update, String message, Bot fileManageBotEntity) {
+        DataManageCommand command = commandMap.get(message.split(" ")[0]);
         if (command != null) {
             command.execute(update, fileManageBotEntity);
         }

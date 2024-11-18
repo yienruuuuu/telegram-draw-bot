@@ -54,6 +54,7 @@ public class JsonUtils {
         try {
             return objectMapper.readValue(json, targetType);
         } catch (Exception e) {
+            log.error("Failed to deserialize JSON: {}", json, e);
             throw new ApiException(SysCode.UNEXPECTED_ERROR, e);
         }
     }
