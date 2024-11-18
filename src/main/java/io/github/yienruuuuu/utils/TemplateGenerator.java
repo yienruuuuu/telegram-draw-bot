@@ -69,6 +69,7 @@ public class TemplateGenerator {
      */
     public static String generateCardPoolTemplate(CardPool cardPool, List<Language> languages) {
         ObjectNode template = objectMapper.createObjectNode();
+        if (cardPool != null) template.put("id", cardPool.getId());
         template.put("startAt", cardPool == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cardPool.getStartAt()));
         template.put("endAt", cardPool == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cardPool.getEndAt()));
         template.put("isOpen", cardPool != null && cardPool.isOpen());

@@ -167,7 +167,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
         rows.add(new InlineKeyboardRow(quickEditOpenStatusButton));
         rows.add(new InlineKeyboardRow(editCardsInPoolButton));
 
-        // 返回四列的 InlineKeyboardMarkup
+        // 返回 InlineKeyboardMarkup
         return new InlineKeyboardMarkup(rows);
     }
 }
