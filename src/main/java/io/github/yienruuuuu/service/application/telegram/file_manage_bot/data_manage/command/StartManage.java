@@ -23,9 +23,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 @Slf4j
 @Component
-public class DataManageStartCommand extends DataManageBaseCommand implements DataManageCommand {
+public class StartManage extends DataManageBaseCommand implements DataManageCommand {
 
-    public DataManageStartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
+    public StartManage(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
     }
 

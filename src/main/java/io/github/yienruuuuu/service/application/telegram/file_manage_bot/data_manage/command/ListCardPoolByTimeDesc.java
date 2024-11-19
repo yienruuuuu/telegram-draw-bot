@@ -35,10 +35,10 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand implements DataManageCommand {
+public class ListCardPoolByTimeDesc extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
 
-    public ListCardPoolByTimeDescCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
+    public ListCardPoolByTimeDesc(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
     }

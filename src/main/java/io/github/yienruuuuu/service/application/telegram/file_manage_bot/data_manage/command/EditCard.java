@@ -24,13 +24,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 @Slf4j
 @Component
-public class EditCardCallback extends DataManageBaseCommand implements DataManageCommand {
-    private final CardPoolService cardPoolService;
+public class EditCard extends DataManageBaseCommand implements DataManageCommand {
     private final CardService cardService;
 
-    public EditCardCallback(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService, CardService cardService) {
+    public EditCard(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardService cardService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
-        this.cardPoolService = cardPoolService;
         this.cardService = cardService;
     }
 

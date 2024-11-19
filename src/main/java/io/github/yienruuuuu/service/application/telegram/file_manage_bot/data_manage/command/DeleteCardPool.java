@@ -17,10 +17,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 @Slf4j
 @Component
-public class DeleteCardPoolCallback extends DataManageBaseCommand implements DataManageCommand {
+public class DeleteCardPool extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
 
-    public DeleteCardPoolCallback(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
+    public DeleteCardPool(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
     }

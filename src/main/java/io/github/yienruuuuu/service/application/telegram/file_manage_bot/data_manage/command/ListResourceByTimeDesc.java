@@ -18,8 +18,14 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 查詢resources_按時間倒序指令處理器
@@ -29,10 +35,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
  */
 @Slf4j
 @Component
-public class ListResourceByTimeDescCommand extends DataManageBaseCommand implements DataManageCommand {
+public class ListResourceByTimeDesc extends DataManageBaseCommand implements DataManageCommand {
 
-
-    public ListResourceByTimeDescCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
+    public ListResourceByTimeDesc(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
     }
 
@@ -85,35 +90,50 @@ public class ListResourceByTimeDescCommand extends DataManageBaseCommand impleme
      * 根據資源類型創建對應的媒體消息
      */
     private void createMediaMessageAndSendMedia(Resource resource, String chatId, Bot fileManageBot) {
+        var inlineKeyboard = createInlineKeyBoard(resource);
+
         switch (resource.getFileType()) {
             case PHOTO -> telegramBotClient.send(
                     SendPhoto.builder()
                             .chatId(chatId)
                             .photo(new InputFile(resource.getFileIdManageBot()))
-                            .caption("`" + resource.getUniqueId() + "`")
-                            .parseMode("MarkdownV2")
-                            .build(),
-                    fileManageBot
+                            .replyMarkup(inlineKeyboard)
+                            .build(), fileManageBot
             );
             case VIDEO -> telegramBotClient.send(
                     SendVideo.builder()
                             .chatId(chatId)
                             .video(new InputFile(resource.getFileIdManageBot()))
-                            .caption("`" + resource.getUniqueId() + "`")
-                            .parseMode("MarkdownV2")
-                            .build(),
-                    fileManageBot
+                            .replyMarkup(inlineKeyboard)
+                            .build(), fileManageBot
             );
             case GIF -> telegramBotClient.send(
                     SendAnimation.builder()
                             .chatId(chatId)
                             .animation(new InputFile(resource.getFileIdManageBot()))
-                            .caption("`" + resource.getUniqueId() + "`")
-                            .parseMode("MarkdownV2")
-                            .build(),
-                    fileManageBot
+                            .replyMarkup(inlineKeyboard)
+                            .build(), fileManageBot
             );
             default -> throw new IllegalArgumentException("Unsupported FileType: " + resource.getFileType());
         }
+    }
+
+    /**
+     * 創建並返回卡池功能按鈕行
+     */
+    private InlineKeyboardMarkup createInlineKeyBoard(Resource resource) {
+        InlineKeyboardButton addCardPoolPic =
+                super.createInlineButton("修改資源", "/edit_resource " + resource.getUniqueId());
+        InlineKeyboardButton deleteCardPoolButton =
+                super.createInlineButton("刪除資源", "/delete_resource " + resource.getUniqueId());
+
+        // 將所有列加入列表
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(new InlineKeyboardRow(addCardPoolPic));
+        rows.add(new InlineKeyboardRow(deleteCardPoolButton));
+
+
+        // 返回 InlineKeyboardMarkup
+        return new InlineKeyboardMarkup(rows);
     }
 }

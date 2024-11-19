@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.yienruuuuu.bean.entity.*;
-import io.github.yienruuuuu.bean.enums.RarityType;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class TemplateGenerator {
     public static String generateResourceTemplate(Resource resource, List<Language> languages) {
         ObjectNode template = objectMapper.createObjectNode();
         template.put("uniqueId", resource.getUniqueId());
-        template.put("rarityType", RarityType.getAllRarityTypesAsString());
+        template.put("rarityType", resource.getRarityType().name());
         template.put("tags", resource.getTags());
 
         ArrayNode texts = template.putArray("texts");

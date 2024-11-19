@@ -29,10 +29,10 @@ import java.time.Instant;
  */
 @Slf4j
 @Component
-public class EditCardPoolCommand extends DataManageBaseCommand implements DataManageCommand {
+public class EditCardPool extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
 
-    public EditCardPoolCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
+    public EditCardPool(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
     }

@@ -16,6 +16,7 @@ import io.github.yienruuuuu.utils.JsonUtils;
 import io.github.yienruuuuu.utils.TemplateGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -27,25 +28,38 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 @Slf4j
 @Component
-public class EditResourceCommand extends DataManageBaseCommand implements DataManageCommand {
+public class EditResource extends DataManageBaseCommand implements DataManageCommand {
 
 
-    public EditResourceCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
+    public EditResource(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
     }
 
     @Override
     public void execute(Update update, Bot fileManageBot) {
+        if (update.hasMessage()) {
+            handleMessageCommand(update, fileManageBot);
+        } else if (update.hasCallbackQuery()) {
+            handleCallbackQuery(update, fileManageBot);
+        }
+
+    }
+
+    @Override
+    public String getCommandName() {
+        return "/edit_resource";
+    }
+
+    /**
+     * 處理一般訊息
+     */
+    private void handleMessageCommand(Update update, Bot fileManageBot) {
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         var chatId = String.valueOf(update.getMessage().getChatId());
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
         //JSON 轉換為DTO
         EditResourceRequest request = parseJsonToEditResourceRequest(update);
-        if (request == null) {
-            sendEditResourceTemplate(new Resource(), chatId, fileManageBot);
-            return;
-        }
         Resource resource = resourceService.findByUniqueId(request.getUniqueId()).orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
         resource.setRarityType(RarityType.valueOf(request.getRarityType()));
         resource.setTags(request.getTags());
@@ -57,21 +71,36 @@ public class EditResourceCommand extends DataManageBaseCommand implements DataMa
         );
     }
 
-    @Override
-    public String getCommandName() {
-        return "/edit_resource";
+    /**
+     * 處理callback query
+     */
+    private void handleCallbackQuery(Update update, Bot fileManageBot) {
+        var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
+        var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
+        var callbackQueryId = update.getCallbackQuery().getId();
+        var text = update.getCallbackQuery().getData();
+
+        //檢查操作權限
+        checkUsersPermission(userId, chatId, fileManageBot);
+        var uniqueId = text.split(" ")[1];
+        Resource resource = resourceService.findByUniqueId(uniqueId).orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
+        sendEditResourceTemplate(resource, chatId, fileManageBot);
+        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot);
     }
 
     /**
      * 傳送完善resource的json模板
      */
     private void sendEditResourceTemplate(Resource newResource, String chatId, Bot fileBotEntity) {
-        String template = TemplateGenerator.generateResourceTemplate(newResource, languageService.findAllLanguages());
-        SendMessage askForCompleteResourceSetting = SendMessage.builder()
-                .chatId(chatId)
-                .text("/edit_resource " + template)
-                .build();
-        telegramBotClient.send(askForCompleteResourceSetting, fileBotEntity);
+        String rareTypeDescription = "稀有度設定類型:" + RarityType.getAllRarityTypesAsString();
+        String template = getCommandName() + " " + TemplateGenerator.generateResourceTemplate(newResource, languageService.findAllLanguages());
+        telegramBotClient.send(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .parseMode("MarkdownV2")
+                        .text(rareTypeDescription + "\n`" + template + "`")
+                        .build(), fileBotEntity
+        );
     }
 
     /**
@@ -81,9 +110,7 @@ public class EditResourceCommand extends DataManageBaseCommand implements DataMa
         String text = update.getMessage().getText();
         String jsonString = text.substring("/edit_resource".length()).trim();
         // 檢查 JSON 是否為空
-        if (jsonString.isEmpty()) {
-            return null;
-        }
+        if (jsonString.isEmpty()) throw new ApiException(SysCode.PARAMETER_ERROR);
         return JsonUtils.parseJsonToTargetDto(jsonString, EditResourceRequest.class);
     }
 

@@ -37,11 +37,11 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class AddCardToPoolCallback extends DataManageBaseCommand implements DataManageCommand {
+public class AddCardToPool extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
     private final CardService cardService;
 
-    public AddCardToPoolCallback(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService, CardService cardService) {
+    public AddCardToPool(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService, CardService cardService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
         this.cardService = cardService;
