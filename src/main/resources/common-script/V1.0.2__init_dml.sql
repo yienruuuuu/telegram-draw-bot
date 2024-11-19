@@ -134,5 +134,19 @@ INSERT INTO announcement_text (announcement_id, text_id)
 VALUES (6, 11);
 
 
+-- 新增無卡池存在公告
+INSERT INTO announcement (type, sequence)
+VALUES ('NO_POOL_OPEN_MESSAGE', 1);
+
+-- 新增繁體中文和英文的 USER_STATUS_QUERY 說明
+INSERT INTO text (language_id, content)
+VALUES (1, '當前無卡池開放，敬請期待下次開放！'),
+       (2, 'Currently, no card pools are open. Please stay tuned for the next opening!');
+
+-- 關聯繁體中文和英文的 USER_STATUS_QUERY 文字
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (7, 12),
+       (7, 13);
+
 
 

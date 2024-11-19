@@ -15,5 +15,7 @@ public enum AnnouncementType {
     NOT_REGISTERED,
     //用戶狀態查詢
     USER_STATUS_QUERY,
+    //無可用卡池訊息
+    NO_POOL_OPEN_MESSAGE,
     OTHER
 }

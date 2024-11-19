@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,6 +21,11 @@ public class CardPoolServiceImpl implements CardPoolService {
 
     public CardPoolServiceImpl(CardPoolRepository cardPoolRepository) {
         this.cardPoolRepository = cardPoolRepository;
+    }
+
+    @Override
+    public List<CardPool> findOpenCardPools() {
+        return cardPoolRepository.findOpenPoolsAfter(Instant.now());
     }
 
     @Override
