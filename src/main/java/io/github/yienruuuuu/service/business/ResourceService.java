@@ -21,6 +21,8 @@ public interface ResourceService {
 
     Page<Resource> findAllByPage(Pageable pageable);
 
+    Page<Resource> findAllByPageExcludingIds(Pageable pageable, List<Integer> excludedIds);
+
     List<Resource> findByType(FileType type);
 
     Resource save(Resource resource);

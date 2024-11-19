@@ -76,7 +76,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
                 .resizeKeyboard(true)
                 .build();
 
-        // 傳送當前頁數及下頁按鈕
+        // 傳送下頁按鈕
         telegramBotClient.send(SendMessage.builder()
                 .chatId(chatId)
                 .text("Page :" + pageInfo)
@@ -157,7 +157,7 @@ public class ListCardPoolByTimeDescCommand extends DataManageBaseCommand impleme
         InlineKeyboardButton quickEditOpenStatusButton =
                 super.createInlineButton("啟用/停用卡池", "/quick_edit_card_pool_status " + cardPool.getId());
         InlineKeyboardButton editCardsInPoolButton =
-                super.createInlineButton("編輯卡池內卡牌", "/edit_cards_in_card_pool " + cardPool.getId());
+                super.createInlineButton("編輯卡牌", "/edit_cards_in_pool " + cardPool.getId());
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();

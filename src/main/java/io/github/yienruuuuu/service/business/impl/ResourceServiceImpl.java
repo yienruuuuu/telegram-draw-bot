@@ -44,6 +44,14 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public Page<Resource> findAllByPageExcludingIds(Pageable pageable, List<Integer> excludedIds) {
+        if (excludedIds.isEmpty()) {
+            return resourceRepository.findAll(pageable);
+        }
+        return resourceRepository.findAllByIdNotInOrderByCreatedAtDesc(excludedIds, pageable);
+    }
+
+    @Override
     public List<Resource> findByType(FileType type) {
         return resourceRepository.findByFileType(type);
     }

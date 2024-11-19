@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface ResourceRepository extends JpaRepository<Resource, Integer> {
     Page<Resource> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Resource> findAllByIdNotInOrderByCreatedAtDesc(List<Integer> excludedIds, Pageable pageable);
+
     Optional<Resource> findByUniqueId(String uniqueId);
 
     List<Resource> findByFileType(FileType type);

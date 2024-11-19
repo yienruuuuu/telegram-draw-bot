@@ -44,4 +44,7 @@ public class CardPool extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "text_id")
     )
     private List<Text> texts;
+
+    @OneToMany(mappedBy = "cardPool", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Card> cards;
 }
