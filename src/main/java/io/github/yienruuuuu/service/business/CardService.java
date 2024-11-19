@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business;
 
 import io.github.yienruuuuu.bean.entity.Card;
+import io.github.yienruuuuu.bean.entity.CardPool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +15,8 @@ public interface CardService {
     Card save(Card card);
 
     Page<Card> findAllByPage(Pageable pageable);
+
+    Page<Card> findAllByCardPool(CardPool cardPool, Pageable pageable);
 
     Optional<Card> findById(Integer id);
 

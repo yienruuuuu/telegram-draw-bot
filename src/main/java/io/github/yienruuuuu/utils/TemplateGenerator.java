@@ -3,10 +3,7 @@ package io.github.yienruuuuu.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.yienruuuuu.bean.entity.CardPool;
-import io.github.yienruuuuu.bean.entity.Language;
-import io.github.yienruuuuu.bean.entity.Resource;
-import io.github.yienruuuuu.bean.entity.Text;
+import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.bean.enums.RarityType;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
@@ -93,6 +90,22 @@ public class TemplateGenerator {
                     .orElse("");
             textNode.put(language.getLanguageCode(), content);
         });
+
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(template);
+        } catch (Exception e) {
+            throw new ApiException(SysCode.CREATE_TEMPLATE_ERROR, e);
+        }
+    }
+
+
+    /**
+     * 產生card的json模板
+     */
+    public static String generateCardTemplate(Card card) {
+        ObjectNode template = objectMapper.createObjectNode();
+        template.put("id", card.getId());
+        template.put("dropRate", card.getDropRate());
 
         try {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(template);

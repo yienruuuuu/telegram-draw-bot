@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
 import io.github.yienruuuuu.bean.dto.AddCardToPoolDto;
+import io.github.yienruuuuu.bean.dto.ListCardInPoolDto;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
@@ -69,7 +70,7 @@ public class EditCardsInPoolCallback extends DataManageBaseCommand implements Da
         InlineKeyboardButton addCardPoolPic =
                 super.createInlineButton("新增卡牌", "/add_card_to_pool " + JsonUtils.parseJson(new AddCardToPoolDto(cardPool.getId(), 1, null)));
         InlineKeyboardButton editCardPoolButton =
-                super.createInlineButton("查詢池內卡牌", "/list_card_in_pool " + cardPool.getId());
+                super.createInlineButton("查詢池內卡牌", "/list_card_in_pool " + JsonUtils.parseJson(new ListCardInPoolDto(cardPool.getId(), 1)));
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();

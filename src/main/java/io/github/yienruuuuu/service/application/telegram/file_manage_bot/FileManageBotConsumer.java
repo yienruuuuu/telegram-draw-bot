@@ -2,22 +2,17 @@ package io.github.yienruuuuu.service.application.telegram.file_manage_bot;
 
 import io.github.yienruuuuu.bean.dto.FileDataDto;
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.bean.enums.FileType;
-import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.repository.BotRepository;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.dispatcher.DataManageCallbackDispatcher;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.dispatcher.DataManageCommandDispatcher;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.upload_file.dispatcher.UploadFileDispatcher;
-import io.github.yienruuuuu.service.exception.ApiException;
-import io.github.yienruuuuu.service.exception.SysCode;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

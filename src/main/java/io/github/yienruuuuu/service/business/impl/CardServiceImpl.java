@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business.impl;
 
 import io.github.yienruuuuu.bean.entity.Card;
+import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.repository.CardRepository;
 import io.github.yienruuuuu.service.business.CardService;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,12 @@ public class CardServiceImpl implements CardService {
     public Page<Card> findAllByPage(Pageable pageable) {
         return cardRepository.findAllByOrderByIdDesc(pageable);
     }
+
+    @Override
+    public Page<Card> findAllByCardPool(CardPool cardPool, Pageable pageable) {
+        return cardRepository.findAllByCardPoolOrderByIdDesc(cardPool, pageable);
+    }
+
 
     @Override
     public Optional<Card> findById(Integer id) {
