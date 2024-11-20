@@ -87,7 +87,7 @@ public class ListCardPoolByTimeDesc extends DataManageBaseCommand implements Dat
 
     @Override
     public String getCommandName() {
-        return "/list_card_pool_by_time_desc";
+        return "/list_card_pool";
     }
 
     /**

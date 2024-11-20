@@ -18,14 +18,16 @@ VALUES (1, '
 歡迎使用Yuki的抽卡機器人 🤖🥰
 /start - 打印帮助信息
 /invite - 邀請用戶，獲取積分
+/pool - 查看卡池
 /my_status - 查看你的帳號資訊
-/getcredit - 如何獲得積分'),
+/get_point - 如何獲得積分'),
        (2, '
 Welcome to Yuki''s Gacha Bot 🤖🥰
 /start - Display help information
 /invite - Invite users to earn points
+/pool - Check the card pool
 /my_status - Check your account information
-/getcredit - Learn how to earn points');
+/get_point - Learn how to earn points');
 
 -- 關聯繁體中文的公告文字
 INSERT INTO announcement_text (announcement_id, text_id)
@@ -123,11 +125,9 @@ VALUES ('FILE_MANAGE_START_MESSAGE', 1);
 INSERT INTO text (language_id, content)
     VALUE (1, '
 歡迎使用資源操作機器人🤖
-/start - 打印操作幫助
-/edit_resource - 編輯資源
-/list_resource_by_time_desc - 查看資源
+/list_resource - 查看資源
 /add_card_pool - 新增卡池
-/list_card_pool_by_time_desc - 查看卡池');
+/list_card_pool - 查看卡池');
 
 -- 關聯繁體中文的公告文字
 INSERT INTO announcement_text (announcement_id, text_id)
@@ -138,15 +138,23 @@ VALUES (6, 11);
 INSERT INTO announcement (type, sequence)
 VALUES ('NO_POOL_OPEN_MESSAGE', 1);
 
--- 新增繁體中文和英文的 USER_STATUS_QUERY 說明
 INSERT INTO text (language_id, content)
-VALUES (1, '當前無卡池開放，敬請期待下次開放！'),
-       (2, 'Currently, no card pools are open. Please stay tuned for the next opening!');
+VALUES (1, '🤡當前無卡池開放，敬請期待下次開放！🤡'),
+       (2, '🤡Currently, no card pools are open. Please stay tuned for the next opening!🤡');
 
--- 關聯繁體中文和英文的 USER_STATUS_QUERY 文字
 INSERT INTO announcement_text (announcement_id, text_id)
 VALUES (7, 12),
        (7, 13);
 
+-- 抽卡訊息
+INSERT INTO announcement (type, sequence)
+VALUES ('PICK_CARD', 1);
 
+INSERT INTO text (language_id, content)
+VALUES (1, '🔮✨抽卡✨🔮'),
+       (2, '🔮✨SUMMON✨🔮');
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (8, 14),
+       (8, 15);
 

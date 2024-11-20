@@ -83,7 +83,7 @@ public class ListResourceByTimeDesc extends DataManageBaseCommand implements Dat
 
     @Override
     public String getCommandName() {
-        return "/list_resource_by_time_desc";
+        return "/list_resource";
     }
 
     /**

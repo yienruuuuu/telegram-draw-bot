@@ -14,6 +14,7 @@ import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.Optional;
 
@@ -73,5 +74,14 @@ public class BaseCommand {
                 .filter(text -> text.getLanguage().equals(language))
                 .findFirst()
                 .map(Text::getContent);
+    }
+
+    /**
+     * 創建 InlineKeyboardButton
+     */
+    protected InlineKeyboardButton createInlineButton(String text, String callBackData) {
+        return InlineKeyboardButton.builder()
+                .text(text)
+                .callbackData(callBackData).build();
     }
 }

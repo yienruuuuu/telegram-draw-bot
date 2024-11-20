@@ -17,5 +17,7 @@ public enum AnnouncementType {
     USER_STATUS_QUERY,
     //無可用卡池訊息
     NO_POOL_OPEN_MESSAGE,
+    //抽卡訊息
+    PICK_CARD,
     OTHER
 }

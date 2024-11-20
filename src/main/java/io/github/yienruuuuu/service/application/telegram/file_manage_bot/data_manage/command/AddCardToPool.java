@@ -201,7 +201,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
      */
     private InlineKeyboardMarkup createPaginationKeyboard(CardPool cardPool, Integer page) {
         InlineKeyboardButton addCardPoolPic =
-                super.createInlineButton("下一頁", "/add_card_to_pool " + JsonUtils.parseJson(new AddCardToPoolDto(cardPool.getId(), page, null)));
+                super.createInlineButton("下一頁", "/add_card_to_pool " + JsonUtils.parseJson(new AddCardToPoolDto(cardPool.getId(), page - 1, null)));
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();
