@@ -25,5 +25,7 @@ public enum AnnouncementType {
     GAME_DESCRIPTION,
     //今日已玩過骰子說明
     HAS_PLAY_DICE_TODAY_MESSAGE,
+    //使用規約回答同意
+    TERM_MESSAGE,
     OTHER
 }

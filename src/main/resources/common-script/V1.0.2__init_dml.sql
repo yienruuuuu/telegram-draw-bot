@@ -193,3 +193,19 @@ VALUES (34, 1, '
        (35, 2, '
 You have already played the dice game today, please come back tomorrow!
 ');
+
+-- 使用條約
+INSERT INTO announcement (id, type, sequence)
+VALUES (12, 'TERM_MESSAGE', 1);
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (12, 36),
+       (12, 37);
+
+INSERT INTO text (id, language_id, content)
+VALUES (36, 1, '
+以上為使用合約，請問是否已閱讀且同意?
+'),
+       (37, 2, '
+The above is the user agreement. Have you read and agreed to it?
+');

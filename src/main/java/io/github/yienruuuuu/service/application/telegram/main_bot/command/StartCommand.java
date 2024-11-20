@@ -11,8 +11,17 @@ import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * start指令處理器
@@ -31,25 +40,76 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
 
     @Override
     public void execute(Update update, Bot mainBotEntity) {
-        String inviteeUserId = update.getMessage().getFrom().getId().toString();
-        String userFirstName = update.getMessage().getFrom().getFirstName();
-        String languageCode = update.getMessage().getFrom().getLanguageCode();
-        String chatId = String.valueOf(update.getMessage().getChatId());
-        String[] messageParts = update.getMessage().getText().trim().split("\\s+");
-        String inviteCode = messageParts.length > 1 ? messageParts[1] : null;
-
-        // 邀請積分邏輯
-        int initialFreePoints = (inviteCode != null) ? processInvitation(inviteCode, inviteeUserId) : 0;
-        // 查詢使用者，若尚未註冊則賦予初始積分
-        User user = registerUser(inviteeUserId, userFirstName, languageCode, initialFreePoints);
-        // start訊息響應
-        SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, chatId);
-        telegramBotClient.send(msgToTelegram, mainBotEntity);
+        if (update.hasMessage()) {
+            handleMessage(update, mainBotEntity);
+        } else if (update.hasCallbackQuery()) {
+            handleCallbackQuery(update, mainBotEntity);
+        }
     }
 
     @Override
     public String getCommandName() {
         return "/start";
+    }
+
+    /**
+     * 處理message
+     */
+    private void handleMessage(Update update, Bot mainBotEntity) {
+        String languageCode = update.getMessage().getFrom().getLanguageCode();
+        String chatId = String.valueOf(update.getMessage().getChatId());
+        var textInUpdate = update.getMessage().getText();
+        User user = userService.findByTelegramUserId(String.valueOf(update.getMessage().getFrom().getId()));
+        if (user == null) {
+            sendTermsOfUse(chatId, textInUpdate, languageCode, mainBotEntity);
+            return;
+        }
+
+        // start訊息響應
+        SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, chatId);
+        telegramBotClient.send(msgToTelegram, mainBotEntity);
+    }
+
+    /**
+     * 處理callback query
+     */
+    private void handleCallbackQuery(Update update, Bot mainBotEntity) {
+        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity);
+        String languageCode = update.getCallbackQuery().getFrom().getLanguageCode();
+        String inviteeUserId = update.getCallbackQuery().getFrom().getId().toString();
+        String userFirstName = update.getCallbackQuery().getFrom().getFirstName();
+        var chatId = update.getCallbackQuery().getMessage().getChatId();
+        String[] messageParts = update.getCallbackQuery().getData().trim().split("\\s+");
+        //檢查是否有同意條約
+        if (messageParts.length > 1 && "refuse".equals(messageParts[1])) {
+            telegramBotClient.send(SendMessage.builder().chatId(chatId).text(":( see you next time!").build(), mainBotEntity);
+            return;
+        }
+
+        // 邀請積分邏輯
+        String inviteCode = messageParts.length > 1 ? messageParts[1] : null;
+        int initialFreePoints = (inviteCode != null) ? processInvitation(inviteCode, inviteeUserId) : 0;
+        // 查詢使用者，若尚未註冊則賦予初始積分
+        User user = registerUser(inviteeUserId, userFirstName, languageCode, initialFreePoints);
+        // start訊息響應
+        SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, String.valueOf(chatId));
+        telegramBotClient.send(msgToTelegram, mainBotEntity);
+    }
+
+    private void sendTermsOfUse(String chatId, String textInUpdate, String languageCode, Bot mainBotEntity) {
+        Language language = languageService.findLanguageByCodeOrDefault(languageCode);
+        String askForReadTerm = super.getAnnouncementMessage(AnnouncementType.TERM_MESSAGE, language).orElse("Please read the terms of use first.");
+        String termFileId = languageCode.equals("zh-hant")
+                ? "AgACAgUAAxkBAAP2Zz2nXnhBVGD-RC31nJhBYKfPDHUAAhTGMRvquPFVLYBH0PSwz54BAAMCAAN5AAM2BA"
+                : "AgACAgUAAxkBAAP3Zz2nmqnJoMRqc8GQH2IKy4fg1p0AAhbGMRvquPFV8muFwNUmCwcBAAMCAAN5AAM2BA";
+        telegramBotClient.send(
+                SendPhoto.builder()
+                        .chatId(chatId)
+                        .photo(new InputFile(termFileId))
+                        .caption(askForReadTerm)
+                        .replyMarkup(createInlineKeyBoard(textInUpdate))
+                        .build(), mainBotEntity);
+
     }
 
 
@@ -112,5 +172,20 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
                 .chatId(chatId)
                 .text(mess)
                 .build();
+    }
+
+    /**
+     * 創建並返回卡池功能按鈕行
+     */
+    private InlineKeyboardMarkup createInlineKeyBoard(String textInUpdate) {
+        InlineKeyboardButton agreeIcon = super.createInlineButton("⭕", textInUpdate);
+        InlineKeyboardButton disagreeIcon = super.createInlineButton("❌", getCommandName() + " refuse");
+
+        // 將所有列加入列表
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(new InlineKeyboardRow(agreeIcon, disagreeIcon));
+
+        // 返回 InlineKeyboardMarkup
+        return new InlineKeyboardMarkup(rows);
     }
 }

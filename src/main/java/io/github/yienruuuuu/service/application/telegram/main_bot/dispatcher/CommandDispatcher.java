@@ -35,4 +35,11 @@ public class CommandDispatcher {
             command.execute(update, mainBotEntity);
         }
     }
+
+    public void dispatchForCallback(Update update, String message, Bot mainBotEntity) {
+        MainBotCommand command = commandMap.get(message.split(" ")[0]);
+        if (command != null) {
+            command.execute(update, mainBotEntity);
+        }
+    }
 }

@@ -1,12 +1,8 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Eric.Lee
@@ -14,17 +10,15 @@ import java.util.Map;
  */
 @Component
 public class CallbackDispatcher {
-    private final Map<String, MainBotCommand> callbackMap = new HashMap<>();
+    private final CommandDispatcher commandDispatcher;
 
-    public CallbackDispatcher() {
+    public CallbackDispatcher(CommandDispatcher commandDispatcher) {
+        this.commandDispatcher = commandDispatcher;
     }
+
 
     public void dispatch(Update update, Bot mainBotEntity) {
         String callbackData = update.getCallbackQuery().getData();
-        MainBotCommand command = callbackMap.get(callbackData);
-
-        if (command != null) {
-            command.execute(update, mainBotEntity);
-        }
+        commandDispatcher.dispatchForCallback(update, callbackData, mainBotEntity);
     }
 }
