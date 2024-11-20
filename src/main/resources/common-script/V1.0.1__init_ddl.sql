@@ -22,8 +22,26 @@ CREATE TABLE user
     free_points         INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
     purchased_points    INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
     last_pick_rare_time TIMESTAMP,                                  -- 上次抽稀有卡時間
+    last_play_dice_time TIMESTAMP,                                  -- 上次玩色子時間
     created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        -- 註冊時間
     updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS point_log;
+CREATE TABLE point_log
+(
+    id                         INT AUTO_INCREMENT PRIMARY KEY,                                  -- 主鍵
+    user_id                    INT          NOT NULL,                                           -- 用戶ID，對應 user 表
+    point_type                 VARCHAR(10)  NOT NULL,                                           -- 積分類型：免費積分或付費積分
+    amount                     INT          NOT NULL,                                           -- 變動數量（正數增加，負數減少）
+    balance_before             INT          NOT NULL,                                           -- 變動後的積分餘額
+    balance_after              INT          NOT NULL,                                           -- 變動後的積分餘額
+    reason                     VARCHAR(255) NOT NULL,                                           -- 積分變動的原因
+    telegram_payment_charge_id TEXT,                                                            -- telegram 付款ID
+    provider_payment_charge_id TEXT,                                                            -- 提供者交易ID
+    created_at                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                             -- 記錄時間
+    updated_at                 TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 更新時間
+    INDEX idx_user_id (user_id)                                                                 -- 用戶ID索引
 );
 
 DROP TABLE IF EXISTS language;

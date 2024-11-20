@@ -55,4 +55,6 @@ public class User extends BaseEntity {
     @Column(name = "last_pick_rare_time")
     private Instant lastPickRareTime;
 
+    @Column(name = "last_play_dice_time")
+    private Instant lastPlayDiceTime;
 }

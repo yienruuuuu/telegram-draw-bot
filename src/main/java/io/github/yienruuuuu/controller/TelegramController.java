@@ -12,14 +12,15 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
+import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
+import org.telegram.telegrambots.meta.api.methods.payments.RefundStarPayment;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -77,5 +78,39 @@ public class TelegramController {
                 .build();
         Message res = telegramBotClient.send(msg, mainBotEntity);
         System.out.println(JsonUtils.parseJson(res));
+    }
+
+    @Operation(summary = "測試傳送付費stars邀請")
+    @GetMapping(value = "bots/sendPayStarsAsking")
+    public void sendStarsAsking() {
+        Bot mainBotEntity = botService.findByBotType(BotType.MAIN);
+
+        SendInvoice sendInvoice = SendInvoice.builder()
+                .chatId("1513052214")
+                .title("購買數位商品")
+                .description("用Telegram Stars支付以解鎖內容")
+                .payload("唯一的識別ID")
+                .currency("XTR")
+                .protectContent(true)
+                .price(new LabeledPrice("價格", 1))
+                .providerToken("").build();
+
+
+        Message mss = telegramBotClient.send(sendInvoice, mainBotEntity);
+        JsonUtils.parseJsonAndPrintLog("收到響應", mss);
+    }
+
+    @Operation(summary = "測試傳送退款stars")
+    @GetMapping(value = "bots/sendRefundStars/{telegramPaymentChargeId}")
+    public void sendRefundStars(@PathVariable("telegramPaymentChargeId") String chargeId) {
+        Bot mainBotEntity = botService.findByBotType(BotType.MAIN);
+        RefundStarPayment msg = RefundStarPayment
+                .builder()
+                .telegramPaymentChargeId(chargeId)
+                .userId(1513052214L)
+                .build();
+
+        Boolean mss = telegramBotClient.send(msg, mainBotEntity);
+        JsonUtils.parseJsonAndPrintLog("收到響應", mss);
     }
 }

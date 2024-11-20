@@ -19,5 +19,11 @@ public enum AnnouncementType {
     NO_POOL_OPEN_MESSAGE,
     //抽卡訊息
     PICK_CARD,
+    //GET_POINT公告訊息
+    GET_POINT_ANNOUNCEMENT,
+    //GAME 說明
+    GAME_DESCRIPTION,
+    //今日已玩過骰子說明
+    HAS_PLAY_DICE_TODAY_MESSAGE,
     OTHER
 }
