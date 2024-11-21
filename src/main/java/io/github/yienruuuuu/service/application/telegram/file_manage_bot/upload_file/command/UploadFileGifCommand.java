@@ -35,7 +35,7 @@ public class UploadFileGifCommand extends UploadFileBaseCommand implements Uploa
     public void execute(Update update, Bot fileBotEntity, FileDataDto fileDataDto) {
         String chatId = update.getMessage().getChatId().toString();
         Resource resource = Resource.builder()
-                .rarityType(RarityType.NORMAL)
+                .rarityType(RarityType.SR)
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())

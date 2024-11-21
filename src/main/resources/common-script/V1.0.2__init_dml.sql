@@ -209,3 +209,43 @@ VALUES (36, 1, '
        (37, 2, '
 The above is the user agreement. Have you read and agreed to it?
 ');
+
+
+-- 積分不足公告
+INSERT INTO announcement (id, type, sequence)
+VALUES (13, 'POINT_NOT_ENOUGH_MESSAGE', 1);
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (13, 38),
+       (13, 39);
+
+INSERT INTO text (id, language_id, content)
+VALUES (38, 1, '
+您的積分不足 : {POINT}，請充值或購買積分。
+可以透過以下方式獲得積分
+- 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
+- 【限時活動】: 關注 @tomato_yuki 了解詳情。
+- 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
+- 【👑購買付費積分👑】: 以 Telegram Star⭐️ 購買付費積分。
+'),
+       (39, 2, '
+Your points are insufficient: {"POINT"}. Please recharge or purchase points.
+You can earn free points through the following ways
+- 【Invite Users】: Click /invite to get your invitation link.
+- 【Limited-Time Events】: Follow @tomato_yuki for more details.
+- 【Play Games】: Send a 🎲 or click /game to learn how to participate.
+- 【👑Purchase Paid Points👑】: Use Telegram Star⭐️ to purchase paid points.
+');
+
+-- 取得下載權限按鍵
+INSERT INTO announcement (id, type, sequence)
+VALUES (14, 'GET_DOWNLOAD_PERMISSION_BUTTON', 1);
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (14, 40),
+       (14, 41);
+
+INSERT INTO text (id, language_id, content)
+VALUES (40, 1, '取得下載/分享權限，需消耗 20 積分。'),
+       (41, 2, 'get Download/share Permission by 20 point');
+

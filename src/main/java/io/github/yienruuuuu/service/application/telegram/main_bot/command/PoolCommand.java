@@ -118,7 +118,7 @@ public class PoolCommand extends BaseCommand implements MainBotCommand {
                 super.getAnnouncementMessage(AnnouncementType.PICK_CARD, language).orElse("Pick card!");
 
         InlineKeyboardButton addCardPoolPic =
-                super.createInlineButton(pickCardText, "/pick_card " + cardPool.getId());
+                super.createInlineButton(pickCardText, "/draw " + cardPool.getId());
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();

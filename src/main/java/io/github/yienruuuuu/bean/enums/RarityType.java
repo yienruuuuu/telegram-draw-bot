@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
  * Date: 2024/11/13
  */
 public enum RarityType {
-    NORMAL,
     SR,
     SSR,
     UR;

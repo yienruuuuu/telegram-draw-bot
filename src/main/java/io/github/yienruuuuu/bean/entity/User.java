@@ -2,6 +2,7 @@ package io.github.yienruuuuu.bean.entity;
 
 import io.github.yienruuuuu.bean.enums.RoleType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -45,15 +46,14 @@ public class User extends BaseEntity {
     private boolean isBlock;
 
     @NotNull
+    @Min(0)
     @Column(name = "free_points")
     private Integer freePoints;
 
     @NotNull
+    @Min(0)
     @Column(name = "purchased_points")
     private Integer purchasedPoints;
-
-    @Column(name = "last_pick_rare_time")
-    private Instant lastPickRareTime;
 
     @Column(name = "last_play_dice_time")
     private Instant lastPlayDiceTime;

@@ -27,5 +27,9 @@ public enum AnnouncementType {
     HAS_PLAY_DICE_TODAY_MESSAGE,
     //使用規約回答同意
     TERM_MESSAGE,
+    //積分不足提示
+    POINT_NOT_ENOUGH_MESSAGE,
+    //取得下載權限_按鍵
+    GET_DOWNLOAD_PERMISSION_BUTTON,
     OTHER
 }

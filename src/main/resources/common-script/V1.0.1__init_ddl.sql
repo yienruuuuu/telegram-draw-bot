@@ -21,7 +21,6 @@ CREATE TABLE user
     is_block            boolean             NOT NULL DEFAULT FALSE, -- 是否為黑名單
     free_points         INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
     purchased_points    INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
-    last_pick_rare_time TIMESTAMP,                                  -- 上次抽稀有卡時間
     last_play_dice_time TIMESTAMP,                                  -- 上次玩色子時間
     created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        -- 註冊時間
     updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -141,6 +140,35 @@ CREATE TABLE announcement_text
     announcement_id INT NOT NULL, -- 公告id
     text_id         INT NOT NULL, -- 文字ID
     PRIMARY KEY (announcement_id, text_id)
+);
+
+DROP TABLE IF EXISTS user_draw_log;
+CREATE TABLE user_draw_log
+(
+    id           INT PRIMARY KEY AUTO_INCREMENT,
+    user_id      INT     NOT NULL, -- 用戶ID
+    card_id      INT,              -- 抽到的卡片ID
+    card_pool_id INT     NOT NULL, -- 所屬卡池ID
+    is_free      BOOLEAN NOT NULL, -- 是否使用免費積分抽卡
+    points_used  INT     NOT NULL, -- 消耗的積分數量
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS user_draw_status;
+CREATE TABLE user_draw_status
+(
+    id                INT PRIMARY KEY AUTO_INCREMENT,
+    user_id           INT NOT NULL,                       -- 用戶ID
+    card_pool_id      INT NOT NULL,                       -- 卡池ID
+    total_draw_count  INT NOT NULL DEFAULT 0,             -- 總抽卡次數
+    ur_draw_count     INT NOT NULL DEFAULT 0,             -- 已抽到UR次數
+    ssr_draw_count    INT NOT NULL DEFAULT 0,             -- 已抽到SSR次數
+    last_draw_time    TIMESTAMP,                          -- 最後一次抽卡時間
+    dynamic_drop_rate JSON,                               -- 動態機率調整（JSON存儲）
+    created_at        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY idx_user_card_pool (user_id, card_pool_id) -- 唯一約束
 );
 
 
