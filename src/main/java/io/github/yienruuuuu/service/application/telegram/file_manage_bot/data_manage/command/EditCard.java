@@ -16,6 +16,8 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * 新增卡池圖片指令處理器
  *
@@ -68,7 +70,7 @@ public class EditCard extends DataManageBaseCommand implements DataManageCommand
                         .text("`" + editCard + "`")
                         .build(), fileManageBot
         );
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 
     /**

@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * start指令處理器
@@ -70,7 +71,7 @@ public class EditCardPool extends DataManageBaseCommand implements DataManageCom
         var cardPoolId = update.getCallbackQuery().getData().split(" ")[1];
         CardPool cardPool = cardPoolService.findById(Integer.valueOf(cardPoolId)).orElseThrow(() -> new IllegalArgumentException("CardPool not found"));
         createCardPoolMessageAndSend(cardPool, chatId, fileManageBot);
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), fileManageBot));
     }
 
     /**

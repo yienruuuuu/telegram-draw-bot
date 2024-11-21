@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * 新增卡池圖片指令處理器
  *
@@ -38,9 +40,8 @@ public class DeleteCard extends DataManageBaseCommand implements DataManageComma
         //取得卡
         var cardId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
         cardService.deleteById(cardId);
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot);
-        telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot);
-
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
+        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot));
     }
 
     @Override

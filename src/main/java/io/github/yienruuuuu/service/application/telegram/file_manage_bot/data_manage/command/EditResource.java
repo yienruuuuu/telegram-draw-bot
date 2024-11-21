@@ -20,6 +20,8 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * start指令處理器
  *
@@ -85,7 +87,7 @@ public class EditResource extends DataManageBaseCommand implements DataManageCom
         var uniqueId = text.split(" ")[1];
         Resource resource = resourceService.findByUniqueId(uniqueId).orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
         sendEditResourceTemplate(resource, chatId, fileManageBot);
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 
     /**

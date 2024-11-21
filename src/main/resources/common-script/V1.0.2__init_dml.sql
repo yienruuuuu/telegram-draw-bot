@@ -246,6 +246,6 @@ VALUES (14, 40),
        (14, 41);
 
 INSERT INTO text (id, language_id, content)
-VALUES (40, 1, '取得下載/分享權限，需消耗 20 積分。'),
-       (41, 2, 'get Download/share Permission by 20 point');
+VALUES (40, 1, '💎20 積分取得下載權限。'),
+       (41, 2, '💎20 point for Download');
 

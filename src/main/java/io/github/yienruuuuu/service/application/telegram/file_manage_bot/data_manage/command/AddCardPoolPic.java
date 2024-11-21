@@ -26,6 +26,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 新增卡池圖片指令處理器
@@ -63,7 +64,7 @@ public class AddCardPoolPic extends DataManageBaseCommand implements DataManageC
             cardPoolService.save(cardPool);
             createCardPoolMessageAndSend(cardPool, chatId, fileManageBot);
         }
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), fileManageBot));
     }
 
     @Override

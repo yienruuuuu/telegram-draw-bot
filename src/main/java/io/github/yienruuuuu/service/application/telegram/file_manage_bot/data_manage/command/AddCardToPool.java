@@ -28,6 +28,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 新增卡牌到卡池
@@ -69,7 +70,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
             // 若有指定 resource id，則儲存為卡牌
             addResourceAsCard(dto, cardPool, chatId, messageId, fileManageBot);
         }
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 
     @Override

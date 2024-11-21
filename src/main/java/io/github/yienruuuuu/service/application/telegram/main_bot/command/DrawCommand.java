@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -23,6 +22,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         // 查詢用戶
         User user = userService.findByTelegramUserId(userId);
         // 檢查用戶點數
-        if (isPointNotEnough(user, chatId, pointUsed, mainBotEntity)) return;
+        if (super.isPointNotEnough(user, chatId, pointUsed, mainBotEntity)) return;
         boolean isFree = user.getFreePoints() > pointUsed;
         // 扣款
         deductPoints(user, isFree, pointUsed);
@@ -101,18 +102,6 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
     private boolean checkIsIllegal(Update update) {
         if (update.hasMessage()) {
             log.warn("Illegal command occurred user = {} ", update.getMessage().getFrom());
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isPointNotEnough(User user, String chatId, Integer pointUsed, Bot mainBotEntity) {
-        if (user.getFreePoints() < pointUsed && user.getPurchasedPoints() < pointUsed) {
-            String pointNotEnoughResponse = super.getAnnouncementMessage(AnnouncementType.POINT_NOT_ENOUGH_MESSAGE, user.getLanguage())
-                    .orElseThrow(() -> new ApiException(SysCode.UNEXPECTED_ERROR));
-            String filledText = pointNotEnoughResponse
-                    .replace("{POINT}", pointUsed.toString());
-            telegramBotClient.send(SendMessage.builder().chatId(chatId).text(filledText).build(), mainBotEntity);
             return true;
         }
         return false;
@@ -194,6 +183,9 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         // 動態調整權重（減少已抽到卡片的權重）
         String cardId = String.valueOf(selectedCard.getId());
         double adjustedWeight = Math.max(weights.get(cardId) * 0.8, 1.0); // 最低權重為 1.0
+        // 限制小數點後兩位
+        BigDecimal bd = BigDecimal.valueOf(adjustedWeight).setScale(2, RoundingMode.HALF_UP);
+        adjustedWeight = bd.doubleValue();
         drawStatus.getDynamicDropRate().put(cardId, adjustedWeight);
         userDrawStatusService.save(drawStatus);
     }

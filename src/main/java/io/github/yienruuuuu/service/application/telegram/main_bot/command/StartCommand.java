@@ -22,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * start指令處理器
@@ -74,7 +75,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
      * 處理callback query
      */
     private void handleCallbackQuery(Update update, Bot mainBotEntity) {
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity));
         String languageCode = update.getCallbackQuery().getFrom().getLanguageCode();
         String inviteeUserId = update.getCallbackQuery().getFrom().getId().toString();
         String userFirstName = update.getCallbackQuery().getFrom().getFirstName();

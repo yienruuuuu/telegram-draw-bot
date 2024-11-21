@@ -84,4 +84,19 @@ public class BaseCommand {
                 .text(text)
                 .callbackData(callBackData).build();
     }
+
+    /**
+     * 檢查使用者是否有足夠的點數
+     */
+    protected boolean isPointNotEnough(User user, String chatId, Integer pointUsed, Bot mainBotEntity) {
+        if (user.getFreePoints() < pointUsed && user.getPurchasedPoints() < pointUsed) {
+            String pointNotEnoughResponse = getAnnouncementMessage(AnnouncementType.POINT_NOT_ENOUGH_MESSAGE, user.getLanguage())
+                    .orElseThrow(() -> new ApiException(SysCode.UNEXPECTED_ERROR));
+            String filledText = pointNotEnoughResponse
+                    .replace("{POINT}", pointUsed.toString());
+            telegramBotClient.send(SendMessage.builder().chatId(chatId).text(filledText).build(), mainBotEntity);
+            return true;
+        }
+        return false;
+    }
 }

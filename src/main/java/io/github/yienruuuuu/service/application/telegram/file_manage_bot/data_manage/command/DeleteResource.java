@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * 新增卡池圖片指令處理器
  *
@@ -39,8 +41,8 @@ public class DeleteResource extends DataManageBaseCommand implements DataManageC
         //取得卡
         var resourceUniqueId = update.getCallbackQuery().getData().split(" ")[1];
         resourceService.deleteById(resourceUniqueId);
-        telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text("已刪除resource").build(), fileManageBot);
-        telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text("已刪除resource").build(), fileManageBot));
+        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot));
     }
 
     @Override
