@@ -7,12 +7,12 @@ import io.github.yienruuuuu.repository.BotRepository;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CallbackDispatcher;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CommandDispatcher;
+import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CheckOutDispatcher;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
-import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 /**
@@ -27,19 +27,19 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
     //Dispatcher
     private final CommandDispatcher commandDispatcher;
     private final CallbackDispatcher callbackDispatcher;
+    private final CheckOutDispatcher checkOutDispatcher;
     //handler
     private final ChannelPostHandler channelPostHandler;
-    //client
-    private final TelegramBotClient telegramBotClient;
+
 
     @Autowired
-    public MainBotConsumer(BotRepository botRepository, AppConfig appConfig, CommandDispatcher commandDispatcher, CallbackDispatcher callbackDispatcher, ChannelPostHandler channelPostHandler, TelegramBotClient telegramBotClient) {
+    public MainBotConsumer(BotRepository botRepository, AppConfig appConfig, CommandDispatcher commandDispatcher, CallbackDispatcher callbackDispatcher, CheckOutDispatcher checkOutDispatcher, ChannelPostHandler channelPostHandler) {
         this.botRepository = botRepository;
         this.appConfig = appConfig;
         this.commandDispatcher = commandDispatcher;
         this.callbackDispatcher = callbackDispatcher;
+        this.checkOutDispatcher = checkOutDispatcher;
         this.channelPostHandler = channelPostHandler;
-        this.telegramBotClient = telegramBotClient;
     }
 
     @Override
@@ -57,9 +57,10 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
             callbackDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
             channelPostHandler.handleChannelPost(update);
-        } else if (update.hasPreCheckoutQuery()) {
-            AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
-            telegramBotClient.send(answerPreCheckoutQuery, mainBotEntity);
+        } else if (update.hasPreCheckoutQuery()) { /*預支付訊息處理*/
+            checkOutDispatcher.dispatch(update, mainBotEntity);
+        } else if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) { /*支付訊息處理*/
+            checkOutDispatcher.dispatch(update, mainBotEntity);
         } else {
             log.warn("MAIN BOT CONSUMER收到不支援的更新類型");
         }

@@ -36,7 +36,7 @@ public class CommandDispatcher {
         }
     }
 
-    public void dispatchForCallback(Update update, String message, Bot mainBotEntity) {
+    public void dispatchForOtherUpdateType(Update update, String message, Bot mainBotEntity) {
         MainBotCommand command = commandMap.get(message.split(" ")[0]);
         if (command != null) {
             command.execute(update, mainBotEntity);

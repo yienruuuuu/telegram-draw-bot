@@ -13,7 +13,6 @@ import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.Optional;
@@ -40,26 +39,20 @@ public class BaseCommand {
     /**
      * 檢查使用者是否註冊
      */
-    protected void checkUserIfExists(Update update, Bot mainBotEntity) {
-        String userId = String.valueOf(update.getMessage().getFrom().getId());
+    protected void checkUserIfExists(String userId, Bot mainBotEntity, Long chatId, String languageCode) {
         User user = userService.findByTelegramUserId(userId);
         //已註冊則返回
-        if (user != null) {
-            return;
-        }
+        if (user != null) return;
         //未註冊則發送註冊提示且拋錯
-        Long chatId = update.getMessage().getChatId();
-        String languageCode = update.getMessage().getFrom().getLanguageCode();
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
         // 獲取 NOT_REGISTERED 的公告消息
         String notRegisteredMessage = getAnnouncementMessage(AnnouncementType.NOT_REGISTERED, language)
                 .orElse("can't found register data_") + userId;
         // 發送消息
-        SendMessage message = SendMessage.builder()
+        telegramBotClient.send(SendMessage.builder()
                 .chatId(chatId)
                 .text(notRegisteredMessage)
-                .build();
-        telegramBotClient.send(message, mainBotEntity);
+                .build(), mainBotEntity);
         throw new ApiException(SysCode.NOT_REGISTER_ERROR);
     }
 

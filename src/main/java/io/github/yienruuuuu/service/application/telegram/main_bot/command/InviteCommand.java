@@ -27,8 +27,12 @@ public class InviteCommand extends BaseCommand implements MainBotCommand {
 
     @Override
     public void execute(Update update, Bot mainBotEntity) {
-        super.checkUserIfExists(update, mainBotEntity);
+        var chatId = String.valueOf(update.getMessage().getChatId());
+        var userId = String.valueOf(update.getMessage().getFrom().getId());
         String languageCode = update.getMessage().getFrom().getLanguageCode();
+        //檢查使用者是否註冊
+        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
+
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
         //取得消息
         String prefixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_PREFIX, language).orElse(null);

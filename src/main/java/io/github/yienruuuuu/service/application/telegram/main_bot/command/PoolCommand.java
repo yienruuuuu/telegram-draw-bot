@@ -39,8 +39,9 @@ public class PoolCommand extends BaseCommand implements MainBotCommand {
     public void execute(Update update, Bot mainBotEntity) {
         var chatId = String.valueOf(update.getMessage().getChatId());
         var userId = String.valueOf(update.getMessage().getFrom().getId());
+        var languageCode = update.getMessage().getFrom().getLanguageCode();
         //檢查使用者是否註冊
-        super.checkUserIfExists(update, mainBotEntity);
+        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
         User user = userService.findByTelegramUserId(userId);
         Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());

@@ -9,16 +9,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  * Date: 2024/11/8
  */
 @Component
-public class CallbackDispatcher {
+public class CheckOutDispatcher {
     private final CommandDispatcher commandDispatcher;
 
-    public CallbackDispatcher(CommandDispatcher commandDispatcher) {
+    public CheckOutDispatcher(CommandDispatcher commandDispatcher) {
         this.commandDispatcher = commandDispatcher;
     }
 
-
     public void dispatch(Update update, Bot mainBotEntity) {
-        String callbackData = update.getCallbackQuery().getData();
-        commandDispatcher.dispatchForOtherUpdateType(update, callbackData, mainBotEntity);
+        commandDispatcher.dispatchForOtherUpdateType(update, "/paid", mainBotEntity);
     }
 }

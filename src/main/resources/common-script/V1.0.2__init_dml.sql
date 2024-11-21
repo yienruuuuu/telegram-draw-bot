@@ -144,14 +144,14 @@ VALUES (30, 1, '
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
 - 【限時活動】: 關注 @tomato_yuki 了解詳情。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
-- 【👑購買付費積分👑】: 以 Telegram Star⭐️ 購買付費積分。
+- 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
        (31, 2, '
 You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
 - 【Limited-Time Events】: Follow @tomato_yuki for more details.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
-- 【👑Purchase Paid Points👑】: Use Telegram Star⭐️ to purchase paid points.
+- 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');
 
 
@@ -226,7 +226,7 @@ VALUES (38, 1, '
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
 - 【限時活動】: 關注 @tomato_yuki 了解詳情。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
-- 【👑購買付費積分👑】: 以 Telegram Star⭐️ 購買付費積分。
+- 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
        (39, 2, '
 Your points are insufficient: {"POINT"}. Please recharge or purchase points.
@@ -234,7 +234,7 @@ You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
 - 【Limited-Time Events】: Follow @tomato_yuki for more details.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
-- 【👑Purchase Paid Points👑】: Use Telegram Star⭐️ to purchase paid points.
+- 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');
 
 -- 取得下載權限按鍵
@@ -248,4 +248,23 @@ VALUES (14, 40),
 INSERT INTO text (id, language_id, content)
 VALUES (40, 1, '💎20 積分取得下載權限。'),
        (41, 2, '💎20 point for Download');
+
+
+-- 購買付費積分公告
+INSERT INTO announcement (id, type, sequence)
+VALUES (15, 'PAYMENT_ANNOUNCEMENT', 1);
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (15, 42),
+       (15, 43);
+
+INSERT INTO text (id, language_id, content)
+VALUES (42, 1, '
+1 Telegram Star⭐️ = 1 付費積分
+您要購買多少呢?
+'),
+       (43, 2, '
+1 Telegram Star⭐️ = 1 Paid Points
+How many do you want to purchase?
+');
 

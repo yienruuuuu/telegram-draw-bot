@@ -31,5 +31,7 @@ public enum AnnouncementType {
     POINT_NOT_ENOUGH_MESSAGE,
     //取得下載權限_按鍵
     GET_DOWNLOAD_PERMISSION_BUTTON,
+    //付費公告
+    PAYMENT_ANNOUNCEMENT,
     OTHER
 }
