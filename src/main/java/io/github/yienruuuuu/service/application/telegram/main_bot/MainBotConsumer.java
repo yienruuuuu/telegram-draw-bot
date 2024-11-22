@@ -4,10 +4,9 @@ import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.repository.BotRepository;
-import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CallbackDispatcher;
-import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CommandDispatcher;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CheckOutDispatcher;
+import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CommandDispatcher;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +43,18 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     @Override
     public void consume(Update update) {
+        // 取得當前時間戳（秒）
+        long currentTimestamp = (System.currentTimeMillis() / 1000) - 10;
         JsonUtils.parseJsonAndPrintLog("MAIN BOT CONSUMER收到Update訊息", update);
         Bot mainBotEntity = botRepository.findBotByType(BotType.MAIN);
 
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getDate() > currentTimestamp) {
             commandDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasMessage() && update.getMessage().hasDice()) {
+        } else if (update.hasMessage() && update.getMessage().hasDice() && update.getMessage().getDate() > currentTimestamp) {
             //色子遊戲
             update.getMessage().setText("/dice");
             commandDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasCallbackQuery()) {
+        } else if (update.hasCallbackQuery() && update.getMessage().getDate() > currentTimestamp) {
             callbackDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
             channelPostHandler.handleChannelPost(update);
