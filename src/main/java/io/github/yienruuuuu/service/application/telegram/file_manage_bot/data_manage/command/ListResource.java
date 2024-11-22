@@ -2,6 +2,7 @@ package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_m
 
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Resource;
+import io.github.yienruuuuu.bean.entity.Text;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -26,6 +27,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 查詢resources_按時間倒序指令處理器
@@ -35,9 +37,9 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class ListResourceByTimeDesc extends DataManageBaseCommand implements DataManageCommand {
+public class ListResource extends DataManageBaseCommand implements DataManageCommand {
 
-    public ListResourceByTimeDesc(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
+    public ListResource(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
     }
 
@@ -91,6 +93,16 @@ public class ListResourceByTimeDesc extends DataManageBaseCommand implements Dat
      */
     private void createMediaMessageAndSendMedia(Resource resource, String chatId, Bot fileManageBot) {
         var inlineKeyboard = createInlineKeyBoard(resource);
+        String resourceDetail = String.join("\n",
+                "id : " + resource.getId(),
+                "類型 : " + resource.getFileType(),
+                "稀有度 : " + resource.getRarityType().name(),
+                "tag : " + resource.getTags(),
+                "曾被作為卡片使用 : " + resource.isHasBeenCardBefore(),
+                "Texts :\n" + resource.getTexts().stream()
+                        .map(Text::toString)
+                        .collect(Collectors.joining("\n"))
+        );
 
         switch (resource.getFileType()) {
             case PHOTO -> telegramBotClient.send(
@@ -98,6 +110,7 @@ public class ListResourceByTimeDesc extends DataManageBaseCommand implements Dat
                             .chatId(chatId)
                             .photo(new InputFile(resource.getFileIdManageBot()))
                             .replyMarkup(inlineKeyboard)
+                            .caption(resourceDetail)
                             .build(), fileManageBot
             );
             case VIDEO -> telegramBotClient.send(
@@ -105,6 +118,7 @@ public class ListResourceByTimeDesc extends DataManageBaseCommand implements Dat
                             .chatId(chatId)
                             .video(new InputFile(resource.getFileIdManageBot()))
                             .replyMarkup(inlineKeyboard)
+                            .caption(resourceDetail)
                             .build(), fileManageBot
             );
             case GIF -> telegramBotClient.send(
@@ -112,6 +126,7 @@ public class ListResourceByTimeDesc extends DataManageBaseCommand implements Dat
                             .chatId(chatId)
                             .animation(new InputFile(resource.getFileIdManageBot()))
                             .replyMarkup(inlineKeyboard)
+                            .caption(resourceDetail)
                             .build(), fileManageBot
             );
             default -> throw new IllegalArgumentException("Unsupported FileType: " + resource.getFileType());

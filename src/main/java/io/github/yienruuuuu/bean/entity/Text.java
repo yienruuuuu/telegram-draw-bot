@@ -21,4 +21,10 @@ public class Text {
     @Lob
     @Column(name = "content")
     private String content;
+
+    @Override
+    public String toString() {
+        String languageCode = (language != null && language.getLanguageCode() != null) ? language.getLanguageCode() : "unknown";
+        return languageCode + ": " + content;
+    }
 }

@@ -182,7 +182,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
 
         // 動態調整權重（減少已抽到卡片的權重）
         String cardId = String.valueOf(selectedCard.getId());
-        double adjustedWeight = Math.max(weights.get(cardId) * 0.8, 1.0); // 最低權重為 1.0
+        double adjustedWeight = Math.max(weights.get(cardId) * 0.5, 1.0);
         // 限制小數點後兩位
         BigDecimal bd = BigDecimal.valueOf(adjustedWeight).setScale(2, RoundingMode.HALF_UP);
         adjustedWeight = bd.doubleValue();

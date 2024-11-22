@@ -25,7 +25,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -86,7 +85,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
         Card newCard = Card.builder()
                 .cardPool(cardPool)
                 .resource(res)
-                .dropRate(BigDecimal.ONE)
+                .dropRate(res.getRarityType().getDefaultDropRate())
                 .build();
         Card card = cardService.save(newCard);
 
