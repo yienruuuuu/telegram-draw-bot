@@ -18,11 +18,9 @@ public enum RarityType {
 
     private final BigDecimal defaultDropRate;
 
-    // 修正建構子，將 int 轉換為 BigDecimal
-    private RarityType(int defaultDropRate) {
+    RarityType(int defaultDropRate) {
         this.defaultDropRate = BigDecimal.valueOf(defaultDropRate);
     }
-
 
     // 靜態方法，返回所有列舉值名稱的串接字串
     public static String getAllRarityTypesAsString() {

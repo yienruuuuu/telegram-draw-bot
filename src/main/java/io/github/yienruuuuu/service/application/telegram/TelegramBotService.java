@@ -3,6 +3,7 @@ package io.github.yienruuuuu.service.application.telegram;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.repository.BotRepository;
+import io.github.yienruuuuu.service.application.telegram.channel_manage.ChannelManageBotConsumer;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.FileManageBotConsumer;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotConsumer;
 import jakarta.annotation.PostConstruct;
@@ -33,12 +34,17 @@ public class TelegramBotService {
     //使用 ENUM Map 來管理 BotType 與 BotConsumer 的映射
     private final EnumMap<BotType, LongPollingUpdateConsumer> botConsumers = new EnumMap<>(BotType.class);
 
-    public TelegramBotService(MainBotConsumer mainBotConsumer, FileManageBotConsumer fileManageBotConsumer, BotRepository botRepository, TelegramBotClient telegramBotClient) {
+    public TelegramBotService(MainBotConsumer mainBotConsumer,
+                              FileManageBotConsumer fileManageBotConsumer,
+                              ChannelManageBotConsumer channelManageBotConsumer,
+                              BotRepository botRepository,
+                              TelegramBotClient telegramBotClient) {
         this.botRepository = botRepository;
         this.telegramBotClient = telegramBotClient;
         // 初始化 BotConsumer Map
         botConsumers.put(BotType.MAIN, mainBotConsumer);
         botConsumers.put(BotType.FILE_MANAGE, fileManageBotConsumer);
+        botConsumers.put(BotType.CHANNEL, channelManageBotConsumer);
     }
 
     @PostConstruct
@@ -59,7 +65,6 @@ public class TelegramBotService {
             } catch (TelegramApiException e) {
                 log.error("機器人 {} 註冊發生錯誤 , 錯誤訊息 : ", botType, e);
             }
-
             // 更新資料庫中的 Bot 資料設定
             updateBotData(botEntity);
         });

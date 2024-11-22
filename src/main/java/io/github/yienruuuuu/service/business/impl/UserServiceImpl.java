@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
                 .isBlock(false)
                 .freePoints(initialFreePoint)
                 .purchasedPoints(0)
+                .hasAddInChannel(false)
                 .build();
         userRepository.save(newUser);
         return newUser;

@@ -45,6 +45,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
     public void consume(Update update) {
         // 取得當前時間戳（秒）
         long currentTimestamp = (System.currentTimeMillis() / 1000) - 10;
+        System.out.println(currentTimestamp);
         JsonUtils.parseJsonAndPrintLog("MAIN BOT CONSUMER收到Update訊息", update);
         Bot mainBotEntity = botRepository.findBotByType(BotType.MAIN);
 
@@ -54,7 +55,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
             //色子遊戲
             update.getMessage().setText("/dice");
             commandDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasCallbackQuery() && update.getMessage().getDate() > currentTimestamp) {
+        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getMessage().getDate() > currentTimestamp) {
             callbackDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
             channelPostHandler.handleChannelPost(update);

@@ -13,17 +13,18 @@ CREATE TABLE bot
 DROP TABLE IF EXISTS user;
 CREATE TABLE user
 (
-    id                  INT PRIMARY KEY AUTO_INCREMENT,             -- 表ID
-    role                VARCHAR(16)         NOT NULL,               -- 身分
-    telegram_user_id    VARCHAR(16)         NOT NULL,               -- telegram id
-    first_name          varchar(25),                                -- 名字
-    language_id         INT,                                        -- 語系代碼（例如：'zh-hant', 'en'）
-    is_block            boolean             NOT NULL DEFAULT FALSE, -- 是否為黑名單
-    free_points         INT       DEFAULT 0 NOT NULL,               -- 免費積分欄位
-    purchased_points    INT       DEFAULT 0 NOT NULL,               -- 付費積分欄位
-    last_play_dice_time TIMESTAMP,                                  -- 上次玩色子時間
-    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        -- 註冊時間
-    updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id                  INT PRIMARY KEY AUTO_INCREMENT,                 -- 表ID
+    role                VARCHAR(16) NOT NULL,                           -- 身分
+    telegram_user_id    VARCHAR(16) NOT NULL,                           -- telegram id
+    first_name          varchar(25),                                    -- 名字
+    language_id         INT,                                            -- 語系代碼（例如：'zh-hant', 'en'）
+    is_block            boolean     NOT NULL DEFAULT FALSE,             -- 是否為黑名單
+    free_points         INT                  DEFAULT 0 NOT NULL,        -- 免費積分欄位
+    purchased_points    INT                  DEFAULT 0 NOT NULL,        -- 付費積分欄位
+    last_play_dice_time TIMESTAMP,                                      -- 上次玩色子時間
+    has_add_in_channel  boolean     NOT NULL DEFAULT false,             -- 是否加入頻道
+    created_at          TIMESTAMP            DEFAULT CURRENT_TIMESTAMP, -- 註冊時間
+    updated_at          TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS point_log;

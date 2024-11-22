@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -75,12 +76,15 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
      * 處理callback query
      */
     private void handleCallbackQuery(Update update, Bot mainBotEntity) {
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity));
         String languageCode = update.getCallbackQuery().getFrom().getLanguageCode();
         String inviteeUserId = update.getCallbackQuery().getFrom().getId().toString();
         String userFirstName = update.getCallbackQuery().getFrom().getFirstName();
         var chatId = update.getCallbackQuery().getMessage().getChatId();
         String[] messageParts = update.getCallbackQuery().getData().trim().split("\\s+");
+        CompletableFuture.runAsync(() ->
+                telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity));
+        CompletableFuture.runAsync(() ->
+                telegramBotClient.send(DeleteMessage.builder().messageId(update.getCallbackQuery().getMessage().getMessageId()).chatId(chatId).build(), mainBotEntity));
         //檢查是否有同意條約
         if (messageParts.length > 1 && "refuse".equals(messageParts[1])) {
             telegramBotClient.send(SendMessage.builder().chatId(chatId).text(":( see you next time!").build(), mainBotEntity);
@@ -138,11 +142,11 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         }
 
         // 更新邀請者的積分
-        inviter.setFreePoints(inviter.getFreePoints() + 10);
+        inviter.setFreePoints(inviter.getFreePoints() + 100);
         userService.save(inviter);
 
-        log.info("邀請成功，邀請者 {} 和被邀請者 {} 都增加 10 積分", inviter.getId(), inviteeUserId);
-        return 10; // 返回被邀請者的初始積分
+        log.info("邀請成功，邀請者 {} 和被邀請者 {} 都增加 100 積分", inviter.getId(), inviteeUserId);
+        return 100; // 返回被邀請者的初始積分
     }
 
 

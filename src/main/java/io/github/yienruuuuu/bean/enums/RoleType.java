@@ -10,7 +10,8 @@ import lombok.Getter;
 public enum RoleType {
     MANAGER(999),
     VIP(2),
-    NORMAL(1);
+    NORMAL(1),
+    BLOCKED(0);
 
     private final int level;
 

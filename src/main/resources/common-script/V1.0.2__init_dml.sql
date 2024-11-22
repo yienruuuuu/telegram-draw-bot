@@ -5,7 +5,7 @@ VALUES ('zh-hant', '繁體中文'),
 INSERT INTO bot (bot_token, description, type)
 VALUES ('', '主BOT', 'MAIN'),
        ('', '資源控管BOT', 'FILE_MANAGE'),
-       ('', '頻道BOT', 'CHANNEL'),
+       ('', '頻道管理BOT', 'CHANNEL'),
        ('', '交易BOT', 'TRADE');
 
 -- 新增公告
@@ -15,14 +15,14 @@ VALUES (1, 'START_MESSAGE', 1);
 -- 繁體中文的公告說明
 INSERT INTO text (id, language_id, content)
 VALUES (1, 1, '
-歡迎使用Yuki的抽卡機器人 🤖🥰
+歡迎使用Dance chicks的抽卡機器人 🤖🥰
 /start - 打印帮助信息
 /invite - 邀請用戶，獲取積分
 /pool - 查看卡池
 /my_status - 查看你的帳號資訊
 /get_point - 如何獲得積分'),
        (2, 2, '
-Welcome to Yuki''s Gacha Bot 🤖🥰
+Welcome use Dance chicks Gacha Bot 🤖🥰
 /start - Display help information
 /invite - Invite users to earn points
 /pool - Check the card pool
@@ -43,8 +43,8 @@ VALUES (2, 'INVITE_MESSAGE_PREFIX', 1),
 INSERT INTO text (id, language_id, content)
 VALUES (3, 1, '請將以下鏈接發送給還未使用過機器人的新用戶:'),
        (4, 2, 'Send the following link to new users who have not used this bot yet:'),
-       (5, 1, '用戶通過你的邀請鏈接註冊成功後，你和他將分別獲得 10 積分'),
-       (6, 2, 'Once a user registers successfully through your invite link, both of you will receive 10 points.');
+       (5, 1, '用戶通過你的邀請鏈接註冊成功後，你和他將分別獲得 100 積分'),
+       (6, 2, 'Once a user registers successfully through your invite link, both of you will receive 100 points.');
 
 INSERT INTO announcement_text (announcement_id, text_id)
 VALUES (2, 3),
@@ -142,14 +142,14 @@ INSERT INTO text (id, language_id, content)
 VALUES (30, 1, '
 可以透過以下方式獲得積分
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
-- 【限時活動】: 關注 @tomato_yuki 了解詳情。
+- 【限時活動】: 關注 @dance_chicks 獲得 100 積分，頻道不定時釋出積分活動。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
 - 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
        (31, 2, '
 You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
-- 【Limited-Time Events】: Follow @tomato_yuki for more details.
+- 【Limited-Time Events】: Follow @dance_chicks for 100 points, and the channel will release points activities at any time.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
 - 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');
@@ -224,7 +224,7 @@ VALUES (38, 1, '
 您的積分不足 : {POINT}，請充值或購買積分。
 可以透過以下方式獲得積分
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
-- 【限時活動】: 關注 @tomato_yuki 了解詳情。
+- 【限時活動】: 關注 @dance_chicks 獲得 100 積分，頻道不定時釋出積分活動。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
 - 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
@@ -232,7 +232,7 @@ VALUES (38, 1, '
 Your points are insufficient: {"POINT"}. Please recharge or purchase points.
 You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
-- 【Limited-Time Events】: Follow @tomato_yuki for more details.
+- 【Limited-Time Events】: Follow @dance_chicks for 100 points, and the channel will release points activities at any time.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
 - 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');
