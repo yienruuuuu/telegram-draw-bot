@@ -142,14 +142,14 @@ INSERT INTO text (id, language_id, content)
 VALUES (30, 1, '
 可以透過以下方式獲得積分
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
-- 【限時活動】: 關注 @dance_chicks 獲得 100 積分，頻道不定時釋出積分活動。
+- 【限時活動】: 關注 @dance_chicks 頻道，頻道不定時釋出積分兌換碼。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
 - 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
        (31, 2, '
 You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
-- 【Limited-Time Events】: Follow @dance_chicks for 100 points, and the channel will release points activities at any time.
+- 【Limited-Time Events】: Follow @dance_chicks channel , channel will release points activities.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
 - 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');
@@ -224,7 +224,7 @@ VALUES (38, 1, '
 您的積分不足 : {POINT}，請充值或購買積分。
 可以透過以下方式獲得積分
 - 【邀請用戶】: 點選 /invite 獲取邀請鏈接。
-- 【限時活動】: 關注 @dance_chicks 獲得 100 積分，頻道不定時釋出積分活動。
+- 【限時活動】: 關注 @dance_chicks 頻道，頻道不定時釋出積分兌換碼。
 - 【玩遊戲】: 發送一個 🎲，點擊 /game 了解如何傳送。
 - 【👑購買付費積分👑】: 點擊 /paid 以 Telegram Star⭐️ 購買。
 '),
@@ -232,7 +232,7 @@ VALUES (38, 1, '
 Your points are insufficient: {"POINT"}. Please recharge or purchase points.
 You can earn free points through the following ways
 - 【Invite Users】: Click /invite to get your invitation link.
-- 【Limited-Time Events】: Follow @dance_chicks for 100 points, and the channel will release points activities at any time.
+- 【Limited-Time Events】: Follow @dance_chicks channel , channel will release points activities.
 - 【Play Games】: Send a 🎲 or click /game to learn how to participate.
 - 【👑Purchase Paid Points👑】: click /paid to use Telegram Star⭐️ to purchase paid points.
 ');

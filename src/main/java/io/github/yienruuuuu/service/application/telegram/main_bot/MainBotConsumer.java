@@ -3,10 +3,10 @@ package io.github.yienruuuuu.service.application.telegram.main_bot;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.config.AppConfig;
-import io.github.yienruuuuu.repository.BotRepository;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CallbackDispatcher;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CheckOutDispatcher;
 import io.github.yienruuuuu.service.application.telegram.main_bot.dispatcher.CommandDispatcher;
+import io.github.yienruuuuu.service.business.BotService;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 @Slf4j
 public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
-    private final BotRepository botRepository;
+    private final BotService botService;
     private final AppConfig appConfig;
     //Dispatcher
     private final CommandDispatcher commandDispatcher;
@@ -32,8 +32,8 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
 
 
     @Autowired
-    public MainBotConsumer(BotRepository botRepository, AppConfig appConfig, CommandDispatcher commandDispatcher, CallbackDispatcher callbackDispatcher, CheckOutDispatcher checkOutDispatcher, ChannelPostHandler channelPostHandler) {
-        this.botRepository = botRepository;
+    public MainBotConsumer(BotService botService, AppConfig appConfig, CommandDispatcher commandDispatcher, CallbackDispatcher callbackDispatcher, CheckOutDispatcher checkOutDispatcher, ChannelPostHandler channelPostHandler) {
+        this.botService = botService;
         this.appConfig = appConfig;
         this.commandDispatcher = commandDispatcher;
         this.callbackDispatcher = callbackDispatcher;
@@ -47,7 +47,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
         long currentTimestamp = (System.currentTimeMillis() / 1000) - 10;
         System.out.println(currentTimestamp);
         JsonUtils.parseJsonAndPrintLog("MAIN BOT CONSUMER收到Update訊息", update);
-        Bot mainBotEntity = botRepository.findBotByType(BotType.MAIN);
+        Bot mainBotEntity = botService.findByBotType(BotType.MAIN);
 
         if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getDate() > currentTimestamp) {
             commandDispatcher.dispatch(update, mainBotEntity);

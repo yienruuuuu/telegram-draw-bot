@@ -16,6 +16,9 @@ public class AppConfig {
     @Value("${bot.communicator}")
     private String botCommunicatorChatId;
 
+    @Value("${bot.public-channel}")
+    private String botPublicChannelId;
+
     //單例 ObjectMapper 物件
     @Bean
     public ObjectMapper objectMapper() {

@@ -1,7 +1,7 @@
 package io.github.yienruuuuu.service.application.telegram.channel_manage.dispatcher;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
+import io.github.yienruuuuu.service.application.telegram.channel_manage.ChannelManageBotCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,28 +18,21 @@ import java.util.Map;
  */
 @Component
 public class ChannelCommandDispatcher {
-    private final Map<String, MainBotCommand> commandMap = new HashMap<>();
+    private final Map<String, ChannelManageBotCommand> commandMap = new HashMap<>();
 
     @Autowired
-    public ChannelCommandDispatcher(List<MainBotCommand> commands) {
-        for (MainBotCommand command : commands) {
+    public ChannelCommandDispatcher(List<ChannelManageBotCommand> commands) {
+        for (ChannelManageBotCommand command : commands) {
             commandMap.put(command.getCommandName(), command);
         }
     }
 
-    public void dispatch(Update update, Bot mainBotEntity) {
+    public void dispatch(Update update, Bot botEntity) {
         String messageText = update.getMessage().getText();
-        MainBotCommand command = commandMap.get(messageText.split(" ")[0]);
+        ChannelManageBotCommand command = commandMap.get(messageText.split(" ")[0]);
 
         if (command != null) {
-            command.execute(update, mainBotEntity);
-        }
-    }
-
-    public void dispatchForOtherUpdateType(Update update, String message, Bot mainBotEntity) {
-        MainBotCommand command = commandMap.get(message.split(" ")[0]);
-        if (command != null) {
-            command.execute(update, mainBotEntity);
+            command.execute(update, botEntity);
         }
     }
 }

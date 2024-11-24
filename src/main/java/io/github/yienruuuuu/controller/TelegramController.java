@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.payments.RefundStarPayment;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
@@ -24,6 +25,8 @@ import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Eric.Lee
@@ -112,5 +115,17 @@ public class TelegramController {
 
         Boolean mss = telegramBotClient.send(msg, mainBotEntity);
         JsonUtils.parseJsonAndPrintLog("收到響應", mss);
+    }
+
+    @Operation(summary = "測試傳送GetUpdates調整接收訊息")
+    @GetMapping(value = "bots/sendGetUpdates")
+    public void sendGetUpdates() {
+        Bot channelBot = botService.findByBotType(BotType.CHANNEL);
+        List<String> allowedUpdates = Arrays.asList("update_id","message","callback_query","channel_post","chat_member");
+        GetUpdates msg = GetUpdates.builder()
+                .allowedUpdates(allowedUpdates)
+                .build();
+
+        telegramBotClient.send(msg, channelBot);
     }
 }

@@ -14,10 +14,13 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.GetMe;
+import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.List;
 
 /**
  * @author Eric.Lee Date: 2024/10/17
@@ -67,6 +70,8 @@ public class TelegramBotService {
             }
             // 更新資料庫中的 Bot 資料設定
             updateBotData(botEntity);
+            // 更新BOT接收Updated資料(allowed_updates )
+            updateBotUpdates(botEntity);
         });
     }
 
@@ -77,6 +82,19 @@ public class TelegramBotService {
         User botData = telegramBotClient.send(GetMe.builder().build(), botEntity);
         botEntity.setBotTelegramUserName(botData.getUserName());
         botRepository.save(botEntity);
+    }
+
+    /**
+     * 更新機器人接收Updated資料(allow_updates)
+     */
+    private void updateBotUpdates(Bot botEntity) {
+        if (!botEntity.getType().equals(BotType.CHANNEL)) return;
+        List<String> allowedUpdates = Arrays.asList("update_id", "message", "callback_query", "channel_post", "chat_member");
+        telegramBotClient.send(
+                GetUpdates.builder()
+                        .allowedUpdates(allowedUpdates)
+                        .build(), botEntity);
+
     }
 
     @PreDestroy

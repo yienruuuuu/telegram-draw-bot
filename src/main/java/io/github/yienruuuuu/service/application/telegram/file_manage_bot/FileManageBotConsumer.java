@@ -4,10 +4,10 @@ import io.github.yienruuuuu.bean.dto.FileDataDto;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.bean.enums.FileType;
-import io.github.yienruuuuu.repository.BotRepository;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.dispatcher.DataManageCallbackDispatcher;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.dispatcher.DataManageCommandDispatcher;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.upload_file.dispatcher.UploadFileDispatcher;
+import io.github.yienruuuuu.service.business.BotService;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +25,15 @@ import java.util.Comparator;
 @Component
 @Slf4j
 public class FileManageBotConsumer implements LongPollingSingleThreadUpdateConsumer {
-    private final BotRepository botRepository;
-
+    private final BotService botService;
     //Dispatcher
     private final DataManageCommandDispatcher dataManageCommandDispatcher;
     private final DataManageCallbackDispatcher dataManageCallbackDispatcher;
     private final UploadFileDispatcher uploadFileDispatcher;
 
     @Autowired
-    public FileManageBotConsumer(BotRepository botRepository, DataManageCommandDispatcher dataManageCommandDispatcher, DataManageCallbackDispatcher dataManageCallbackDispatcher, UploadFileDispatcher uploadFileDispatcher) {
-        this.botRepository = botRepository;
+    public FileManageBotConsumer(BotService botService, DataManageCommandDispatcher dataManageCommandDispatcher, DataManageCallbackDispatcher dataManageCallbackDispatcher, UploadFileDispatcher uploadFileDispatcher) {
+        this.botService = botService;
         this.dataManageCommandDispatcher = dataManageCommandDispatcher;
         this.dataManageCallbackDispatcher = dataManageCallbackDispatcher;
         this.uploadFileDispatcher = uploadFileDispatcher;
@@ -43,7 +42,7 @@ public class FileManageBotConsumer implements LongPollingSingleThreadUpdateConsu
     @Override
     public void consume(Update update) {
         JsonUtils.parseJsonAndPrintLog("FILE MANAGE BOT CONSUMER收到Update訊息", update);
-        Bot fileManageBotEntity = botRepository.findBotByType(BotType.FILE_MANAGE);
+        Bot fileManageBotEntity = botService.findByBotType(BotType.FILE_MANAGE);
 
         if (update.hasMessage()) {
             handleMessage(update, fileManageBotEntity);
