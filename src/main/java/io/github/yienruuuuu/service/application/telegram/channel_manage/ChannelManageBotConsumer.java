@@ -20,10 +20,13 @@ public class ChannelManageBotConsumer implements LongPollingSingleThreadUpdateCo
     private final BotService botService;
     //Dispatcher
     private final ChannelCommandDispatcher channelCommandDispatcher;
+    //handler
+    private final NewMemberHandler newMemberHandler;
 
-    public ChannelManageBotConsumer(BotService botService, ChannelCommandDispatcher channelCommandDispatcher) {
+    public ChannelManageBotConsumer(BotService botService, ChannelCommandDispatcher channelCommandDispatcher, NewMemberHandler newMemberHandler) {
         this.botService = botService;
         this.channelCommandDispatcher = channelCommandDispatcher;
+        this.newMemberHandler = newMemberHandler;
     }
 
 
@@ -35,7 +38,7 @@ public class ChannelManageBotConsumer implements LongPollingSingleThreadUpdateCo
         if (update.hasMessage()) {
             channelCommandDispatcher.dispatch(update, botEntity);
         } else if (update.hasChatMember()) {
-            channelCommandDispatcher.dispatch(update, botEntity);
+            newMemberHandler.handleNewMember(update);
         } else {
             log.warn("CHANNEL BOT CONSUMER收到不支援的更新類型");
         }
