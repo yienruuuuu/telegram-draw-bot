@@ -58,7 +58,7 @@ public class AddCheatCode implements ChannelManageBotCommand {
         User user = userService.findByTelegramUserId(userId);
         AddCheatCodeRequest request = parseJsonToDto(update);
         if (request == null) {
-            sendEditResourceTemplate(chatId, null, channelManageBot);
+            sendEditResourceTemplate(chatId, channelManageBot);
             return;
         }
         // 新增 CheatCode
@@ -115,8 +115,8 @@ public class AddCheatCode implements ChannelManageBotCommand {
     /**
      * 傳送json模板
      */
-    private void sendEditResourceTemplate(String chatId, CheatCode cheatCode, Bot channelManageBotEntity) {
-        String template = getCommandName() + " " + TemplateGenerator.generateCheatCodeTemplate(cheatCode);
+    private void sendEditResourceTemplate(String chatId, Bot channelManageBotEntity) {
+        String template = getCommandName() + " " + TemplateGenerator.generateCheatCodeTemplate(null);
         telegramBotClient.send(
                 SendMessage.builder()
                         .chatId(chatId)

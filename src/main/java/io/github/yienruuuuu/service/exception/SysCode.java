@@ -19,6 +19,7 @@ public enum SysCode implements ErrorCode {
     RESOURCE_HAS_BEEN_CARD(2005, "資源已被壓製成卡牌"),
     CARD_POOL_NOT_EXIST(2006, "卡池不存在"),
     CARD_NOT_FOUND(2007, "卡片不存在"),
+    CHEAT_CODE_EXPIRED(2008, "作弊碼過期"),
 
     //3000 系統錯誤
     CREATE_TEMPLATE_ERROR(3000, "建立模板失敗"),

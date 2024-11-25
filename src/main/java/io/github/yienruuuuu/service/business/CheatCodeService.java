@@ -17,5 +17,7 @@ public interface CheatCodeService {
 
     Optional<CheatCode> findById(Integer id);
 
+    Optional<CheatCode> findByCode(String code);
+
     void deleteById(Integer id);
 }

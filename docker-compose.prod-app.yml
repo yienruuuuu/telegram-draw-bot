@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  tg_bot_app:
+    image: openjdk:17-jdk
+    container_name: tg_bot_app
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 引用 MySQL 密碼
+      - BOT_TOKEN_MAIN=${BOT_TOKEN_MAIN}  # 引用 Bot Token
+      - BOT_TOKEN_FILE_MANAGE=${BOT_TOKEN_FILE_MANAGE}  # 引用 Bot Token
+      - BOT_TOKEN_CHANNEL=${BOT_TOKEN_CHANNEL}  # 引用 Bot Token
+      - TZ=UTC  # 設置容器時區為 UTC
+    volumes:
+      # 修改為 Docker Compose 層的 jar 路徑
+      - ./tg_bot.jar:/app/tg_bot.jar
+      # 記錄檔
+      - ./logs:/logs
+      # container時區
+      - /etc/timezone:/etc/timezone:ro
+
+
+    command: [ 'sh', '-c', 'java -jar -Dspring.profiles.active=prod -Duser.timezone=UTC /app/tg_bot.jar' ]
+    ports:
+      - "8080:8080"
+    networks:
+      - prod-network
+
+networks:
+  prod-network:
+    driver: bridge

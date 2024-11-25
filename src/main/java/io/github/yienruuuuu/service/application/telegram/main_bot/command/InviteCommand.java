@@ -1,7 +1,7 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Language;
+import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
@@ -32,11 +32,10 @@ public class InviteCommand extends BaseCommand implements MainBotCommand {
         String languageCode = update.getMessage().getFrom().getLanguageCode();
         //檢查使用者是否註冊
         super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-
-        Language language = languageService.findLanguageByCodeOrDefault(languageCode);
+        User user = userService.findByTelegramUserId(userId);
         //取得消息
-        String prefixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_PREFIX, language).orElse(null);
-        String suffixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_SUFFIX, language).orElse(null);
+        String prefixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_PREFIX, user.getLanguage()).orElse(null);
+        String suffixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_SUFFIX, user.getLanguage()).orElse(null);
         String inviteUrl = "https://t.me/" + mainBotEntity.getBotTelegramUserName() + "?start=invite_" + update.getMessage().getFrom().getId();
         //組裝消息並使用 %n 作為換行符
         String fullMessage = String.format("%s%n%s%n%s", prefixAnnounce, inviteUrl, suffixAnnounce);
