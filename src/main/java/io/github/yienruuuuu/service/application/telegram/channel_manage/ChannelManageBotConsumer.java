@@ -35,7 +35,7 @@ public class ChannelManageBotConsumer implements LongPollingSingleThreadUpdateCo
         JsonUtils.parseJsonAndPrintLog("CHANNEL BOT CONSUMER收到Update訊息", update);
         Bot botEntity = botService.findByBotType(BotType.CHANNEL);
 
-        if (update.hasMessage()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             channelCommandDispatcher.dispatch(update, botEntity);
         } else if (update.hasChatMember()) {
             newMemberHandler.handleNewMember(update);

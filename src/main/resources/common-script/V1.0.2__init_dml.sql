@@ -268,3 +268,23 @@ VALUES (42, 1, '
 How many do you want to purchase?
 ');
 
+-- 作弊碼公告
+INSERT INTO announcement (id, type, sequence)
+VALUES (16, 'CHEAT_CODE_ANNOUNCEMENT', 1);
+
+INSERT INTO announcement_text (announcement_id, text_id)
+VALUES (16, 44);
+
+INSERT INTO text (id, language_id, content)
+VALUES (44, 1, '
+🔞作弊碼來囉~
+直接對機器人輸入以下作弊碼即可獲得 {POINT_AMOUNT} 積分。
+📆有效期間:
+{VALIDITY_PERIOD}
+
+🔞cheat code is here~
+enter the following cheat code to the bot and get {POINT_AMOUNT} points instantly.
+📆validity period:
+{VALIDITY_PERIOD}
+');
+

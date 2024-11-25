@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Eric.Lee
@@ -112,5 +113,26 @@ public class TemplateGenerator {
             throw new ApiException(SysCode.CREATE_TEMPLATE_ERROR, e);
         }
     }
+
+    /**
+     * 產生cheat code的json模板
+     */
+    public static String generateCheatCodeTemplate(CheatCode cheatCode) {
+        ObjectNode template = objectMapper.createObjectNode();
+        template.put("code", cheatCode == null ? "/cheat_code " + UUID.randomUUID() : cheatCode.getCode());
+        template.put("pointAmount", cheatCode == null ? 10 : cheatCode.getPointAmount());
+        template.put("validFrom", cheatCode == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cheatCode.getValidFrom()));
+        template.put("validTo", cheatCode == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cheatCode.getValidTo()));
+        template.put("maxUsage", cheatCode == null ? null : cheatCode.getMaxUsage());
+        template.put("isActive", cheatCode == null ? "true" : cheatCode.getIsActive().toString());
+
+
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(template);
+        } catch (Exception e) {
+            throw new ApiException(SysCode.CREATE_TEMPLATE_ERROR, e);
+        }
+    }
+
 
 }

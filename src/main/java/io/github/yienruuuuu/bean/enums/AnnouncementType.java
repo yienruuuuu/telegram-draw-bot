@@ -33,5 +33,7 @@ public enum AnnouncementType {
     GET_DOWNLOAD_PERMISSION_BUTTON,
     //付費公告
     PAYMENT_ANNOUNCEMENT,
+    //作弊碼公告
+    CHEAT_CODE_ANNOUNCEMENT,
     OTHER
 }

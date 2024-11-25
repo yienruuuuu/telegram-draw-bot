@@ -172,6 +172,33 @@ CREATE TABLE user_draw_status
     UNIQUE KEY idx_user_card_pool (user_id, card_pool_id) -- 唯一約束
 );
 
+DROP TABLE IF EXISTS cheat_codes;
+CREATE TABLE cheat_codes
+(
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    code         VARCHAR(255) NOT NULL UNIQUE,
+    point_amount INT          NOT NULL,
+    valid_from   TIMESTAMP    NOT NULL,
+    valid_to     TIMESTAMP    NOT NULL,
+    max_usage    INT      DEFAULT NULL,
+    is_active    BOOLEAN  DEFAULT TRUE,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS cheat_code_usages;
+CREATE TABLE cheat_code_usages
+(
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    cheat_code_id BIGINT NOT NULL,
+    user_id       BIGINT NOT NULL,
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY idx_cheat_code_user (cheat_code_id, user_id)
+);
+
+
+
 
 
 
