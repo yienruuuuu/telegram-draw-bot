@@ -13,12 +13,12 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - tg_bot_mysql_data :/var/lib/mysql
     networks:
       - prod-network
 
 volumes:
-  mysql_data:
+  tg_bot_mysql_data:
 
 networks:
   prod-network:
