@@ -213,8 +213,8 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         var text = cardResource.getTexts().stream()
                 .filter(t -> t.getLanguage().equals(language))
                 .findFirst()
-                .orElseThrow(() -> new ApiException(SysCode.UNEXPECTED_ERROR))
-                .getContent();
+                .map(Text::getContent)
+                .orElse(null);
         var inlineKeyboard = createInlineKeyBoard(card, language);
 
         switch (cardResource.getFileType()) {
