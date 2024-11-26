@@ -1,8 +1,8 @@
 <configuration>
-<!--    log輸出位置-->
+    <!-- 日誌輸出位置 -->
     <property name="LOG_PATH" value="./logs" />
 
-<!--    將日誌輸出到控制台-->
+    <!-- 控制台輸出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
@@ -12,7 +12,7 @@
         </encoder>
     </appender>
 
-<!--    各層級日置檔案輸出-->
+    <!-- WARN 級別文件輸出 -->
     <appender name="file_warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/warn/logback.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -30,6 +30,7 @@
         </encoder>
     </appender>
 
+    <!-- INFO 級別文件輸出 -->
     <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/info/logback.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -39,17 +40,15 @@
                 <maxFileSize>20MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
-        <filter class="ch.qos.logback.classic.filter.LevelRangeFilter">
-            <levelMin>INFO</levelMin>
-            <levelMax>ERROR</levelMax>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
         </filter>
         <encoder>
             <pattern>%d{HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
+    <!-- DEBUG 級別文件輸出 -->
     <appender name="file_debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/debug/logback.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -59,25 +58,23 @@
                 <maxFileSize>20MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
-        <filter class="ch.qos.logback.classic.filter.LevelRangeFilter">
-            <levelMin>DEBUG</levelMin>
-            <levelMax>ERROR</levelMax>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
         </filter>
         <encoder>
             <pattern>%d{HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- project log -->
+    <!-- 專案日誌設定 -->
     <logger name="io.github.yienruuuuu" level="DEBUG" additivity="false">
         <appender-ref ref="console" />
         <appender-ref ref="file_debug" />
         <appender-ref ref="file_info" />
         <appender-ref ref="file_warn" />
     </logger>
-    <!-- other log not in project -->
+
+    <!-- 全局日誌設定 -->
     <root level="DEBUG">
         <appender-ref ref="console" />
         <appender-ref ref="file_warn" />
