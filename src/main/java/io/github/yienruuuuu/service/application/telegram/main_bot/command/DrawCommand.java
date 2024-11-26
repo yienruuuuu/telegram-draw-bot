@@ -2,6 +2,7 @@ package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
+import io.github.yienruuuuu.bean.enums.PointType;
 import io.github.yienruuuuu.bean.enums.RarityType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
@@ -68,7 +69,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         if (super.isPointNotEnough(user, chatId, pointUsed, mainBotEntity)) return;
         boolean userFreePoint = user.getFreePoints() >= pointUsed;
         // 扣款
-        deductPoints(user, userFreePoint, pointUsed);
+        deductPoints(user, userFreePoint, -pointUsed);
         // 取得卡池
         CardPool cardPool = cardPoolService.findById(data).orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_EXIST));
         // 確保用戶抽卡狀態存在
@@ -111,12 +112,8 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
      * 扣款
      */
     private void deductPoints(User user, boolean userFreePoint, Integer pointUsed) {
-        if (userFreePoint) {
-            user.setFreePoints(user.getFreePoints() - pointUsed);
-        } else {
-            user.setPurchasedPoints(user.getPurchasedPoints() - pointUsed);
-        }
-        userService.save(user);
+        PointType pointType = userFreePoint ? PointType.FREE : PointType.PAID;
+        userService.addPointAndSavePointLog(user, pointUsed, pointType, getCommandName(), null, null);
     }
 
     /**

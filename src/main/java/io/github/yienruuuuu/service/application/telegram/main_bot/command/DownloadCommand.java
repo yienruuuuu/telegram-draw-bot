@@ -1,7 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.PointLog;
 import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.PointType;
@@ -12,6 +11,7 @@ import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
 import io.github.yienruuuuu.service.business.impl.PointLogServiceImpl;
 import io.github.yienruuuuu.service.business.impl.ResourceServiceImpl;
+import io.github.yienruuuuu.service.business.impl.UserServiceImpl;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
@@ -35,12 +35,10 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class DownloadCommand extends BaseCommand implements MainBotCommand {
     private final ResourceServiceImpl resourceService;
-    private final PointLogServiceImpl pointLogService;
 
-    public DownloadCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceServiceImpl resourceService, PointLogServiceImpl pointLogService) {
+    public DownloadCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceServiceImpl resourceService) {
         super(userService, languageService, telegramBotClient, announcementService);
         this.resourceService = resourceService;
-        this.pointLogService = pointLogService;
     }
 
     @Transactional
@@ -61,11 +59,10 @@ public class DownloadCommand extends BaseCommand implements MainBotCommand {
         User user = userService.findByTelegramUserId(userId);
         // 檢查用戶點數
         if (super.isPointNotEnough(user, chatId, pointUsed, mainBotEntity)) return;
-        boolean isFree = user.getFreePoints() > pointUsed;
         // 查詢資源
         Resource resource = resourceService.findByUniqueId(data).orElseThrow(() -> new ApiException(SysCode.UNEXPECTED_ERROR));
         // 扣款
-        deductPoints(user, isFree, pointUsed);
+        deductPoints(user, user.getFreePoints() > pointUsed, -pointUsed);
         // 發送抽卡結果
         createMediaMessageAndSendMedia(resource, chatId, mainBotEntity);
     }
@@ -90,22 +87,8 @@ public class DownloadCommand extends BaseCommand implements MainBotCommand {
      * 扣款
      */
     private void deductPoints(User user, boolean isFree, Integer pointUsed) {
-        PointLog pointLog = PointLog.builder().reason(getCommandName()).user(user).amount(-pointUsed).build();
-        if (isFree) {
-            pointLog.setPointType(PointType.FREE);
-            pointLog.setBalanceBefore(user.getFreePoints());
-            Integer pointAfter = user.getFreePoints() - pointUsed;
-            pointLog.setBalanceAfter(pointAfter);
-            user.setFreePoints(pointAfter);
-        } else {
-            pointLog.setPointType(PointType.PAID);
-            pointLog.setBalanceBefore(user.getPurchasedPoints());
-            Integer pointAfter = user.getPurchasedPoints() - pointUsed;
-            pointLog.setBalanceAfter(pointAfter);
-            user.setPurchasedPoints(pointAfter);
-        }
-        pointLogService.save(pointLog);
-        userService.save(user);
+        PointType pointType = isFree ? PointType.FREE : PointType.PAID;
+        userService.addPointAndSavePointLog(user, pointUsed, pointType, getCommandName(), null, null);
     }
 
     /**

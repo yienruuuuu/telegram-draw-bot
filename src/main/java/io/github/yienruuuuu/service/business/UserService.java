@@ -2,6 +2,7 @@ package io.github.yienruuuuu.service.business;
 
 import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
+import io.github.yienruuuuu.bean.enums.PointType;
 
 import java.util.List;
 
@@ -12,7 +13,9 @@ import java.util.List;
 public interface UserService {
     List<User> findAll();
 
-    void save(User user);
+    User save(User user);
+
+    User addPointAndSavePointLog(User user, int point, PointType pointType, String reason, String telegramPaymentChargeId, String providerPaymentChargeId);
 
     /**
      * 根據telegramId查詢用戶，如果不存在則保存用戶並返回

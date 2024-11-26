@@ -2,7 +2,6 @@ package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Language;
-import io.github.yienruuuuu.bean.entity.PointLog;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
@@ -11,7 +10,6 @@ import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand
 import io.github.yienruuuuu.service.business.AnnouncementService;
 import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
-import io.github.yienruuuuu.service.business.impl.PointLogServiceImpl;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
@@ -22,7 +20,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
-import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
@@ -44,11 +41,9 @@ import java.util.concurrent.CompletableFuture;
 public class PaidCommand extends BaseCommand implements MainBotCommand {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault());
     private final List<Integer> numbers = Arrays.asList(5, 10, 20);
-    private final PointLogServiceImpl pointLogService;
 
-    public PaidCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, PointLogServiceImpl pointLogService) {
+    public PaidCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
         super(userService, languageService, telegramBotClient, announcementService);
-        this.pointLogService = pointLogService;
     }
 
     @Override
@@ -82,14 +77,13 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
         super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
         User user = userService.findByTelegramUserId(userId);
-        Integer balanceBefore = user.getPurchasedPoints();
         Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
         //檢核
         if (!numbers.contains(payAmount)) return;
         //增加付費積分
-        addPoint(user, payAmount, balanceBefore, successfulPayment);
+        User userAfter = userService.addPointAndSavePointLog(user, payAmount, PointType.PAID, getCommandName(), successfulPayment.getProviderPaymentChargeId(), successfulPayment.getTelegramPaymentChargeId());
         //傳送成功訊息
-        sendSuccessMessage(language, chatId, mainBotEntity, user, balanceBefore, payAmount);
+        sendSuccessMessage(language, chatId, mainBotEntity, user, userAfter.getPurchasedPoints(), payAmount);
     }
 
     /**
@@ -182,27 +176,6 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
 
         // 返回 InlineKeyboardMarkup
         return new InlineKeyboardMarkup(rows);
-    }
-
-    /**
-     * 增加付費積分
-     */
-    private void addPoint(User user, Integer payAmount, Integer balanceBefore, SuccessfulPayment successfulPayment) {
-        //增加付費積分
-        Integer balanceAfter = balanceBefore + payAmount;
-        user.setPurchasedPoints(user.getPurchasedPoints() + payAmount);
-        PointLog pointLog = PointLog.builder()
-                .user(user)
-                .amount(payAmount)
-                .pointType(PointType.PAID)
-                .balanceBefore(balanceBefore)
-                .balanceAfter(balanceAfter)
-                .reason(getCommandName())
-                .telegramPaymentChargeId(successfulPayment.getTelegramPaymentChargeId())
-                .providerPaymentChargeId(successfulPayment.getProviderPaymentChargeId())
-                .build();
-        userService.save(user);
-        pointLogService.save(pointLog);
     }
 
     /**

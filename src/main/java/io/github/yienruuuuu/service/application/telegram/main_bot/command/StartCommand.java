@@ -4,6 +4,7 @@ import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
+import io.github.yienruuuuu.bean.enums.PointType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -122,6 +123,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
      * 處理邀請邏輯，根據邀請碼增加積分
      */
     private int processInvitation(String inviteCode, String inviteeUserId) {
+        int inviteRewardPoint = 100; // 邀請得的積分數量
         if (!isValidInviteCode(inviteCode)) {
             log.warn("無效的邀請碼: {}", inviteCode);
             return 0;
@@ -142,11 +144,10 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         }
 
         // 更新邀請者的積分
-        inviter.setFreePoints(inviter.getFreePoints() + 100);
-        userService.save(inviter);
+        userService.addPointAndSavePointLog(inviter, inviteRewardPoint, PointType.FREE, "邀請 " + inviteeUserId, null, null);
 
-        log.info("邀請成功，邀請者 {} 和被邀請者 {} 都增加 100 積分", inviter.getId(), inviteeUserId);
-        return 100; // 返回被邀請者的初始積分
+        log.info("邀請成功，邀請者 {} 增加 100 積分", inviter.getId());
+        return inviteRewardPoint;
     }
 
 

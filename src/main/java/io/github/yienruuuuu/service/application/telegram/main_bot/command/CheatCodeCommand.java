@@ -1,11 +1,17 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
-import io.github.yienruuuuu.bean.entity.*;
+import io.github.yienruuuuu.bean.entity.Bot;
+import io.github.yienruuuuu.bean.entity.CheatCode;
+import io.github.yienruuuuu.bean.entity.Language;
+import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
-import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.service.business.AnnouncementService;
+import io.github.yienruuuuu.service.business.CheatCodeService;
+import io.github.yienruuuuu.service.business.LanguageService;
+import io.github.yienruuuuu.service.business.UserService;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
@@ -25,12 +31,10 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class CheatCodeCommand extends BaseCommand implements MainBotCommand {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault());
-    private final PointLogService pointLogService;
     private final CheatCodeService cheatCodeService;
 
-    public CheatCodeCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, PointLogService pointLogService, CheatCodeService cheatCodeService) {
+    public CheatCodeCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, CheatCodeService cheatCodeService) {
         super(userService, languageService, telegramBotClient, announcementService);
-        this.pointLogService = pointLogService;
         this.cheatCodeService = cheatCodeService;
     }
 
@@ -67,20 +71,8 @@ public class CheatCodeCommand extends BaseCommand implements MainBotCommand {
      * 更新使用者的免費點數及傳送通知
      */
     private void updateFreePoints(User user, String chatId, Integer amount, Language language, Bot mainBotEntity) {
-        Integer balanceBefore = user.getFreePoints();
-        Integer balanceAfter = user.getFreePoints() + amount;
-        PointLog pointLog = PointLog.builder()
-                .user(user)
-                .pointType(PointType.FREE)
-                .amount(amount)
-                .balanceBefore(balanceBefore)
-                .balanceAfter(balanceAfter)
-                .reason(getCommandName())
-                .build();
-        user.setFreePoints(user.getFreePoints() + amount);
-        user.setLastPlayDiceTime(Instant.now());
-        userService.save(user);
-        pointLogService.save(pointLog);
+        //更新使用者的免費點數
+        User userAfter = userService.addPointAndSavePointLog(user, amount, PointType.FREE, getCommandName(), null, null);
 
         //模板查詢
         String userStatusTemplate = super.getAnnouncementMessage(AnnouncementType.USER_STATUS_QUERY, language)
@@ -89,7 +81,7 @@ public class CheatCodeCommand extends BaseCommand implements MainBotCommand {
         String filledText = userStatusTemplate
                 .replace("{USER_ID}", user.getTelegramUserId())
                 .replace("{USER_ROLE}", user.getRole().name())
-                .replace("{FREE_POINT}", balanceBefore + "+" + amount)
+                .replace("{FREE_POINT}", String.valueOf(userAfter.getFreePoints()))
                 .replace("{PAID_POINT}", String.valueOf(user.getPurchasedPoints()))
                 .replace("{REGISTER_TIME}", DATE_FORMATTER.format(user.getCreatedAt()));
         //傳送

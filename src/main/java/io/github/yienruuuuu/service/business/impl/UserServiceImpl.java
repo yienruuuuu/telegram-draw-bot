@@ -1,8 +1,11 @@
 package io.github.yienruuuuu.service.business.impl;
 
 import io.github.yienruuuuu.bean.entity.Language;
+import io.github.yienruuuuu.bean.entity.PointLog;
 import io.github.yienruuuuu.bean.entity.User;
+import io.github.yienruuuuu.bean.enums.PointType;
 import io.github.yienruuuuu.bean.enums.RoleType;
+import io.github.yienruuuuu.repository.PointLogRepository;
 import io.github.yienruuuuu.repository.UserRepository;
 import io.github.yienruuuuu.service.business.UserService;
 import org.springframework.stereotype.Service;
@@ -17,9 +20,11 @@ import java.util.Optional;
 @Service("userService")
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PointLogRepository pointLogRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PointLogRepository pointLogRepository) {
         this.userRepository = userRepository;
+        this.pointLogRepository = pointLogRepository;
     }
 
     @Override
@@ -28,12 +33,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language,Integer initialFreePoint) {
+    public User addPointAndSavePointLog(User user, int point, PointType pointType, String reason, String telegramPaymentChargeId, String providerPaymentChargeId) {
+        int beforePoint;
+        int afterPoint;
+        PointLog pointLog = PointLog.builder().user(user).amount(point).build();
+        if (pointType == PointType.FREE) {
+            beforePoint = user.getFreePoints();
+            afterPoint = beforePoint + point;
+            user.setFreePoints(afterPoint);
+            pointLog.setPointType(PointType.FREE);
+            pointLog.setReason(reason);
+        } else if (pointType == PointType.PAID) {
+            beforePoint = user.getPurchasedPoints();
+            afterPoint = beforePoint + point;
+            user.setPurchasedPoints(afterPoint);
+            pointLog.setPointType(PointType.PAID);
+            pointLog.setReason(reason);
+            pointLog.setTelegramPaymentChargeId(telegramPaymentChargeId);
+            pointLog.setProviderPaymentChargeId(providerPaymentChargeId);
+        }
+        pointLogRepository.save(pointLog);
+        return save(user);
+    }
+
+    @Override
+    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language, Integer initialFreePoint) {
         Optional<User> user = userRepository.findByTelegramUserId(telegramId);
         if (user.isPresent()) {
             return user.get();

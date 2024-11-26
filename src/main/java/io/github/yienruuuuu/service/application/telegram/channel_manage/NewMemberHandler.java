@@ -18,11 +18,9 @@ public class NewMemberHandler {
     private static final Integer NEW_MEMBER_POINT = 100;
     //service
     private final UserService userService;
-    private final PointLogService pointLogService;
 
-    public NewMemberHandler(UserService userService, PointLogService pointLogService) {
+    public NewMemberHandler(UserService userService) {
         this.userService = userService;
-        this.pointLogService = pointLogService;
     }
 
     public void handleNewMember(Update update) {
@@ -36,26 +34,7 @@ public class NewMemberHandler {
         if (chatMember.getNewChatMember().getStatus().equals("member") &&
                 chatMember.getOldChatMember().getStatus().equals("left") &&
                 !user.isHasAddInChannel()) {
-            Integer balanceBefore = user.getFreePoints();
-            Integer balanceAfter = balanceBefore + NEW_MEMBER_POINT;
-            user.setFreePoints(balanceAfter);
-            user.setHasAddInChannel(true);
-            userService.save(user);
-            pointLogService.save(addPointLog(user, balanceBefore, balanceAfter));
+            userService.addPointAndSavePointLog(user, NEW_MEMBER_POINT, PointType.FREE, "channel new member", null, null);
         }
-    }
-
-    /**
-     * 為新會員新增積分日誌。
-     */
-    private PointLog addPointLog(User user, Integer balanceBefore, Integer balanceAfter) {
-        return PointLog.builder()
-                .user(user)
-                .balanceAfter(balanceAfter)
-                .balanceBefore(balanceBefore)
-                .reason("channel new member")
-                .pointType(PointType.FREE)
-                .amount(NEW_MEMBER_POINT)
-                .build();
     }
 }
