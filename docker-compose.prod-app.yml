@@ -8,9 +8,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 引用 MySQL 密碼
-      - BOT_TOKEN_MAIN=${BOT_TOKEN_MAIN}  # 引用 Bot Token
-      - BOT_TOKEN_FILE_MANAGE=${BOT_TOKEN_FILE_MANAGE}  # 引用 Bot Token
-      - BOT_TOKEN_CHANNEL=${BOT_TOKEN_CHANNEL}  # 引用 Bot Token
       - TZ=UTC  # 設置容器時區為 UTC
     volumes:
       # 修改為 Docker Compose 層的 jar 路徑

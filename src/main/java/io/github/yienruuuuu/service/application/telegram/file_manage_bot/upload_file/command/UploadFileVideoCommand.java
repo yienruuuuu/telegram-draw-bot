@@ -36,7 +36,7 @@ public class UploadFileVideoCommand extends UploadFileBaseCommand implements Upl
     public void execute(Update update, Bot fileBotEntity, FileDataDto fileDataDto) {
         String chatId = update.getMessage().getChatId().toString();
         Resource resource = Resource.builder()
-                .rarityType(RarityType.SR)
+                .rarityType(RarityType.SSR)
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())

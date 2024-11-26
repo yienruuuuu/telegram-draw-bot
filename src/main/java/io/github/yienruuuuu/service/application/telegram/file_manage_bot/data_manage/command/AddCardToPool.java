@@ -82,11 +82,13 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
      */
     private void addResourceAsCard(AddCardToPoolDto dto, CardPool cardPool, String chatId, Integer messageId, Bot fileManageBot) {
         Resource res = resourceService.findById(dto.getRId()).orElseThrow(() -> new IllegalArgumentException("Resource not found"));
+        res.setHasBeenCardBefore(true);
         Card newCard = Card.builder()
                 .cardPool(cardPool)
                 .resource(res)
                 .dropRate(res.getRarityType().getDefaultDropRate())
                 .build();
+        resourceService.save(res);
         Card card = cardService.save(newCard);
 
         EditMessageCaption editMessage = EditMessageCaption.builder()
