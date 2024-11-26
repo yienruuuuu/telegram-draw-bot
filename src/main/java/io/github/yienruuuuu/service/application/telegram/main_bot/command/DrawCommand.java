@@ -210,15 +210,11 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
      */
     private void createMediaMessageAndSendMedia(Card card, Language language, String chatId, Bot mainBotEntity) {
         Resource cardResource = card.getResource();
-        String text = null;
-        if (cardResource.getTexts() != null && !cardResource.getTexts().isEmpty()) {
-            text = cardResource.getTexts().stream()
-                    .filter(t -> t.getLanguage().equals(language))
-                    .findFirst()
-                    .map(Text::getContent)
-                    .orElse(null);
-        }
-
+        var text = cardResource.getTexts().stream()
+                .filter(t -> t.getLanguage().equals(language))
+                .findFirst()
+                .map(Text::getContent)
+                .orElse(null);
         var inlineKeyboard = createInlineKeyBoard(card, language);
 
         switch (cardResource.getFileType()) {
