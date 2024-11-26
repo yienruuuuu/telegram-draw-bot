@@ -70,7 +70,7 @@ public class TelegramBotService {
             }
             // 更新資料庫中的 Bot 資料設定
             updateBotData(botEntity);
-            // 更新BOT接收Updated資料(allowed_updates )
+            // 更新BOT接收Updated資料(allowed_updates)
             updateBotUpdates(botEntity);
         });
     }

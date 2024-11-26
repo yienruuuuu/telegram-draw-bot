@@ -66,9 +66,9 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         User user = userService.findByTelegramUserId(userId);
         // 檢查用戶點數
         if (super.isPointNotEnough(user, chatId, pointUsed, mainBotEntity)) return;
-        boolean isFree = user.getFreePoints() > pointUsed;
+        boolean userFreePoint = user.getFreePoints() >= pointUsed;
         // 扣款
-        deductPoints(user, isFree, pointUsed);
+        deductPoints(user, userFreePoint, pointUsed);
         // 取得卡池
         CardPool cardPool = cardPoolService.findById(data).orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_EXIST));
         // 確保用戶抽卡狀態存在
@@ -86,7 +86,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         // 更新抽卡狀態
         updateDrawStatus(drawStatus, selectedCard, weights);
         // 紀錄日誌
-        saveDrawLog(pointUsed, isFree, user, cardPool, selectedCard);
+        saveDrawLog(pointUsed, userFreePoint, user, cardPool, selectedCard);
         // 發送抽卡結果
         createMediaMessageAndSendMedia(selectedCard, user.getLanguage(), chatId, mainBotEntity);
     }
@@ -110,8 +110,8 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
     /**
      * 扣款
      */
-    private void deductPoints(User user, boolean isFree, Integer pointUsed) {
-        if (isFree) {
+    private void deductPoints(User user, boolean userFreePoint, Integer pointUsed) {
+        if (userFreePoint) {
             user.setFreePoints(user.getFreePoints() - pointUsed);
         } else {
             user.setPurchasedPoints(user.getPurchasedPoints() - pointUsed);

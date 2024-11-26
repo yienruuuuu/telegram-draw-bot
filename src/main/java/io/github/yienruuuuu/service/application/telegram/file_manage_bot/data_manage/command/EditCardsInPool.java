@@ -10,6 +10,7 @@ import io.github.yienruuuuu.service.business.*;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 新增卡池圖片指令處理器
@@ -40,21 +42,20 @@ public class EditCardsInPool extends DataManageBaseCommand implements DataManage
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var messageId = update.getCallbackQuery().getMessage().getMessageId();
+        var callbackQueryId = update.getCallbackQuery().getId();
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
         //取得卡池
         var cardPoolId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
         CardPool cardPool = cardPoolService.findById(cardPoolId).orElseThrow(() -> new IllegalArgumentException("CardPool not found"));
 
-        EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .replyMarkup(createInlineKeyBoard(cardPool))
-                .build();
         telegramBotClient.send(
-                editMessageReplyMarkup,
-                fileManageBot
-        );
+                EditMessageReplyMarkup.builder()
+                        .chatId(chatId)
+                        .messageId(messageId)
+                        .replyMarkup(createInlineKeyBoard(cardPool))
+                        .build(), fileManageBot);
     }
 
     @Override

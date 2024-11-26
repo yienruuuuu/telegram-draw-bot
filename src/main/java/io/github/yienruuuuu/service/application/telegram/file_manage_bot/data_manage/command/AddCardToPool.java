@@ -116,7 +116,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
 
         // 提取分頁參數，默認為第 1 頁
         int pageNumber = dto.getPg() - 1; // Pageable 的頁碼從 0 開始
-        int pageSize = 1;
+        int pageSize = 10;
         Page<Resource> resourcePage = resourceService.findAllByPageExcludingIds(PageRequest.of(pageNumber, pageSize), excludedResourceIds);
 
         if (resourcePage.isEmpty()) {

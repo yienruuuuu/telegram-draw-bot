@@ -3,9 +3,9 @@ VALUES ('zh-hant', '繁體中文'),
        ('en', 'English');
 
 INSERT INTO bot (bot_token, description, type)
-VALUES ('$BOT_TOKEN_MAIN', '主BOT', 'MAIN'),
-       ('$BOT_TOKEN_FILE_MANAGE', '資源控管BOT', 'FILE_MANAGE'),
-       ('$BOT_TOKEN_CHANNEL', '頻道管理BOT', 'CHANNEL');
+VALUES ('', '主BOT', 'MAIN'),
+       ('', '資源控管BOT', 'FILE_MANAGE'),
+       ('', '頻道管理BOT', 'CHANNEL');
 
 -- 新增公告
 INSERT INTO announcement (id, type, sequence)

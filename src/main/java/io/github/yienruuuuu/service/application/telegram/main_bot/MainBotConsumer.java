@@ -44,25 +44,23 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
     @Override
     public void consume(Update update) {
         // 取得當前時間戳（秒）
-        long currentTimestamp = (System.currentTimeMillis() / 1000) - 10;
-        System.out.println(currentTimestamp);
+        long currentTimestamp = (System.currentTimeMillis() / 1000) - 600;
         JsonUtils.parseJsonAndPrintLog("MAIN BOT CONSUMER收到Update訊息", update);
         Bot mainBotEntity = botService.findByBotType(BotType.MAIN);
 
         if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getDate() > currentTimestamp) {
             commandDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasMessage() && update.getMessage().hasDice() && update.getMessage().getDate() > currentTimestamp) {
-            //色子遊戲
             update.getMessage().setText("/dice");
             commandDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getMessage().getDate() > currentTimestamp) {
+        } else if (update.hasCallbackQuery()) {
             callbackDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
-            channelPostHandler.handleChannelPost(update);
         } else if (update.hasPreCheckoutQuery()) { /*預支付訊息處理*/
             checkOutDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) { /*支付訊息處理*/
             checkOutDispatcher.dispatch(update, mainBotEntity);
+        } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
+            channelPostHandler.handleChannelPost(update);
         } else {
             log.warn("MAIN BOT CONSUMER收到不支援的更新類型");
         }
