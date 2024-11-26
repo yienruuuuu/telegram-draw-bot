@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.GetMe;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -72,6 +75,8 @@ public class TelegramBotService {
             updateBotData(botEntity);
             // 更新BOT接收Updated資料(allowed_updates)
             updateBotUpdates(botEntity);
+            // 更新BOT指令
+            updateBotCommands(botEntity);
         });
     }
 
@@ -97,11 +102,41 @@ public class TelegramBotService {
 
     }
 
+    /**
+     * 更新機器人接收Updated資料(allow_updates)
+     */
+    private void updateBotCommands(Bot botEntity) {
+        if (!botEntity.getType().equals(BotType.MAIN)) return;
+        List<BotCommand> commands = Arrays.asList(
+                BotCommand.builder().command("start").description("get started").build(),
+                BotCommand.builder().command("pool").description("get pool").build(),
+                BotCommand.builder().command("invite").description("get invited url").build(),
+                BotCommand.builder().command("my_status").description("get my status").build(),
+                BotCommand.builder().command("get_point").description("how to get point").build()
+        );
+        SetMyCommands msg = SetMyCommands.builder().commands(commands).build();
+        telegramBotClient.send(msg, botEntity);
+
+    }
+
     @PreDestroy
     public void shutdownBot() throws Exception {
         if (botsApplication != null) {
+            updateBotCommandsForClosed();
             log.info("關閉機器人並釋放資源");
             botsApplication.close();
         }
+    }
+
+    /**
+     * 更新機器人為維護指令
+     */
+    private void updateBotCommandsForClosed() {
+        Bot botEntity = botRepository.findBotByType(BotType.MAIN);
+        List<BotCommand> commands = Collections.singletonList(
+                BotCommand.builder().command("under_maintenance").description("maintenance Time ,Please Try Again Later").build()
+        );
+        SetMyCommands msg = SetMyCommands.builder().commands(commands).build();
+        telegramBotClient.send(msg, botEntity);
     }
 }

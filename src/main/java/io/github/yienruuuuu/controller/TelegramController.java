@@ -121,7 +121,7 @@ public class TelegramController {
     @GetMapping(value = "bots/sendGetUpdates")
     public void sendGetUpdates() {
         Bot channelBot = botService.findByBotType(BotType.CHANNEL);
-        List<String> allowedUpdates = Arrays.asList("update_id","message","callback_query","channel_post","chat_member");
+        List<String> allowedUpdates = Arrays.asList("update_id", "message", "callback_query", "channel_post", "chat_member");
         GetUpdates msg = GetUpdates.builder()
                 .allowedUpdates(allowedUpdates)
                 .build();
