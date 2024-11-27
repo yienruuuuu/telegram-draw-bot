@@ -56,7 +56,12 @@ public class UserServiceImpl implements UserService {
             pointLog.setReason(reason);
             pointLog.setTelegramPaymentChargeId(telegramPaymentChargeId);
             pointLog.setProviderPaymentChargeId(providerPaymentChargeId);
+        } else {
+            throw new IllegalArgumentException("Unsupported PointType: " + pointType);
         }
+        // 設置 balanceBefore 和 balanceAfter
+        pointLog.setBalanceBefore(beforePoint);
+        pointLog.setBalanceAfter(afterPoint);
         pointLogRepository.save(pointLog);
         return save(user);
     }

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   tg_bot_app:
     image: openjdk:17-jdk
