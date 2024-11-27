@@ -185,7 +185,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
      * 創建並返回卡池功能按鈕行
      */
     private InlineKeyboardMarkup createInlineKeyBoard(String textInUpdate) {
-        InlineKeyboardButton agreeIcon = super.createInlineButton("⭕", textInUpdate);
+        InlineKeyboardButton agreeIcon = super.createInlineButton("✅", textInUpdate);
         InlineKeyboardButton disagreeIcon = super.createInlineButton("❌", getCommandName() + " refuse");
 
         // 將所有列加入列表
