@@ -94,7 +94,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
 
         // 邀請積分邏輯
         String inviteCode = messageParts.length > 1 ? messageParts[1] : null;
-        int initialFreePoints = (inviteCode != null) ? processInvitation(inviteCode, inviteeUserId) : 0;
+        int initialFreePoints = (inviteCode != null) ? handleInviterPointAndCalculateNewUserPoint(inviteCode, inviteeUserId) : 20;
         // 查詢使用者，若尚未註冊則賦予初始積分
         User user = registerUser(inviteeUserId, userFirstName, languageCode, initialFreePoints);
         // start訊息響應
@@ -120,34 +120,35 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
 
 
     /**
-     * 處理邀請邏輯，根據邀請碼增加積分
+     * 處理邀請邏輯，增加邀請者的積分，計算新用戶初始積分
      */
-    private int processInvitation(String inviteCode, String inviteeUserId) {
+    private int handleInviterPointAndCalculateNewUserPoint(String inviteCode, String newUserId) {
         int inviteRewardPoint = 100; // 邀請得的積分數量
-        if (!isValidInviteCode(inviteCode)) {
-            log.warn("無效的邀請碼: {}", inviteCode);
+        int newUserFreePoint = 20; // 新用戶初始積分數量
+
+        // 確認被邀請者是否已經註冊
+        if (userService.existsByTelegramUserId(newUserId)) {
+            log.warn("被邀請者 {} 已註冊，無法再次接受邀請", newUserId);
             return 0;
+        }
+
+        if (!isValidInviteCode(inviteCode)) {
+            log.warn("新用戶 {} 使用了無效的邀請碼: {}", newUserId, inviteCode);
+            return newUserFreePoint;
         }
 
         // 解析邀請者的 userId
         String inviterUserId = inviteCode.split("_")[1];
         User inviter = userService.findByTelegramUserId(inviterUserId);
         if (inviter == null) {
-            log.warn("找不到邀請者 ID: {}", inviterUserId);
-            return 0;
-        }
-
-        // 確認被邀請者是否已經註冊
-        if (userService.existsByTelegramUserId(inviteeUserId)) {
-            log.warn("被邀請者 {} 已註冊，無法再次接受邀請", inviteeUserId);
-            return 0;
+            log.warn("新用戶 {} 查無邀請者 ID: {}", newUserId, inviterUserId);
+            return newUserFreePoint;
         }
 
         // 更新邀請者的積分
-        userService.addPointAndSavePointLog(inviter, inviteRewardPoint, PointType.FREE, "邀請 " + inviteeUserId, null, null);
-
+        userService.addPointAndSavePointLog(inviter, inviteRewardPoint, PointType.FREE, "邀請 " + newUserId, null, null);
         log.info("邀請成功，邀請者 {} 增加 100 積分", inviter.getId());
-        return inviteRewardPoint;
+        return inviteRewardPoint + newUserFreePoint;
     }
 
 

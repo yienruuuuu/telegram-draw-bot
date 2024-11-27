@@ -106,17 +106,41 @@ public class TelegramBotService {
      * 更新機器人接收Updated資料(allow_updates)
      */
     private void updateBotCommands(Bot botEntity) {
-        if (!botEntity.getType().equals(BotType.MAIN)) return;
-        List<BotCommand> commands = Arrays.asList(
-                BotCommand.builder().command("start").description("get started").build(),
-                BotCommand.builder().command("pool").description("get pool").build(),
-                BotCommand.builder().command("invite").description("get invited url").build(),
-                BotCommand.builder().command("my_status").description("get my status").build(),
-                BotCommand.builder().command("get_point").description("how to get point").build()
-        );
+        // 根據 BotType 設定不同指令
+        List<BotCommand> commands;
+        switch (botEntity.getType()) {
+            case MAIN:
+                commands = Arrays.asList(
+                        BotCommand.builder().command("start").description("Get started").build(),
+                        BotCommand.builder().command("pool").description("Get pool information").build(),
+                        BotCommand.builder().command("invite").description("Get invitation URL").build(),
+                        BotCommand.builder().command("my_status").description("Check your status").build(),
+                        BotCommand.builder().command("get_point").description("How to earn points").build()
+                );
+                break;
+
+            case FILE_MANAGE:
+                commands = Arrays.asList(
+                        BotCommand.builder().command("start").description("Get started").build(),
+                        BotCommand.builder().command("list_resource").description("查看資源").build(),
+                        BotCommand.builder().command("add_card_pool").description("新增卡池").build(),
+                        BotCommand.builder().command("list_card_pool").description("查看卡池").build()
+                );
+                break;
+
+            case CHANNEL:
+                commands = Collections.singletonList(
+                        BotCommand.builder().command("add_cheat_code").description("新增作弊碼").build()
+                );
+                break;
+
+            default:
+                return;
+        }
+
+        // 發送設置指令的請求
         SetMyCommands msg = SetMyCommands.builder().commands(commands).build();
         telegramBotClient.send(msg, botEntity);
-
     }
 
     @PreDestroy
@@ -134,7 +158,7 @@ public class TelegramBotService {
     private void updateBotCommandsForClosed() {
         Bot botEntity = botRepository.findBotByType(BotType.MAIN);
         List<BotCommand> commands = Collections.singletonList(
-                BotCommand.builder().command("under_maintenance").description("maintenance Time ,Please Try Again Later").build()
+                BotCommand.builder().command("under_maintenance").description("maintenance Time").build()
         );
         SetMyCommands msg = SetMyCommands.builder().commands(commands).build();
         telegramBotClient.send(msg, botEntity);
