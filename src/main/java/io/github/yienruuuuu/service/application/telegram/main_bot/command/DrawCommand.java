@@ -57,12 +57,12 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         var messageId = update.getCallbackQuery().getMessage().getMessageId();
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
-        var cardPoolId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
-        var againOrNot = update.getCallbackQuery().getData().split(" ")[2];
+        String[] dataParts = update.getCallbackQuery().getData().split(" ");
+        var cardPoolId = Integer.parseInt(dataParts[1]);
         var pointUsed = 5;
         // 將兩個發送請求異步執行
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), mainBotEntity));
-        if (againOrNot == null) {
+        if (dataParts.length < 3) {
             CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
         }
 
