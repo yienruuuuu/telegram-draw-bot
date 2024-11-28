@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                         StringUtils.isBlank(exception.getMessage()) ? exception.getErrorCode().getMessage() : exception.getMessage(),
                         Optional.ofNullable(exception.getData()).orElse(new HashMap<String, String>())
                 ),
-                exception.getHttpStatus());
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Throwable.class)
