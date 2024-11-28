@@ -57,11 +57,14 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         var messageId = update.getCallbackQuery().getMessage().getMessageId();
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
-        var data = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
+        var cardPoolId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
+        var againOrNot = update.getCallbackQuery().getData().split(" ")[2];
         var pointUsed = 5;
         // 將兩個發送請求異步執行
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), mainBotEntity));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
+        if (againOrNot == null) {
+            CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
+        }
 
         // 查詢用戶
         User user = userService.findByTelegramUserId(userId);
@@ -71,7 +74,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         // 扣款
         deductPoints(user, userFreePoint, -pointUsed);
         // 取得卡池
-        CardPool cardPool = cardPoolService.findByIdIsOpen(data)
+        CardPool cardPool = cardPoolService.findByIdIsOpen(cardPoolId)
                 .orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_EXIST, "userId :" + userId));
         // 確保用戶抽卡狀態存在
         UserDrawStatus drawStatus = queryOrCreateDrawStatus(user, cardPool);
@@ -259,7 +262,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         InlineKeyboardButton button =
                 super.createInlineButton(pickCardText, "/download " + card.getResource().getUniqueId());
         InlineKeyboardButton button2 =
-                super.createInlineButton(pickAgainText, "/draw " + cardPool.getId());
+                super.createInlineButton(pickAgainText, "/draw " + cardPool.getId() + " again");
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();
