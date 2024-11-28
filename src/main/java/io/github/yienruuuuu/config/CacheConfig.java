@@ -17,8 +17,16 @@ public class CacheConfig {
     @Bean
     public Cache<String, Language> languageCache() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES) // 10 分鐘後過期
+                .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(5)
+                .build();
+    }
+
+    @Bean
+    public Cache<String, String> announceCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(30, TimeUnit.MINUTES)
+                .maximumSize(100)
                 .build();
     }
 }

@@ -1,12 +1,14 @@
 package io.github.yienruuuuu.service.business.impl;
 
-import io.github.yienruuuuu.bean.entity.Announcement;
+import com.github.benmanes.caffeine.cache.Cache;
+import io.github.yienruuuuu.bean.entity.Language;
+import io.github.yienruuuuu.bean.entity.Text;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.repository.AnnouncementRepository;
 import io.github.yienruuuuu.service.business.AnnouncementService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Eric.Lee
@@ -14,34 +16,26 @@ import java.util.List;
  */
 @Service("announcementService")
 public class AnnouncementServiceImpl implements AnnouncementService {
+    private final Cache<String, String> announceContentCache;
     private final AnnouncementRepository announcementRepository;
 
-    public AnnouncementServiceImpl(AnnouncementRepository announcementRepository) {
+    public AnnouncementServiceImpl(Cache<String, String> announceContentCache, AnnouncementRepository announcementRepository) {
+        this.announceContentCache = announceContentCache;
         this.announcementRepository = announcementRepository;
     }
 
-    @Override
-    public List<Announcement> findAll() {
-        return announcementRepository.findAll();
+    public Optional<String> findAnnounceContentByTypeAndLanguage(AnnouncementType type, Language language) {
+        String cacheKey = type.name() + "_" + language.getLanguageCode();
+        return Optional.ofNullable(announceContentCache.get(cacheKey, key -> fetchFromDatabase(type, language)));
     }
 
-    @Override
-    public void save(Announcement announcement) {
-        announcementRepository.save(announcement);
-    }
-
-    @Override
-    public Announcement findById(int id) {
-        return announcementRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public void delete(int id) {
-        announcementRepository.deleteById(id);
-    }
-
-    @Override
-    public Announcement findAnnouncementByType(AnnouncementType type) {
-        return announcementRepository.findAnnouncementByType(type);
+    private String fetchFromDatabase(AnnouncementType type, Language language) {
+        return announcementRepository.findAnnouncementByType(type)
+                .getTexts()
+                .stream()
+                .filter(text -> text.getLanguage().equals(language))
+                .findFirst()
+                .map(Text::getContent)
+                .orElse(null);
     }
 }

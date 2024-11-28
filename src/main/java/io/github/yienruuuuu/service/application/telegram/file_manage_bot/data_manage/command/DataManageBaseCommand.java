@@ -63,12 +63,7 @@ public class DataManageBaseCommand {
      * 比對語言並獲取公告消息
      */
     protected Optional<String> getAnnouncementMessage(AnnouncementType type, Language language) {
-        return announcementService.findAnnouncementByType(type)
-                .getTexts()
-                .stream()
-                .filter(text -> text.getLanguage().equals(language))
-                .findFirst()
-                .map(Text::getContent);
+        return announcementService.findAnnounceContentByTypeAndLanguage(type, language);
     }
 
     /**

@@ -2,7 +2,6 @@ package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Language;
-import io.github.yienruuuuu.bean.entity.Text;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
@@ -61,12 +60,7 @@ public class BaseCommand {
      * 比對語言並獲取公告消息
      */
     protected Optional<String> getAnnouncementMessage(AnnouncementType type, Language language) {
-        return announcementService.findAnnouncementByType(type)
-                .getTexts()
-                .stream()
-                .filter(text -> text.getLanguage().equals(language))
-                .findFirst()
-                .map(Text::getContent);
+        return announcementService.findAnnounceContentByTypeAndLanguage(type, language);
     }
 
     /**
