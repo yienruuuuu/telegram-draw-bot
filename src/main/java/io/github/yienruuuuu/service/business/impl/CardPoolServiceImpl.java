@@ -44,6 +44,11 @@ public class CardPoolServiceImpl implements CardPoolService {
     }
 
     @Override
+    public Optional<CardPool> findByIdIsOpen(Integer id) {
+        return cardPoolRepository.findOpenPoolByIdAndEndTime(id, Instant.now());
+    }
+
+    @Override
     public void deleteById(Integer id) {
         cardPoolRepository.deleteById(id);
     }

@@ -20,5 +20,7 @@ public interface CardPoolService {
 
     Optional<CardPool> findById(Integer id);
 
+    Optional<CardPool> findByIdIsOpen(Integer id);
+
     void deleteById(Integer id);
 }
