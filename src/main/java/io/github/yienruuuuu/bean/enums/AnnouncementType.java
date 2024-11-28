@@ -35,5 +35,7 @@ public enum AnnouncementType {
     PAYMENT_ANNOUNCEMENT,
     //作弊碼公告
     CHEAT_CODE_ANNOUNCEMENT,
+    //再抽一次
+    PICK_AGAIN,
     OTHER
 }

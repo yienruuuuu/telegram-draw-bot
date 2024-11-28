@@ -90,7 +90,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         // 紀錄日誌
         saveDrawLog(pointUsed, userFreePoint, user, cardPool, selectedCard);
         // 發送抽卡結果
-        createMediaMessageAndSendMedia(selectedCard, user.getLanguage(), chatId, mainBotEntity);
+        createMediaMessageAndSendMedia(cardPool, selectedCard, user.getLanguage(), chatId, mainBotEntity);
     }
 
     @Override
@@ -206,14 +206,14 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
     /**
      * 根據資源類型創建對應的媒體消息
      */
-    private void createMediaMessageAndSendMedia(Card card, Language language, String chatId, Bot mainBotEntity) {
+    private void createMediaMessageAndSendMedia(CardPool cardPool, Card card, Language language, String chatId, Bot mainBotEntity) {
         Resource cardResource = card.getResource();
         var text = cardResource.getTexts().stream()
                 .filter(t -> t.getLanguage().equals(language))
                 .findFirst()
                 .map(Text::getContent)
                 .orElse(null);
-        var inlineKeyboard = createInlineKeyBoard(card, language);
+        var inlineKeyboard = createInlineKeyBoard(cardPool, card, language);
 
         switch (cardResource.getFileType()) {
             case PHOTO -> telegramBotClient.send(
@@ -250,16 +250,21 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
     /**
      * 創建並返回卡池功能按鈕行
      */
-    private InlineKeyboardMarkup createInlineKeyBoard(Card card, Language language) {
+    private InlineKeyboardMarkup createInlineKeyBoard(CardPool cardPool, Card card, Language language) {
         String pickCardText = super.getAnnouncementMessage(AnnouncementType.GET_DOWNLOAD_PERMISSION_BUTTON, language)
                 .orElse("get Download/share Permission by 20 point");
+        String pickAgainText = super.getAnnouncementMessage(AnnouncementType.PICK_AGAIN, language)
+                .orElse("Summon again!");
 
         InlineKeyboardButton button =
                 super.createInlineButton(pickCardText, "/download " + card.getResource().getUniqueId());
+        InlineKeyboardButton button2 =
+                super.createInlineButton(pickAgainText, "/draw " + cardPool.getId());
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();
         rows.add(new InlineKeyboardRow(button));
+        rows.add(new InlineKeyboardRow(button2));
 
         // 返回 InlineKeyboardMarkup
         return new InlineKeyboardMarkup(rows);
