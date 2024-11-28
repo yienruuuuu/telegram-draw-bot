@@ -94,7 +94,7 @@ public class TelegramBotService {
      */
     private void updateBotUpdates(Bot botEntity) {
         if (!botEntity.getType().equals(BotType.CHANNEL)) return;
-        List<String> allowedUpdates = Arrays.asList("update_id", "message", "callback_query", "channel_post", "chat_member");
+        List<String> allowedUpdates = Arrays.asList("update_id", "message", "callback_query", "channel_post", "chat_member", "poll_answer");
         telegramBotClient.send(
                 GetUpdates.builder()
                         .allowedUpdates(allowedUpdates)
