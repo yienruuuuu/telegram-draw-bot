@@ -5,6 +5,7 @@ import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
+import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -35,9 +36,11 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Component
 public class StartCommand extends BaseCommand implements MainBotCommand {
+    private final AppConfig appConfig;
 
-    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
+    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, AppConfig appConfig) {
         super(userService, languageService, telegramBotClient, announcementService);
+        this.appConfig = appConfig;
     }
 
 
@@ -105,9 +108,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
     private void sendTermsOfUse(String chatId, String textInUpdate, String languageCode, Bot mainBotEntity) {
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
         String askForReadTerm = super.getAnnouncementMessage(AnnouncementType.TERM_MESSAGE, language).orElse("Please read the terms of use first.");
-        String termFileId = languageCode.equals("zh-hant")
-                ? "AgACAgUAAxkBAAP2Zz2nXnhBVGD-RC31nJhBYKfPDHUAAhTGMRvquPFVLYBH0PSwz54BAAMCAAN5AAM2BA"
-                : "AgACAgUAAxkBAAP3Zz2nmqnJoMRqc8GQH2IKy4fg1p0AAhbGMRvquPFV8muFwNUmCwcBAAMCAAN5AAM2BA";
+        String termFileId = languageCode.equals("zh-hant") ? appConfig.getBotProtocolCn() : appConfig.getBotProtocolEn();
         telegramBotClient.send(
                 SendPhoto.builder()
                         .chatId(chatId)

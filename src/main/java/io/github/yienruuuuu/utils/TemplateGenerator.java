@@ -8,6 +8,7 @@ import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -67,8 +68,9 @@ public class TemplateGenerator {
     public static String generateCardPoolTemplate(CardPool cardPool, List<Language> languages) {
         ObjectNode template = objectMapper.createObjectNode();
         if (cardPool != null) template.put("id", cardPool.getId());
-        template.put("startAt", cardPool == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cardPool.getStartAt()));
-        template.put("endAt", cardPool == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cardPool.getEndAt()));
+        String defaultDate = DATE_FORMATTER.format(LocalDateTime.now());
+        template.put("startAt", cardPool == null ? defaultDate : DATE_FORMATTER.format(cardPool.getStartAt()));
+        template.put("endAt", cardPool == null ? defaultDate : DATE_FORMATTER.format(cardPool.getEndAt()));
         template.put("isOpen", cardPool != null && cardPool.isOpen());
         template.put("resourceId", cardPool == null ? null : cardPool.getResource().getUniqueId());
 
@@ -119,10 +121,11 @@ public class TemplateGenerator {
      */
     public static String generateCheatCodeTemplate(CheatCode cheatCode) {
         ObjectNode template = objectMapper.createObjectNode();
+        String defaultDate = DATE_FORMATTER.format(LocalDateTime.now());
         template.put("code", cheatCode == null ? "/cheat_code " + UUID.randomUUID() : cheatCode.getCode());
         template.put("pointAmount", cheatCode == null ? 10 : cheatCode.getPointAmount());
-        template.put("validFrom", cheatCode == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cheatCode.getValidFrom()));
-        template.put("validTo", cheatCode == null ? "20YY-MM-DD" : DATE_FORMATTER.format(cheatCode.getValidTo()));
+        template.put("validFrom", cheatCode == null ? defaultDate : DATE_FORMATTER.format(cheatCode.getValidFrom()));
+        template.put("validTo", cheatCode == null ? defaultDate : DATE_FORMATTER.format(cheatCode.getValidTo()));
         template.put("maxUsage", cheatCode == null ? null : cheatCode.getMaxUsage());
         template.put("isActive", cheatCode == null ? "true" : cheatCode.getIsActive().toString());
 
