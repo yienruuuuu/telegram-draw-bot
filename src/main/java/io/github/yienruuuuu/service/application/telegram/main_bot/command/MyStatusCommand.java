@@ -1,7 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
@@ -36,12 +35,9 @@ public class MyStatusCommand extends BaseCommand implements MainBotCommand {
         String chatId = String.valueOf(update.getMessage().getChatId());
         var languageCode = update.getMessage().getFrom().getLanguageCode();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-        //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //模板查詢
-        String userStatusTemplate = super.getAnnouncementMessage(AnnouncementType.USER_STATUS_QUERY, language)
+        String userStatusTemplate = super.getAnnouncementMessage(AnnouncementType.USER_STATUS_QUERY, user.getLanguage())
                 .orElseThrow(() -> new ApiException(SysCode.ANNOUNCE_UNEXPECTED_ERROR));
         //替換填充模板
         String filledText = userStatusTemplate
@@ -51,8 +47,7 @@ public class MyStatusCommand extends BaseCommand implements MainBotCommand {
                 .replace("{PAID_POINT}", String.valueOf(user.getPurchasedPoints()))
                 .replace("{REGISTER_TIME}", DATE_FORMATTER.format(user.getCreatedAt()));
         //傳送
-        SendMessage msg = SendMessage.builder().chatId(chatId).text(filledText).build();
-        telegramBotClient.send(msg, mainBotEntity);
+        telegramBotClient.send(SendMessage.builder().chatId(chatId).text(filledText).build(), mainBotEntity);
     }
 
     @Override

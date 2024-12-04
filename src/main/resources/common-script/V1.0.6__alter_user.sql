@@ -1,0 +1,1 @@
+ALTER TABLE `user` ADD COLUMN original_language_code VARCHAR ( 52 );

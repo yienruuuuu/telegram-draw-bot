@@ -31,8 +31,7 @@ public class InviteCommand extends BaseCommand implements MainBotCommand {
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         String languageCode = update.getMessage().getFrom().getLanguageCode();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-        User user = userService.findByTelegramUserId(userId);
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //取得消息
         String prefixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_PREFIX, user.getLanguage()).orElse(null);
         String suffixAnnounce = getAnnouncementMessage(AnnouncementType.INVITE_MESSAGE_SUFFIX, user.getLanguage()).orElse(null);
@@ -40,8 +39,7 @@ public class InviteCommand extends BaseCommand implements MainBotCommand {
         //組裝消息並使用 %n 作為換行符
         String fullMessage = String.format("%s%n%s%n%s", prefixAnnounce, inviteUrl, suffixAnnounce);
         //發送消息
-        SendMessage message = SendMessage.builder().chatId(update.getMessage().getChatId()).text(fullMessage).build();
-        telegramBotClient.send(message, mainBotEntity);
+        telegramBotClient.send(SendMessage.builder().chatId(update.getMessage().getChatId()).text(fullMessage).build(), mainBotEntity);
     }
 
     @Override

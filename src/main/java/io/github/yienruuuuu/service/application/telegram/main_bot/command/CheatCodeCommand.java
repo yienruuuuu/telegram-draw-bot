@@ -45,10 +45,8 @@ public class CheatCodeCommand extends BaseCommand implements MainBotCommand {
         var languageCode = update.getMessage().getFrom().getLanguageCode();
         var data = update.getMessage().getText();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
         CheatCode cheatCode = cheatCodeService.findByCode(data)
                 .orElseThrow(() -> new ApiException(SysCode.UNEXPECTED_ERROR));
         // 檢查時間是否有效
@@ -56,9 +54,8 @@ public class CheatCodeCommand extends BaseCommand implements MainBotCommand {
         if (now.isBefore(cheatCode.getValidFrom()) || now.isAfter(cheatCode.getValidTo())) {
             throw new ApiException(SysCode.CHEAT_CODE_EXPIRED);
         }
-
         //更新使用者的免費點數
-        updateFreePoints(user, chatId, cheatCode.getPointAmount(), language, mainBotEntity);
+        updateFreePoints(user, chatId, cheatCode.getPointAmount(), user.getLanguage(), mainBotEntity);
     }
 
     @Override

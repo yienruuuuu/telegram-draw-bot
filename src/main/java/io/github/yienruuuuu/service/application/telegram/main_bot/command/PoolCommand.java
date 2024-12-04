@@ -41,10 +41,9 @@ public class PoolCommand extends BaseCommand implements MainBotCommand {
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         var languageCode = update.getMessage().getFrom().getLanguageCode();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
+        Language language = user.getLanguage();
         List<CardPool> cardPools = cardPoolService.findOpenCardPools();
         //檢查是否有開放卡池
         if (checkOpenPool(chatId, mainBotEntity, language, cardPools)) return;

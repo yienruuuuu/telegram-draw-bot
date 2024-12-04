@@ -46,14 +46,11 @@ public class DiceCommand extends BaseCommand implements MainBotCommand {
         var languageCode = update.getMessage().getFrom().getLanguageCode();
         var diceValue = update.getMessage().getDice().getValue();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-        //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //檢查當天是否有玩過色子
-        if (checkHasPlayDiceToday(chatId, user, language, mainBotEntity)) return;
+        if (checkHasPlayDiceToday(chatId, user, user.getLanguage(), mainBotEntity)) return;
         //更新使用者的免費點數
-        updateFreePoints(user, chatId, diceValue, language, mainBotEntity);
+        updateFreePoints(user, chatId, diceValue, user.getLanguage(), mainBotEntity);
     }
 
     @Override

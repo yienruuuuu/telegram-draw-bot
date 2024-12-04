@@ -51,10 +51,7 @@ public class DownloadCommand extends BaseCommand implements MainBotCommand {
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
         var data = update.getCallbackQuery().getData().split(" ")[1];
         var pointUsed = 20;
-        // 將兩個發送請求異步執行
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), mainBotEntity));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
-
         // 查詢用戶
         User user = userService.findByTelegramUserId(userId);
         // 檢查用戶點數
@@ -64,6 +61,7 @@ public class DownloadCommand extends BaseCommand implements MainBotCommand {
         // 扣款
         deductPoints(user, user.getFreePoints() > pointUsed, -pointUsed);
         // 發送抽卡結果
+        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
         createMediaMessageAndSendMedia(resource, chatId, mainBotEntity);
     }
 

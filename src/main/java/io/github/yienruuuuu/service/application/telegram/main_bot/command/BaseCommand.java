@@ -38,10 +38,10 @@ public class BaseCommand {
     /**
      * 檢查使用者是否註冊
      */
-    protected void checkUserIfExists(String userId, Bot mainBotEntity, Long chatId, String languageCode) {
+    protected User checkAndGetUserIfExists(String userId, Bot mainBotEntity, Long chatId, String languageCode) {
         User user = userService.findByTelegramUserId(userId);
         //已註冊則返回
-        if (user != null) return;
+        if (user != null) return user;
         //未註冊則發送註冊提示且拋錯
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
         // 獲取 NOT_REGISTERED 的公告消息

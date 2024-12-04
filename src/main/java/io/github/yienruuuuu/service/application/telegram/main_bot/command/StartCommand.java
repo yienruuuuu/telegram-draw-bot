@@ -72,8 +72,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         }
 
         // start訊息響應
-        SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, chatId);
-        telegramBotClient.send(msgToTelegram, mainBotEntity);
+        createAndSendMessage(user, chatId, mainBotEntity);
     }
 
     /**
@@ -99,10 +98,9 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         String inviteCode = messageParts.length > 1 ? messageParts[1] : null;
         int initialFreePoints = (inviteCode != null) ? handleInviterPointAndCalculateNewUserPoint(inviteCode, inviteeUserId) : 20;
         // 查詢使用者，若尚未註冊則賦予初始積分
-        User user = registerUser(inviteeUserId, userFirstName, languageCode, initialFreePoints);
+        User user = userService.findByTelegramUserIdOrSaveNewUser(inviteeUserId, userFirstName, initialFreePoints, languageCode);
         // start訊息響應
-        SendMessage msgToTelegram = createSendMessageOfAnnouncement(user, String.valueOf(chatId));
-        telegramBotClient.send(msgToTelegram, mainBotEntity);
+        createAndSendMessage(user, String.valueOf(chatId), mainBotEntity);
     }
 
     private void sendTermsOfUse(String chatId, String textInUpdate, String languageCode, Bot mainBotEntity) {
@@ -162,24 +160,17 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
 
 
     /**
-     * 查詢使用者，若未註冊則賦予初始積分
-     */
-    private User registerUser(String inviteeUserId, String userFirstName, String languageCode, int initialFreePoints) {
-        Language language = languageService.findLanguageByCodeOrDefault(languageCode);
-        return userService.findByTelegramUserIdOrSaveNewUser(inviteeUserId, userFirstName, language, initialFreePoints);
-    }
-
-    /**
      * 根據使用者的語言，選擇對應的開始訊息並傳送給使用者
      */
-    private SendMessage createSendMessageOfAnnouncement(User newUser, String chatId) {
-        Language language = newUser.getLanguage();
-        String mess = super.getAnnouncementMessage(AnnouncementType.START_MESSAGE, language)
+    private void createAndSendMessage(User newUser, String chatId, Bot mainBotEntity) {
+        String mess = super.getAnnouncementMessage(AnnouncementType.START_MESSAGE, newUser.getLanguage())
                 .orElse("can't found start message");
-        return SendMessage.builder()
-                .chatId(chatId)
-                .text(mess)
-                .build();
+        telegramBotClient.send(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text(mess)
+                        .build(), mainBotEntity
+        );
     }
 
     /**

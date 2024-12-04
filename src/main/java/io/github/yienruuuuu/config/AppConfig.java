@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 public class AppConfig {
-    @Value("${bot.communicator}")
-    private String botCommunicatorChatId;
+    @Value("${bot.communicate-channel}")
+    private String botCommunicateChannelChatId;
 
     @Value("${bot.public-channel}")
     private String botPublicChannelId;

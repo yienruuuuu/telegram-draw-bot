@@ -1,9 +1,7 @@
 package io.github.yienruuuuu.service.application.telegram.channel_manage;
 
-import io.github.yienruuuuu.bean.entity.PointLog;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.PointType;
-import io.github.yienruuuuu.service.business.PointLogService;
 import io.github.yienruuuuu.service.business.UserService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;

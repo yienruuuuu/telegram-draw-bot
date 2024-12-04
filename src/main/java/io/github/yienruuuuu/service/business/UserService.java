@@ -1,6 +1,5 @@
 package io.github.yienruuuuu.service.business;
 
-import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.PointType;
 
@@ -20,7 +19,7 @@ public interface UserService {
     /**
      * 根據telegramId查詢用戶，如果不存在則保存用戶並返回
      */
-    User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language, Integer initialFreePoint);
+    User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Integer initialFreePoint, String originalLanguageCode);
 
     User findByTelegramUserId(String telegramId);
 

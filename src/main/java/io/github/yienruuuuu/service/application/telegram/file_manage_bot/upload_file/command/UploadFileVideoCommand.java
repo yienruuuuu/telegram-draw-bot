@@ -45,7 +45,7 @@ public class UploadFileVideoCommand extends UploadFileBaseCommand implements Upl
         Resource newResource = resourceService.save(resource);
         SendVideo sendVideo = SendVideo.builder()
                 .video(new InputFile(fileDataDto.fileId()))
-                .chatId(appConfig.getBotCommunicatorChatId())
+                .chatId(appConfig.getBotCommunicateChannelChatId())
                 .caption(newResource.getUniqueId())
                 .build();
         telegramBotClient.send(sendVideo, fileBotEntity);

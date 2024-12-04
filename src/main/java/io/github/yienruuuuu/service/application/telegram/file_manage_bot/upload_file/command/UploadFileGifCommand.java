@@ -44,7 +44,7 @@ public class UploadFileGifCommand extends UploadFileBaseCommand implements Uploa
         Resource newResource = resourceService.save(resource);
         SendAnimation sendAnimation = SendAnimation.builder()
                 .animation(new InputFile(fileDataDto.fileId()))
-                .chatId(appConfig.getBotCommunicatorChatId())
+                .chatId(appConfig.getBotCommunicateChannelChatId())
                 .caption(newResource.getUniqueId())
                 .build();
         telegramBotClient.send(sendAnimation, fileBotEntity);

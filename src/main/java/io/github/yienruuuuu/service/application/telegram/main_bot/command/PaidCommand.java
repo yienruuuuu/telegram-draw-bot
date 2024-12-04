@@ -65,25 +65,43 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
     }
 
     /**
-     * 處理支付前確認訊息
+     * 處理訊息
      */
-    private void handleSuccessPayment(Update update, Bot mainBotEntity) {
+    private void handleMessage(Update update, Bot mainBotEntity) {
         var chatId = String.valueOf(update.getMessage().getChatId());
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         var languageCode = update.getMessage().getFrom().getLanguageCode();
-        var successfulPayment = update.getMessage().getSuccessfulPayment();
-        var payAmount = successfulPayment.getTotalAmount();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-        //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
-        //檢核
-        if (!numbers.contains(payAmount)) return;
-        //增加付費積分
-        User userAfter = userService.addPointAndSavePointLog(user, payAmount, PointType.PAID, getCommandName(), successfulPayment.getProviderPaymentChargeId(), successfulPayment.getTelegramPaymentChargeId());
-        //傳送成功訊息
-        sendSuccessMessage(language, chatId, mainBotEntity, user, userAfter.getPurchasedPoints(), payAmount);
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
+        //根據資源類型創建對應的媒體消息並傳送
+        createMessageAndSend(user.getLanguage(), chatId, mainBotEntity);
+    }
+
+    /**
+     * 處理callback query
+     */
+    private void handleCallbackQuery(Update update, Bot mainBotEntity) {
+        var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
+        var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
+        var messageId = update.getCallbackQuery().getMessage().getMessageId();
+        var callbackQueryId = update.getCallbackQuery().getId();
+        // 將兩個發送請求異步執行
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), mainBotEntity));
+        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
+        //金額檢核
+        var points = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
+        if (!numbers.contains(points)) return;
+        //訊息傳送
+        telegramBotClient.send(
+                SendInvoice.builder()
+                        .chatId(chatId)
+                        .title("Exchange Points⭐")
+                        .description("Get " + points + " Points by Telegram Star⭐")
+                        .payload(userId)
+                        .currency("XTR")
+                        .protectContent(true)
+                        .price(new LabeledPrice("Price", points))
+                        .providerToken("").build(), mainBotEntity);
     }
 
     /**
@@ -99,51 +117,33 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
         //檢核
         if (user == null) return;
         if (!numbers.contains(payAmount)) return;
-        AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery(preCheckoutQuery.getId(), true);
-        telegramBotClient.send(answerPreCheckoutQuery, mainBotEntity);
+        telegramBotClient.send(
+                AnswerPreCheckoutQuery.builder()
+                        .preCheckoutQueryId(preCheckoutQuery.getId())
+                        .ok(true)
+                        .build(), mainBotEntity);
     }
 
     /**
-     * 處理訊息
+     * 處理支付前確認訊息
      */
-    private void handleMessage(Update update, Bot mainBotEntity) {
+    private void handleSuccessPayment(Update update, Bot mainBotEntity) {
         var chatId = String.valueOf(update.getMessage().getChatId());
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         var languageCode = update.getMessage().getFrom().getLanguageCode();
+        var successfulPayment = update.getMessage().getSuccessfulPayment();
+        var payAmount = successfulPayment.getTotalAmount();
         //檢查使用者是否註冊
-        super.checkUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
-        //查詢必要資訊
-        User user = userService.findByTelegramUserId(userId);
-        Language language = languageService.findLanguageByCodeOrDefault(user.getLanguage().getLanguageCode());
-
-        createMessageAndSend(language, chatId, mainBotEntity);
+        User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
+        Integer balanceBefore = user.getPurchasedPoints();
+        //檢核
+        if (!numbers.contains(payAmount)) return;
+        //增加付費積分
+        userService.addPointAndSavePointLog(user, payAmount, PointType.PAID, getCommandName(), successfulPayment.getProviderPaymentChargeId(), successfulPayment.getTelegramPaymentChargeId());
+        //傳送成功訊息
+        sendSuccessMessage(user.getLanguage(), chatId, mainBotEntity, user, balanceBefore, payAmount);
     }
 
-    /**
-     * 處理callback query
-     */
-    private void handleCallbackQuery(Update update, Bot mainBotEntity) {
-        var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
-        var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
-        var messageId = update.getCallbackQuery().getMessage().getMessageId();
-        var callbackQueryId = update.getCallbackQuery().getId();
-        // 將兩個發送請求異步執行
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), mainBotEntity));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().chatId(chatId).messageId(messageId).build(), mainBotEntity));
-        //查詢必要資訊
-        var points = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
-        if (!numbers.contains(points)) return;
-        telegramBotClient.send(
-                SendInvoice.builder()
-                        .chatId(chatId)
-                        .title("Exchange Points⭐")
-                        .description("Get " + points + " Points by Telegram Star⭐")
-                        .payload(userId)
-                        .currency("XTR")
-                        .protectContent(true)
-                        .price(new LabeledPrice("Price", points))
-                        .providerToken("").build(), mainBotEntity);
-    }
 
     /**
      * 根據資源類型創建對應的媒體消息

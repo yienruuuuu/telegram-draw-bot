@@ -7,6 +7,7 @@ import io.github.yienruuuuu.bean.enums.PointType;
 import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.repository.PointLogRepository;
 import io.github.yienruuuuu.repository.UserRepository;
+import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PointLogRepository pointLogRepository;
+    private final LanguageService languageService;
 
-    public UserServiceImpl(UserRepository userRepository, PointLogRepository pointLogRepository) {
+    public UserServiceImpl(UserRepository userRepository, PointLogRepository pointLogRepository, LanguageService languageService) {
         this.userRepository = userRepository;
         this.pointLogRepository = pointLogRepository;
+        this.languageService = languageService;
     }
 
     @Override
@@ -67,7 +70,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Language language, Integer initialFreePoint) {
+    public User findByTelegramUserIdOrSaveNewUser(String telegramId, String firstName, Integer initialFreePoint, String originalLanguageCode) {
+        Language language = languageService.findLanguageByCodeOrDefault(originalLanguageCode);
         Optional<User> user = userRepository.findByTelegramUserId(telegramId);
         if (user.isPresent()) {
             return user.get();
@@ -81,6 +85,7 @@ public class UserServiceImpl implements UserService {
                 .freePoints(initialFreePoint)
                 .purchasedPoints(0)
                 .hasAddInChannel(false)
+                .originalLanguageCode(originalLanguageCode)
                 .build();
         userRepository.save(newUser);
         return newUser;

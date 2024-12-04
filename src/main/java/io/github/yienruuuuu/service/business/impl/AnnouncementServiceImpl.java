@@ -6,6 +6,7 @@ import io.github.yienruuuuu.bean.entity.Text;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.repository.AnnouncementRepository;
 import io.github.yienruuuuu.service.business.AnnouncementService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
  * @author Eric.Lee
  * Date: 2024/11/8
  */
+@Slf4j
 @Service("announcementService")
 public class AnnouncementServiceImpl implements AnnouncementService {
     private final Cache<String, String> announceContentCache;
@@ -36,6 +38,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                 .filter(text -> text.getLanguage().equals(language))
                 .findFirst()
                 .map(Text::getContent)
-                .orElse(null);
+                .orElseGet(() -> {
+                    log.warn("缺少 {} 類型的公告內容 (語言: {})", type.name(), language.getLanguageCode());
+                    return null;
+                });
     }
 }

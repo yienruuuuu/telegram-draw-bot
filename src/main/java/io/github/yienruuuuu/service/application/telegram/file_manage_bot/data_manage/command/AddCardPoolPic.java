@@ -79,7 +79,7 @@ public class AddCardPoolPic extends DataManageBaseCommand implements DataManageC
     private void listResourcesForChosen(AddCardPoolPicDto dto, String chatId, Bot fileManageBot, CardPool cardPool) {
         // 提取分頁參數
         int pageNumber = dto.getPage() - 1;
-        int pageSize = 1;
+        int pageSize = 10;
 
         Page<Resource> resourcePage = resourceService.findAllByPage(PageRequest.of(pageNumber, pageSize));
 

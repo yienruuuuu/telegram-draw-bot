@@ -45,7 +45,7 @@ public class UploadFilePhotoCommand extends UploadFileBaseCommand implements Upl
         Resource newResource = resourceService.save(resource);
         SendPhoto sendPhoto = SendPhoto.builder()
                 .photo(new InputFile(fileDataDto.fileId()))
-                .chatId(appConfig.getBotCommunicatorChatId())
+                .chatId(appConfig.getBotCommunicateChannelChatId())
                 .caption(newResource.getUniqueId())
                 .build();
         telegramBotClient.send(sendPhoto, fileBotEntity);

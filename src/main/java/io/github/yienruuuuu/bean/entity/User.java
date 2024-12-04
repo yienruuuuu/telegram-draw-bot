@@ -37,6 +37,7 @@ public class User extends BaseEntity {
     @Column(name = "first_name", length = 50)
     private String firstName;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
     private Language language;
@@ -60,4 +61,8 @@ public class User extends BaseEntity {
 
     @Column(name = "has_add_in_channel")
     private boolean hasAddInChannel;
+
+    @Column(name = "original_language_code")
+    private String originalLanguageCode;
+
 }

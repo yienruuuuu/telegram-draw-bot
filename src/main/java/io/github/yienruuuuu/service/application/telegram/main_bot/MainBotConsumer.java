@@ -59,7 +59,7 @@ public class MainBotConsumer implements LongPollingSingleThreadUpdateConsumer {
             checkOutDispatcher.dispatch(update, mainBotEntity);
         } else if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) { /*支付訊息處理*/
             checkOutDispatcher.dispatch(update, mainBotEntity);
-        } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicatorChatId())) {
+        } else if (update.hasChannelPost() && update.getChannelPost().getChatId().toString().equals(appConfig.getBotCommunicateChannelChatId())) {
             channelPostHandler.handleChannelPost(update);
         } else {
             log.warn("MAIN BOT CONSUMER收到不支援的更新類型");

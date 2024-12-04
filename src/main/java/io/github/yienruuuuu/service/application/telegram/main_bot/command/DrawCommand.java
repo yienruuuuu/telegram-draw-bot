@@ -80,7 +80,6 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         UserDrawStatus drawStatus = queryOrCreateDrawStatus(user, cardPool);
         // 準備權重
         Map<String, Double> weights = prepareWeights(cardPool, drawStatus);
-
         // 執行加權隨機選擇
         String selectedCardId = getWeightedRandom(weights);
         Card selectedCard = cardPool.getCards().stream()
