@@ -106,7 +106,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
     private void sendTermsOfUse(String chatId, String textInUpdate, String languageCode, Bot mainBotEntity) {
         Language language = languageService.findLanguageByCodeOrDefault(languageCode);
         String askForReadTerm = super.getAnnouncementMessage(AnnouncementType.TERM_MESSAGE, language).orElse("Please read the terms of use first.");
-        String termFileId = !languageCode.equals("zh-hant") ? appConfig.getBotProtocolCn() : appConfig.getBotProtocolEn();
+        String termFileId = languageCode.equals("zh-hant") ? appConfig.getBotProtocolCn() : appConfig.getBotProtocolEn();
         telegramBotClient.send(
                 SendPhoto.builder()
                         .chatId(chatId)
