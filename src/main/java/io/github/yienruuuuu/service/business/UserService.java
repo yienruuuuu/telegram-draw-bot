@@ -3,15 +3,11 @@ package io.github.yienruuuuu.service.business;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.PointType;
 
-import java.util.List;
-
 /**
  * @author Eric.Lee
  * Date: 2024/11/8
  */
 public interface UserService {
-    List<User> findAll();
-
     User save(User user);
 
     User addPointAndSavePointLog(User user, int point, PointType pointType, String reason, String telegramPaymentChargeId, String providerPaymentChargeId);

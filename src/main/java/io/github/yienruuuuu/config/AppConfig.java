@@ -19,12 +19,6 @@ public class AppConfig {
     @Value("${bot.public-channel}")
     private String botPublicChannelId;
 
-    @Value("${bot.protocol-cn}")
-    private String botProtocolCn;
-
-    @Value("${bot.protocol-en}")
-    private String botProtocolEn;
-
     //單例 ObjectMapper 物件
     @Bean
     public ObjectMapper objectMapper() {

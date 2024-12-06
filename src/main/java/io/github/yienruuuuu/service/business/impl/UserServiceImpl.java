@@ -11,7 +11,6 @@ import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,11 +27,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.pointLogRepository = pointLogRepository;
         this.languageService = languageService;
-    }
-
-    @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
     }
 
     @Override

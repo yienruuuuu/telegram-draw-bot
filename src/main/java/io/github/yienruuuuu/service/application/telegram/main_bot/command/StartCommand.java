@@ -1,11 +1,9 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
-import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -13,19 +11,8 @@ import io.github.yienruuuuu.service.business.LanguageService;
 import io.github.yienruuuuu.service.business.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * start指令處理器
@@ -36,21 +23,23 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Component
 public class StartCommand extends BaseCommand implements MainBotCommand {
-    private final AppConfig appConfig;
 
-    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, AppConfig appConfig) {
+    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
         super(userService, languageService, telegramBotClient, announcementService);
-        this.appConfig = appConfig;
     }
 
 
     @Override
     public void execute(Update update, Bot mainBotEntity) {
-        if (update.hasMessage()) {
-            handleMessage(update, mainBotEntity);
-        } else if (update.hasCallbackQuery()) {
-            handleCallbackQuery(update, mainBotEntity);
+        String chatId = String.valueOf(update.getMessage().getChatId());
+        var text = update.getMessage().getText();
+        var userId = String.valueOf(update.getMessage().getFrom().getId());
+        User user = userService.findByTelegramUserId(userId);
+        if (user == null) {
+            user = handleRegister(update, text, userId);
         }
+        // start訊息響應
+        createAndSendMessage(user, chatId, mainBotEntity);
     }
 
     @Override
@@ -59,70 +48,26 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
     }
 
     /**
-     * 處理message
+     * 處理註冊
      */
-    private void handleMessage(Update update, Bot mainBotEntity) {
+    private User handleRegister(Update update, String text, String newUserId) {
         String languageCode = update.getMessage().getFrom().getLanguageCode();
-        String chatId = String.valueOf(update.getMessage().getChatId());
-        var textInUpdate = update.getMessage().getText();
-        User user = userService.findByTelegramUserId(String.valueOf(update.getMessage().getFrom().getId()));
-        if (user == null) {
-            sendTermsOfUse(chatId, textInUpdate, languageCode, mainBotEntity);
-            return;
-        }
-
-        // start訊息響應
-        createAndSendMessage(user, chatId, mainBotEntity);
-    }
-
-    /**
-     * 處理callback query
-     */
-    private void handleCallbackQuery(Update update, Bot mainBotEntity) {
-        String languageCode = update.getCallbackQuery().getFrom().getLanguageCode();
-        String inviteeUserId = update.getCallbackQuery().getFrom().getId().toString();
-        String userFirstName = update.getCallbackQuery().getFrom().getFirstName();
-        var chatId = update.getCallbackQuery().getMessage().getChatId();
-        String[] messageParts = update.getCallbackQuery().getData().trim().split("\\s+");
-        CompletableFuture.runAsync(() ->
-                telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), mainBotEntity));
-        CompletableFuture.runAsync(() ->
-                telegramBotClient.send(DeleteMessage.builder().messageId(update.getCallbackQuery().getMessage().getMessageId()).chatId(chatId).build(), mainBotEntity));
-        //檢查是否有同意條約
-        if (messageParts.length > 1 && "refuse".equals(messageParts[1])) {
-            telegramBotClient.send(SendMessage.builder().chatId(chatId).text(":( see you next time!").build(), mainBotEntity);
-            return;
-        }
+        String userFirstName = update.getMessage().getFrom().getFirstName();
+        String[] messageParts = text.trim().split("\\s+");
 
         // 邀請積分邏輯
-        String inviteCode = messageParts.length > 1 ? messageParts[1] : null;
-        int initialFreePoints = (inviteCode != null) ? handleInviterPointAndCalculateNewUserPoint(inviteCode, inviteeUserId) : 20;
+        String inviterCode = messageParts.length > 1 ? messageParts[1] : null;
+        int initialFreePoints = (inviterCode != null) ? addInviterPointAndCalculateNewUserPoint(inviterCode, newUserId) : 20;
         // 查詢使用者，若尚未註冊則賦予初始積分
-        User user = userService.findByTelegramUserIdOrSaveNewUser(inviteeUserId, userFirstName, initialFreePoints, languageCode);
-        // start訊息響應
-        createAndSendMessage(user, String.valueOf(chatId), mainBotEntity);
-    }
-
-    private void sendTermsOfUse(String chatId, String textInUpdate, String languageCode, Bot mainBotEntity) {
-        Language language = languageService.findLanguageByCodeOrDefault(languageCode);
-        String askForReadTerm = super.getAnnouncementMessage(AnnouncementType.TERM_MESSAGE, language).orElse("Please read the terms of use first.");
-        String termFileId = languageCode.equals("zh-hant") ? appConfig.getBotProtocolCn() : appConfig.getBotProtocolEn();
-        telegramBotClient.send(
-                SendPhoto.builder()
-                        .chatId(chatId)
-                        .photo(new InputFile(termFileId))
-                        .caption(askForReadTerm)
-                        .replyMarkup(createInlineKeyBoard(textInUpdate))
-                        .build(), mainBotEntity);
-
+        return userService.findByTelegramUserIdOrSaveNewUser(newUserId, userFirstName, initialFreePoints, languageCode);
     }
 
 
     /**
      * 處理邀請邏輯，增加邀請者的積分，計算新用戶初始積分
      */
-    private int handleInviterPointAndCalculateNewUserPoint(String inviteCode, String newUserId) {
-        int inviteRewardPoint = 100; // 邀請得的積分數量
+    private int addInviterPointAndCalculateNewUserPoint(String inviterCode, String newUserId) {
+        int inviteRewardPoint = 100; // 邀請者新增的積分數量
         int newUserFreePoint = 20; // 新用戶初始積分數量
 
         // 確認被邀請者是否已經註冊
@@ -131,13 +76,13 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
             return 0;
         }
 
-        if (!isValidInviteCode(inviteCode)) {
-            log.warn("新用戶 {} 使用了無效的邀請碼: {}", newUserId, inviteCode);
+        if (!isValidInviteCode(inviterCode)) {
+            log.warn("新用戶 {} 使用了無效的邀請碼: {}", newUserId, inviterCode);
             return newUserFreePoint;
         }
 
         // 解析邀請者的 userId
-        String inviterUserId = inviteCode.split("_")[1];
+        String inviterUserId = inviterCode.split("_")[1];
         User inviter = userService.findByTelegramUserId(inviterUserId);
         if (inviter == null) {
             log.warn("新用戶 {} 查無邀請者 ID: {}", newUserId, inviterUserId);
@@ -171,20 +116,5 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
                         .text(mess)
                         .build(), mainBotEntity
         );
-    }
-
-    /**
-     * 創建並返回卡池功能按鈕行
-     */
-    private InlineKeyboardMarkup createInlineKeyBoard(String textInUpdate) {
-        InlineKeyboardButton agreeIcon = super.createInlineButton("✅", textInUpdate);
-        InlineKeyboardButton disagreeIcon = super.createInlineButton("❌", getCommandName() + " refuse");
-
-        // 將所有列加入列表
-        List<InlineKeyboardRow> rows = new ArrayList<>();
-        rows.add(new InlineKeyboardRow(agreeIcon, disagreeIcon));
-
-        // 返回 InlineKeyboardMarkup
-        return new InlineKeyboardMarkup(rows);
     }
 }
