@@ -1,7 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
@@ -14,12 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * start指令處理器
