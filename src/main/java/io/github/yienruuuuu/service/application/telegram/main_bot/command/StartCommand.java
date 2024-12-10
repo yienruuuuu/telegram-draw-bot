@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
+import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.bean.entity.User;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.PointType;
@@ -13,6 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * start指令處理器
@@ -37,6 +44,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         User user = userService.findByTelegramUserId(userId);
         if (user == null) {
             user = handleRegister(update, text, userId);
+            createLanguageSettingMessage(user, chatId, mainBotEntity);
         }
         // start訊息響應
         createAndSendMessage(user, chatId, mainBotEntity);
@@ -116,5 +124,18 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
                         .text(mess)
                         .build(), mainBotEntity
         );
+    }
+
+    /**
+     * 根據使用者的語言，選擇對應的開始訊息並傳送給使用者
+     */
+    private void createLanguageSettingMessage(User newUser, String chatId, Bot mainBotEntity) {
+        String mess = "Language :" + newUser.getLanguage().getFlagPattern() + newUser.getLanguage().getOriginalLanguageName();
+        telegramBotClient.send(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text(mess)
+                        .replyMarkup(super.createInlineKeyBoardForLanguageSetting())
+                        .build(), mainBotEntity);
     }
 }

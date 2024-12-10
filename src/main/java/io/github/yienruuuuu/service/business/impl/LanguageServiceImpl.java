@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Cache;
 import io.github.yienruuuuu.bean.entity.Language;
 import io.github.yienruuuuu.repository.LanguageRepository;
 import io.github.yienruuuuu.service.business.LanguageService;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,11 @@ public class LanguageServiceImpl implements LanguageService {
     public LanguageServiceImpl(LanguageRepository languageRepository, Cache<String, Language> languageCache) {
         this.languageRepository = languageRepository;
         this.languageCache = languageCache;
+    }
+
+    @Override
+    public Language findById(Integer id) {
+        return languageRepository.findById(id).orElseThrow(() -> new ApiException(SysCode.LANGUAGE_NOT_FOUND));
     }
 
     @Override

@@ -12,8 +12,12 @@ import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -85,5 +89,18 @@ public class BaseCommand {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 創建並返回更換語系按鈕行
+     */
+    protected InlineKeyboardMarkup createInlineKeyBoardForLanguageSetting() {
+        InlineKeyboardButton button =
+                createInlineButton("\uD83C\uDF0D change language ", "/change_language ");
+
+        // 將所有列加入列表
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(new InlineKeyboardRow(button));
+        return new InlineKeyboardMarkup(rows);
     }
 }

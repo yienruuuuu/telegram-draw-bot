@@ -28,6 +28,14 @@ public class Language {
     @Column(name = "language_name", nullable = false, length = 50)
     private String languageName;
 
+    @Size(max = 50)
+    @Column(name = "original_language_name", length = 50)
+    private String originalLanguageName;
+
+    @Size(max = 50)
+    @Column(name = "flag_pattern", length = 50)
+    private String flagPattern;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,6 +9,8 @@ import java.util.List;
  * Date: 2024/11/8
  */
 public interface LanguageService {
+    Language findById(Integer id);
+
     Language findLanguageByCodeOrDefault(String code);
 
     List<Language> findAllLanguages();

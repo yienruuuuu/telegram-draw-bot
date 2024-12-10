@@ -115,7 +115,8 @@ public class TelegramBotService {
                         BotCommand.builder().command("pool").description("Get pool information").build(),
                         BotCommand.builder().command("invite").description("Get invitation URL").build(),
                         BotCommand.builder().command("my_status").description("Check your status").build(),
-                        BotCommand.builder().command("get_point").description("How to earn points").build()
+                        BotCommand.builder().command("get_point").description("How to earn points").build(),
+                        BotCommand.builder().command("language").description("\uD83C\uDF0D language setting").build()
                 );
                 break;
 
