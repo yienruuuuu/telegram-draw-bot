@@ -23,9 +23,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 @Component
 public class StartCommand extends BaseCommand implements MainBotCommand {
+    private final PoolCommand poolCommand;
 
-    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService) {
+    public StartCommand(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, PoolCommand poolCommand) {
         super(userService, languageService, telegramBotClient, announcementService);
+        this.poolCommand = poolCommand;
     }
 
 
@@ -35,12 +37,16 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         var text = update.getMessage().getText();
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         User user = userService.findByTelegramUserId(userId);
+        boolean firstTime = false;
         if (user == null) {
             user = handleRegister(update, text, userId);
             createLanguageSettingMessage(user, chatId, mainBotEntity);
+            firstTime = true;
         }
         // start訊息響應
         createAndSendMessage(user, chatId, mainBotEntity);
+        // 傳送卡池資訊
+        if (firstTime) poolCommand.execute(update, mainBotEntity);
     }
 
     @Override
