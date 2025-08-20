@@ -28,7 +28,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     public Optional<String> findAnnounceContentByTypeAndLanguage(AnnouncementType type, Language language) {
         String cacheKey = type.name() + "_" + language.getLanguageCode();
-        return Optional.ofNullable(announceContentCache.get(cacheKey, key -> fetchFromDatabase(type, language)));
+        return Optional.ofNullable(
+                announceContentCache.get(cacheKey, key -> fetchFromDatabase(type, language))
+        );
     }
 
     private String fetchFromDatabase(AnnouncementType type, Language language) {

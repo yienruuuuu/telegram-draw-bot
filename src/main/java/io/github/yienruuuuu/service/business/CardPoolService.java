@@ -23,4 +23,6 @@ public interface CardPoolService {
     Optional<CardPool> findByIdIsOpen(Integer id);
 
     void deleteById(Integer id);
+
+    boolean existsByResourceId(Integer id);
 }

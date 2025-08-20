@@ -10,4 +10,6 @@ public interface CardRepository extends JpaRepository<Card, Integer> {
     Page<Card> findAllByOrderByIdDesc(Pageable pageable);
 
     Page<Card> findAllByCardPoolOrderByIdDesc(CardPool cardPool, Pageable pageable);
+
+    boolean existsByResource_Id(Integer resourceId);
 }

@@ -21,4 +21,6 @@ public interface CardService {
     Optional<Card> findById(Integer id);
 
     void deleteById(Integer id);
+
+    boolean existsByResourceId(Integer id);
 }

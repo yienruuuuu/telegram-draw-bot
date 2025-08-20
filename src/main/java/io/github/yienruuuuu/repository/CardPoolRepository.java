@@ -18,4 +18,6 @@ public interface CardPoolRepository extends JpaRepository<CardPool, Integer> {
 
     @Query("SELECT c FROM CardPool c WHERE c.id = :id AND c.isOpen = true AND c.endAt > :endAt")
     Optional<CardPool> findOpenPoolByIdAndEndTime(Integer id, Instant endAt);
+
+    boolean existsByResource_Id(Integer resourceId);
 }

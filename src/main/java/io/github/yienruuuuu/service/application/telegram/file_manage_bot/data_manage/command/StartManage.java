@@ -25,7 +25,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class StartManage extends DataManageBaseCommand implements DataManageCommand {
 
-    public StartManage(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService) {
+    public StartManage(
+            UserService userService,
+            LanguageService languageService,
+            TelegramBotClient telegramBotClient,
+            AnnouncementService announcementService,
+            ResourceService resourceService
+    ) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
     }
 
@@ -34,11 +40,13 @@ public class StartManage extends DataManageBaseCommand implements DataManageComm
         var userId = String.valueOf(update.getMessage().getFrom().getId());
         var chatId = String.valueOf(update.getMessage().getChatId());
         //檢查操作權限
-        checkUsersPermission(userId, chatId, fileManageBot);
+        this.checkUsersPermission(userId, chatId, fileManageBot);
         //查詢操作者
         User user = userService.findByTelegramUserId(userId);
         //傳送操作幫助
-        telegramBotClient.send(createSendMessageOfAnnouncement(user, chatId), fileManageBot);
+        telegramBotClient.send(
+                this.createSendMessageOfAnnouncement(user, chatId), fileManageBot
+        );
     }
 
     @Override
