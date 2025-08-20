@@ -64,7 +64,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Transactional
     @Override
-    public void deleteById(String uniqueId) {
+    public void deleteByUniqueId(String uniqueId) {
         resourceRepository.deleteByUniqueId(uniqueId);
     }
 }

@@ -23,7 +23,14 @@ import java.util.concurrent.CompletableFuture;
 public class DeleteCard extends DataManageBaseCommand implements DataManageCommand {
     private final CardService cardService;
 
-    public DeleteCard(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardService cardService) {
+    public DeleteCard(
+            UserService userService,
+            LanguageService languageService,
+            TelegramBotClient telegramBotClient,
+            AnnouncementService announcementService,
+            ResourceService resourceService,
+            CardService cardService
+    ) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardService = cardService;
     }
@@ -40,8 +47,12 @@ public class DeleteCard extends DataManageBaseCommand implements DataManageComma
         //取得卡
         var cardId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
         cardService.deleteById(cardId);
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot));
+        CompletableFuture.runAsync(() -> telegramBotClient.send(
+                AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot)
+        );
+        CompletableFuture.runAsync(() -> telegramBotClient.send(
+                DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot)
+        );
     }
 
     @Override

@@ -10,7 +10,6 @@ import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -48,18 +47,21 @@ public class DeleteResource extends DataManageBaseCommand implements DataManageC
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var callbackQueryId = update.getCallbackQuery().getId();
         var messageId = update.getCallbackQuery().getMessage().getMessageId();
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
 
         //取得卡
         String resourceUniqueId = update.getCallbackQuery().getData().split(" ")[1];
         // 檢查資源是否被卡或卡池使用
-        this.checkResourceIsUsedByCardOrCardPool(resourceUniqueId, chatId, fileManageBot);
+        this.checkResourceIsUsedByCardOrCardPool(resourceUniqueId, fileManageBot, callbackQueryId);
 
-        resourceService.deleteById(resourceUniqueId);
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text("已刪除resource").build(), fileManageBot));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot));
+        resourceService.deleteByUniqueId(resourceUniqueId);
+        CompletableFuture.runAsync(() -> telegramBotClient.send(
+                AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text("已刪除resource").build(), fileManageBot)
+        );
+        CompletableFuture.runAsync(() -> telegramBotClient.send(
+                DeleteMessage.builder().messageId(messageId).chatId(chatId).build(), fileManageBot)
+        );
     }
 
     @Override
@@ -71,13 +73,18 @@ public class DeleteResource extends DataManageBaseCommand implements DataManageC
     /**
      * 檢查資源是否被卡或卡池使用
      */
-    private void checkResourceIsUsedByCardOrCardPool(String resourceUniqueId, String chatId, Bot fileManageBot) {
+    private void checkResourceIsUsedByCardOrCardPool(
+            String resourceUniqueId,
+            Bot fileManageBot,
+            String callbackQueryId
+    ) {
         Resource rs = resourceService.findByUniqueId(resourceUniqueId)
                 .orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUND));
 
         if (cardService.existsByResourceId(rs.getId()) || cardPoolService.existsByResourceId(rs.getId())) {
-            SendMessage message = SendMessage.builder().chatId(chatId).text(SysCode.RESOURCE_HAS_BEEN_CARD.getMessage()).build();
-            telegramBotClient.send(message, fileManageBot);
+            CompletableFuture.runAsync(() -> telegramBotClient.send(
+                    AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text(SysCode.RESOURCE_HAS_BEEN_CARD.getMessage()).build(), fileManageBot)
+            );
             throw new ApiException(SysCode.RESOURCE_HAS_BEEN_CARD);
         }
     }

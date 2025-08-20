@@ -49,6 +49,11 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public void deleteByCardPoolId(Integer cardPoolId) {
+        cardRepository.deleteAllByCardPool_Id(cardPoolId);
+    }
+
+    @Override
     public boolean existsByResourceId(Integer id) {
         return cardRepository.existsByResource_Id(id);
     }

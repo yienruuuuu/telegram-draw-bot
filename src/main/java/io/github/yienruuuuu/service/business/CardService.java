@@ -22,5 +22,7 @@ public interface CardService {
 
     void deleteById(Integer id);
 
+    void deleteByCardPoolId(Integer cardPoolId);
+
     boolean existsByResourceId(Integer id);
 }

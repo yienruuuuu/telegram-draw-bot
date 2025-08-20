@@ -27,5 +27,5 @@ public interface ResourceService {
 
     Resource save(Resource resource);
 
-    void deleteById(String uniqueId);
+    void deleteByUniqueId(String uniqueId);
 }
