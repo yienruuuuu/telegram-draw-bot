@@ -1,5 +1,6 @@
 package io.github.yienruuuuu.bean.dto;
 
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +16,6 @@ public class AddCardPoolRequest {
     private String endAt;
     private boolean isOpen;
     private String resourceId;
+    private String cardPoolType;
     private List<Map<String, String>> texts;
 }

@@ -42,7 +42,7 @@ public class AddCardPool extends DataManageBaseCommand implements DataManageComm
         var chatId = String.valueOf(update.getMessage().getChatId());
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
-        AddCardPoolRequest addCardPoolRequest = parseJsonToDto(update);
+        AddCardPoolRequest addCardPoolRequest = this.parseJsonToDto(update);
         if (addCardPoolRequest == null) {
             sendEditResourceTemplate(chatId, fileManageBot);
             return;
@@ -61,7 +61,7 @@ public class AddCardPool extends DataManageBaseCommand implements DataManageComm
                 .endAt(Instant.parse(endAtIso))
                 .resource(res)
                 .texts(super.convertToTextEntities(addCardPoolRequest.getTexts()))
-                .cardPoolType(CardPoolType.CARD)
+                .cardPoolType(CardPoolType.valueOf(addCardPoolRequest.getCardPoolType()))
                 .build();
         CardPool pool = cardPoolService.save(newPool);
         telegramBotClient.send(

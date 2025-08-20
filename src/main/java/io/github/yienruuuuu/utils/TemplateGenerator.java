@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.yienruuuuu.bean.entity.*;
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import io.github.yienruuuuu.service.exception.ApiException;
 import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +74,7 @@ public class TemplateGenerator {
         template.put("endAt", cardPool == null ? defaultDate : DATE_FORMATTER.format(cardPool.getEndAt()));
         template.put("isOpen", cardPool != null && cardPool.isOpen());
         template.put("resourceId", cardPool == null ? null : cardPool.getResource().getUniqueId());
+        template.put("cardPoolType", cardPool == null ? CardPoolType.CARD.name() : cardPool.getCardPoolType().name());
 
         ArrayNode texts = template.putArray("texts");
 
