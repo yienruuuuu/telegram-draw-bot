@@ -4,6 +4,7 @@ import io.github.yienruuuuu.bean.dto.AddCardPoolRequest;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.bean.entity.Resource;
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
@@ -60,6 +61,7 @@ public class AddCardPool extends DataManageBaseCommand implements DataManageComm
                 .endAt(Instant.parse(endAtIso))
                 .resource(res)
                 .texts(super.convertToTextEntities(addCardPoolRequest.getTexts()))
+                .cardPoolType(CardPoolType.CARD)
                 .build();
         CardPool pool = cardPoolService.save(newPool);
         telegramBotClient.send(

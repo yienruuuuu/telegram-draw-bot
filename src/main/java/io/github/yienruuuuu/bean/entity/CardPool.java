@@ -1,5 +1,6 @@
 package io.github.yienruuuuu.bean.entity;
 
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -31,6 +32,11 @@ public class CardPool extends BaseEntity {
     @ColumnDefault("0")
     @Column(name = "is_open", nullable = false)
     private boolean isOpen = false;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pool_type", nullable = false)
+    private CardPoolType cardPoolType;
 
     @ManyToOne
     @JoinColumn(name = "resource_id")
