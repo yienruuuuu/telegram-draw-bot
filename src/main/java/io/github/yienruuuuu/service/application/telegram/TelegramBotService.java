@@ -40,11 +40,13 @@ public class TelegramBotService {
     //使用 ENUM Map 來管理 BotType 與 BotConsumer 的映射
     private final EnumMap<BotType, LongPollingUpdateConsumer> botConsumers = new EnumMap<>(BotType.class);
 
-    public TelegramBotService(MainBotConsumer mainBotConsumer,
-                              FileManageBotConsumer fileManageBotConsumer,
-                              ChannelManageBotConsumer channelManageBotConsumer,
-                              BotRepository botRepository,
-                              TelegramBotClient telegramBotClient) {
+    public TelegramBotService(
+            MainBotConsumer mainBotConsumer,
+            FileManageBotConsumer fileManageBotConsumer,
+            ChannelManageBotConsumer channelManageBotConsumer,
+            BotRepository botRepository,
+            TelegramBotClient telegramBotClient
+    ) {
         this.botRepository = botRepository;
         this.telegramBotClient = telegramBotClient;
         // 初始化 BotConsumer Map
@@ -94,11 +96,14 @@ public class TelegramBotService {
      */
     private void updateBotUpdates(Bot botEntity) {
         if (!botEntity.getType().equals(BotType.CHANNEL)) return;
+
         List<String> allowedUpdates = Arrays.asList("update_id", "message", "callback_query", "channel_post", "chat_member");
         telegramBotClient.send(
                 GetUpdates.builder()
                         .allowedUpdates(allowedUpdates)
-                        .build(), botEntity);
+                        .build()
+                , botEntity
+        );
 
     }
 
@@ -111,21 +116,24 @@ public class TelegramBotService {
         switch (botEntity.getType()) {
             case MAIN:
                 commands = Arrays.asList(
-                        BotCommand.builder().command("start").description("Get started").build(),
-                        BotCommand.builder().command("pool").description("Get pool information").build(),
-                        BotCommand.builder().command("invite").description("Get invitation URL").build(),
-                        BotCommand.builder().command("my_status").description("Check your status").build(),
-                        BotCommand.builder().command("get_point").description("How to earn points").build(),
+                        BotCommand.builder().command("start").description("開始").build(),
+                        BotCommand.builder().command("hint").description("你...獲得了一些線索?").build(),
+                        BotCommand.builder().command("hint_pool").description("請神").build(),
+                        BotCommand.builder().command("pool").description("卡池資訊").build(),
+                        BotCommand.builder().command("invite").description("取得邀請連結").build(),
+                        BotCommand.builder().command("my_status").description("玩家狀態").build(),
+                        BotCommand.builder().command("get_point").description("如何取得積分").build(),
                         BotCommand.builder().command("language").description("\uD83C\uDF0D language setting").build()
                 );
                 break;
 
             case FILE_MANAGE:
                 commands = Arrays.asList(
-                        BotCommand.builder().command("start").description("Get started").build(),
+                        BotCommand.builder().command("start").description("開始").build(),
                         BotCommand.builder().command("list_resource").description("查看資源").build(),
                         BotCommand.builder().command("add_card_pool").description("新增卡池").build(),
-                        BotCommand.builder().command("list_card_pool").description("查看卡池").build()
+                        BotCommand.builder().command("list_card_pool").description("查看卡池").build(),
+                        BotCommand.builder().command("list_basic_pic").description("查看基礎建設圖片").build()
                 );
                 break;
 

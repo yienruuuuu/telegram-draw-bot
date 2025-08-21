@@ -40,11 +40,11 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
         boolean firstTime = false;
         if (user == null) {
             user = handleRegister(update, text, userId);
-            createLanguageSettingMessage(user, chatId, mainBotEntity);
+            this.createLanguageSettingMessage(user, chatId, mainBotEntity);
             firstTime = true;
         }
         // start訊息響應
-        createAndSendMessage(user, chatId, mainBotEntity);
+        this.createAndSendMessage(user, chatId, mainBotEntity);
         // 傳送卡池資訊
         if (firstTime) poolCommand.execute(update, mainBotEntity);
     }

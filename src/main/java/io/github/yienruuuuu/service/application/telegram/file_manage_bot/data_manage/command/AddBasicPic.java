@@ -1,10 +1,10 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
-import io.github.yienruuuuu.bean.dto.AddCardToPoolDto;
+import io.github.yienruuuuu.bean.dto.AddBasicPicDto;
+import io.github.yienruuuuu.bean.entity.BasicPic;
 import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Card;
-import io.github.yienruuuuu.bean.entity.CardPool;
 import io.github.yienruuuuu.bean.entity.Resource;
+import io.github.yienruuuuu.bean.enums.BasicPicType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
@@ -27,24 +27,30 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 新增卡牌到卡池
+ * 為基礎圖片指定資源
  *
  * @author Eric.Lee
- * Date: 2024/11/8
+ * Date: 2025/08/21
  */
 @Slf4j
 @Component
-public class AddCardToPool extends DataManageBaseCommand implements DataManageCommand {
-    private final CardPoolService cardPoolService;
-    private final CardService cardService;
+public class AddBasicPic extends DataManageBaseCommand implements DataManageCommand {
+    private final BasicPicService basicPicService;
 
-    public AddCardToPool(UserService userService, LanguageService languageService, TelegramBotClient telegramBotClient, AnnouncementService announcementService, ResourceService resourceService, CardPoolService cardPoolService, CardService cardService) {
+    public AddBasicPic(
+            UserService userService,
+            LanguageService languageService,
+            TelegramBotClient telegramBotClient,
+            AnnouncementService announcementService,
+            ResourceService resourceService,
+            BasicPicService basicPicService
+    ) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
-        this.cardPoolService = cardPoolService;
-        this.cardService = cardService;
+        this.basicPicService = basicPicService;
     }
 
     @Override
@@ -53,48 +59,48 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var messageId = update.getCallbackQuery().getMessage().getMessageId();
         var callbackQueryId = update.getCallbackQuery().getId();
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
 
         //取出參數
-        AddCardToPoolDto dto =
-                JsonUtils.parseJsonToTargetDto(update.getCallbackQuery().getData().substring(getCommandName().length()).trim(), AddCardToPoolDto.class);
-        //取得卡池
-        CardPool cardPool = cardPoolService.findById(dto.getCpId()).orElseThrow(() -> new IllegalArgumentException("CardPool not found"));
+        AddBasicPicDto dto =
+                JsonUtils.parseJsonToTargetDto(update.getCallbackQuery().getData().substring(getCommandName().length()).trim(), AddBasicPicDto.class);
+
 
         if (dto.getRId() == null) {
             // 若沒有指定 resource id，則列出 resource 並分頁傳送
-            listResourcesByPage(cardPool, dto, chatId, fileManageBot);
+            listResourcesByPage(dto.getT(), dto, chatId, fileManageBot);
         } else {
             // 若有指定 resource id，則儲存為卡牌
-            addResourceAsCard(dto, cardPool, chatId, messageId, fileManageBot);
+            addResourceAsCard(dto, dto.getT(), chatId, messageId, fileManageBot);
         }
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 
     @Override
     public String getCommandName() {
-        return "/add_card_to_pool";
+        return "/add_basic_pic";
     }
 
     /**
      * 添加資源為卡牌
      */
-    private void addResourceAsCard(AddCardToPoolDto dto, CardPool cardPool, String chatId, Integer messageId, Bot fileManageBot) {
-        Resource res = resourceService.findById(dto.getRId()).orElseThrow(() -> new IllegalArgumentException("Resource not found"));
-        res.setHasBeenCardBefore(true);
-        Card newCard = Card.builder()
-                .cardPool(cardPool)
-                .resource(res)
-                .dropRate(res.getRarityType().getDefaultDropRate())
-                .build();
-        resourceService.save(res);
-        Card card = cardService.save(newCard);
+    private void addResourceAsCard(AddBasicPicDto dto, BasicPicType type, String chatId, Integer messageId, Bot fileManageBot) {
+        Resource res = resourceService.findById(dto.getRId())
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found"));
+        BasicPic pic = Optional.ofNullable(basicPicService.findByType(type)).orElse(
+                BasicPic.builder()
+                        .resource(res)
+                        .type(type)
+                        .build()
+        );
+        basicPicService.save(pic);
 
         EditMessageCaption editMessage = EditMessageCaption.builder()
                 .chatId(chatId)
                 .messageId(messageId)
-                .caption("已儲存卡牌: card id= " + card.getId())
+                .caption("已儲存")
                 .replyMarkup(null)
                 .build();
         telegramBotClient.send(
@@ -107,19 +113,12 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
     /**
      * 分頁列出資源
      */
-    private void listResourcesByPage(CardPool cardPool, AddCardToPoolDto dto, String chatId, Bot fileManageBot) {
-        // 提取卡池中的 resourceId 列表
-        List<Integer> excludedResourceIds = new ArrayList<>();
-        if (cardPool.getCards() != null && !cardPool.getCards().isEmpty()) {
-            excludedResourceIds = cardPool.getCards().stream()
-                    .map(card -> card.getResource().getId())
-                    .toList();
-        }
+    private void listResourcesByPage(BasicPicType picType, AddBasicPicDto dto, String chatId, Bot fileManageBot) {
 
         // 提取分頁參數，默認為第 1 頁
         int pageNumber = dto.getPg() - 1; // Pageable 的頁碼從 0 開始
         int pageSize = 10;
-        Page<Resource> resourcePage = resourceService.findAllByPageExcludingIds(PageRequest.of(pageNumber, pageSize), excludedResourceIds);
+        Page<Resource> resourcePage = resourceService.findAllByPageExcludingIds(PageRequest.of(pageNumber, pageSize), List.of());
 
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()
@@ -130,35 +129,36 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
         }
         //傳送resource列表
         resourcePage.getContent().forEach(
-                resource -> this.createMediaMessageAndSendMedia(cardPool, resource, chatId, fileManageBot)
+                resource -> this.createBasicPicMessageAndSend(picType, resource, chatId, fileManageBot)
         );
 
         // 附加分頁信息
         String pageInfo = String.format(" %d of %d", resourcePage.getNumber() + 1, resourcePage.getTotalPages());
 
         // 傳送當前頁數及下頁按鈕
-        telegramBotClient.send(SendMessage.builder()
-                .chatId(chatId)
-                .text("Page :" + pageInfo)
-                .replyMarkup(createPaginationKeyboard(cardPool, resourcePage.getNumber() + 2))
-                .build(), fileManageBot);
+        telegramBotClient.send(
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Page :" + pageInfo)
+                        .replyMarkup(createPaginationKeyboard(picType, resourcePage.getNumber() + 2))
+                        .build(),
+                fileManageBot
+        );
     }
 
 
     /**
      * 根據資源類型創建對應的媒體消息
      */
-    private void createMediaMessageAndSendMedia(CardPool cardPool, Resource resource, String chatId, Bot fileManageBot) {
+    private void createBasicPicMessageAndSend(BasicPicType picType, Resource resource, String chatId, Bot fileManageBot) {
         var inputFile = new InputFile(resource.getFileIdManageBot());
-        var replyMarkup = createResourceKeyboard(cardPool, resource);
-        var captionText = resource.getUniqueId();
+        var replyMarkup = createResourceKeyboard(picType, resource);
 
         switch (resource.getFileType()) {
             case PHOTO -> telegramBotClient.send(
                     SendPhoto.builder()
                             .chatId(chatId)
                             .photo(inputFile)
-                            .caption(captionText)
                             .replyMarkup(replyMarkup)
                             .build(),
                     fileManageBot
@@ -167,7 +167,6 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
                     SendVideo.builder()
                             .chatId(chatId)
                             .video(inputFile)
-                            .caption(captionText)
                             .replyMarkup(replyMarkup)
                             .build(),
                     fileManageBot
@@ -176,7 +175,6 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
                     SendAnimation.builder()
                             .chatId(chatId)
                             .animation(inputFile)
-                            .caption(captionText)
                             .replyMarkup(replyMarkup)
                             .build(),
                     fileManageBot
@@ -188,9 +186,14 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
     /**
      * 創建並返回功能按鈕行
      */
-    private InlineKeyboardMarkup createResourceKeyboard(CardPool cardPool, Resource resource) {
+    private InlineKeyboardMarkup createResourceKeyboard(BasicPicType type, Resource resource) {
         InlineKeyboardButton addCardPoolPic =
-                super.createInlineButton("加為卡牌", "/add_card_to_pool " + JsonUtils.parseJson(new AddCardToPoolDto(cardPool.getId(), 1, resource.getId())));
+                super.createInlineButton(
+                        "指定為基礎資源",
+                        "/add_basic_pic " + JsonUtils.parseJson(
+                                new AddBasicPicDto(type, 1, resource.getId())
+                        )
+                );
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();
@@ -203,9 +206,14 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
     /**
      * 創建並返回功能按鈕行
      */
-    private InlineKeyboardMarkup createPaginationKeyboard(CardPool cardPool, Integer page) {
+    private InlineKeyboardMarkup createPaginationKeyboard(BasicPicType type, Integer page) {
         InlineKeyboardButton addCardPoolPic =
-                super.createInlineButton("下一頁", "/add_card_to_pool " + JsonUtils.parseJson(new AddCardToPoolDto(cardPool.getId(), page - 1, null)));
+                super.createInlineButton(
+                        "下一頁",
+                        "/add_basic_pic " + JsonUtils.parseJson(
+                                new AddBasicPicDto(type, page - 1, null)
+                        )
+                );
 
         // 將所有列加入列表
         List<InlineKeyboardRow> rows = new ArrayList<>();

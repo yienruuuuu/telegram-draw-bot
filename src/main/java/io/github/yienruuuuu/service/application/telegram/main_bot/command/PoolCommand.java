@@ -2,6 +2,7 @@ package io.github.yienruuuuu.service.application.telegram.main_bot.command;
 
 import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.main_bot.MainBotCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -44,7 +45,7 @@ public class PoolCommand extends BaseCommand implements MainBotCommand {
         User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
         Language language = user.getLanguage();
-        List<CardPool> cardPools = cardPoolService.findOpenCardPools();
+        List<CardPool> cardPools = cardPoolService.findOpenCardPools(CardPoolType.CARD);
         //檢查是否有開放卡池
         if (checkOpenPool(chatId, mainBotEntity, language, cardPools)) return;
         //傳送卡池資訊

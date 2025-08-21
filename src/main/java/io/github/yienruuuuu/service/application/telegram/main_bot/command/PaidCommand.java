@@ -74,7 +74,7 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
         //檢查使用者是否註冊
         User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //根據資源類型創建對應的媒體消息並傳送
-        createMessageAndSend(user.getLanguage(), chatId, mainBotEntity);
+        this.createMessageAndSend(user.getLanguage(), chatId, mainBotEntity);
     }
 
     /**
@@ -139,9 +139,16 @@ public class PaidCommand extends BaseCommand implements MainBotCommand {
         //檢核
         if (!numbers.contains(payAmount)) return;
         //增加付費積分
-        userService.addPointAndSavePointLog(user, payAmount, PointType.PAID, getCommandName(), successfulPayment.getProviderPaymentChargeId(), successfulPayment.getTelegramPaymentChargeId());
+        userService.addPointAndSavePointLog(
+                user,
+                payAmount,
+                PointType.PAID,
+                getCommandName(),
+                successfulPayment.getProviderPaymentChargeId(),
+                successfulPayment.getTelegramPaymentChargeId()
+        );
         //傳送成功訊息
-        sendSuccessMessage(user.getLanguage(), chatId, mainBotEntity, user, balanceBefore, payAmount);
+        this.sendSuccessMessage(user.getLanguage(), chatId, mainBotEntity, user, balanceBefore, payAmount);
     }
 
 

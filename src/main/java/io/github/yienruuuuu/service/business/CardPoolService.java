@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business;
 
 import io.github.yienruuuuu.bean.entity.CardPool;
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
  * Date: 2024/11/14
  */
 public interface CardPoolService {
-    List<CardPool> findOpenCardPools();
+    List<CardPool> findOpenCardPools(CardPoolType cardPoolType);
 
     CardPool save(CardPool cardPool);
 

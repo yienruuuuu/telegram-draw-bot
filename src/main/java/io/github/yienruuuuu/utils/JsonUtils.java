@@ -32,7 +32,7 @@ public class JsonUtils {
      */
     public static void parseJsonAndPrintLog(String objectDescription, Object obj) {
         try {
-            log.debug("{} : {} ", objectDescription, objectMapper.writeValueAsString(obj));
+            log.info("{} : {} ", objectDescription, objectMapper.writeValueAsString(obj));
         } catch (JsonProcessingException e) {
             log.error("將更新物件解析為 json 字串時出錯", e);
         }

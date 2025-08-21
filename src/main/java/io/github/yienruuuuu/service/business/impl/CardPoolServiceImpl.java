@@ -1,6 +1,7 @@
 package io.github.yienruuuuu.service.business.impl;
 
 import io.github.yienruuuuu.bean.entity.CardPool;
+import io.github.yienruuuuu.bean.enums.CardPoolType;
 import io.github.yienruuuuu.repository.CardPoolRepository;
 import io.github.yienruuuuu.service.business.CardPoolService;
 import org.springframework.data.domain.Page;
@@ -24,8 +25,8 @@ public class CardPoolServiceImpl implements CardPoolService {
     }
 
     @Override
-    public List<CardPool> findOpenCardPools() {
-        return cardPoolRepository.findOpenPoolsAfter(Instant.now());
+    public List<CardPool> findOpenCardPools(CardPoolType cardPoolType) {
+        return cardPoolRepository.findOpenPoolsAfter(cardPoolType, Instant.now());
     }
 
     @Override
