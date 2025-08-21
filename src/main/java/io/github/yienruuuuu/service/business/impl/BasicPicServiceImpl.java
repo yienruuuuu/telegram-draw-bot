@@ -5,6 +5,7 @@ import io.github.yienruuuuu.bean.enums.BasicPicType;
 import io.github.yienruuuuu.repository.BasicPicRepository;
 import io.github.yienruuuuu.service.business.BasicPicService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,16 +22,19 @@ public class BasicPicServiceImpl implements BasicPicService {
     }
 
 
+    @Transactional(readOnly = true)
     @Override
     public List<BasicPic> findAll() {
         return basicPicRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BasicPic findByType(BasicPicType type) {
         return basicPicRepository.findBasicPicByType(type);
     }
 
+    @Transactional
     @Override
     public BasicPic save(BasicPic basicPic) {
         return basicPicRepository.save(basicPic);

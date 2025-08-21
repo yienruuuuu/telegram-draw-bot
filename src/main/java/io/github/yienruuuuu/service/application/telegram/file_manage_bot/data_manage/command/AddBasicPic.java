@@ -89,22 +89,23 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
     private void addResourceAsCard(AddBasicPicDto dto, BasicPicType type, String chatId, Integer messageId, Bot fileManageBot) {
         Resource res = resourceService.findById(dto.getRId())
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found"));
-        BasicPic pic = Optional.ofNullable(basicPicService.findByType(type)).orElse(
-                BasicPic.builder()
-                        .resource(res)
-                        .type(type)
-                        .build()
-        );
+
+        BasicPic pic = Optional.ofNullable(basicPicService.findByType(type))
+                .orElse(
+                        BasicPic.builder()
+                                .resource(res)
+                                .type(type)
+                                .build()
+                );
         basicPicService.save(pic);
 
-        EditMessageCaption editMessage = EditMessageCaption.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .caption("已儲存")
-                .replyMarkup(null)
-                .build();
         telegramBotClient.send(
-                editMessage,
+                EditMessageCaption.builder()
+                        .chatId(chatId)
+                        .messageId(messageId)
+                        .caption("已儲存")
+                        .replyMarkup(null)
+                        .build(),
                 fileManageBot
         );
     }
