@@ -14,19 +14,23 @@ VALUES (1, 'START_MESSAGE', 1);
 -- 繁體中文的公告說明
 INSERT INTO text (id, language_id, content)
 VALUES (1, 1, '
-歡迎使用Dance chicks的抽卡機器人 🤖🥰
+有什麼我可以幫助你的嗎? 🤖🥰
 /start - 打印帮助信息
+/hint - 你好像有著什麼資訊?
+/hint_pool - ✨如有神助✨
 /invite - 邀請用戶，獲取積分
 /pool - 查看卡池
 /my_status - 查看你的帳號資訊
 /get_point - 如何獲得積分'),
        (2, 2, '
-Welcome use Dance chicks Gacha Bot 🤖🥰
-/start - Display help information
-/invite - Invite users to earn points
-/pool - Check the card pool
-/my_status - Check your account information
-/get_point - Learn how to earn points');
+How can I help you? 🤖🥰
+/start - Show help information
+/hint - It feels like you’re holding some information?
+/hint_pool - ✨Divine Assistance✨
+/invite - Invite users and earn points
+/pool - View the card pool
+/my_status - View your account information
+/get_point - How to earn points');
 
 -- 關聯繁體中文的公告文字
 INSERT INTO announcement_text (announcement_id, text_id)
