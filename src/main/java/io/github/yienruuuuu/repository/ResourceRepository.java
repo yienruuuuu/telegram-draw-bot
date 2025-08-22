@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResourceRepository extends JpaRepository<Resource, Integer> {
-    Page<Resource> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Resource> findByInUsedOrderByCreatedAtDesc(boolean inUsed, Pageable pageable);
 
     Page<Resource> findAllByIdNotInOrderByCreatedAtDesc(List<Integer> excludedIds, Pageable pageable);
 

@@ -1,18 +1,18 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
 import io.github.yienruuuuu.bean.dto.AddCardToPoolDto;
-import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Card;
-import io.github.yienruuuuu.bean.entity.CardPool;
-import io.github.yienruuuuu.bean.entity.Resource;
+import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -47,6 +47,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
         this.cardService = cardService;
     }
 
+    @Transactional
     @Override
     public void execute(Update update, Bot fileManageBot) {
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
@@ -64,10 +65,10 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
 
         if (dto.getRId() == null) {
             // 若沒有指定 resource id，則列出 resource 並分頁傳送
-            listResourcesByPage(cardPool, dto, chatId, fileManageBot);
+            this.listResourcesByPage(cardPool, dto, chatId, fileManageBot);
         } else {
             // 若有指定 resource id，則儲存為卡牌
-            addResourceAsCard(dto, cardPool, chatId, messageId, fileManageBot);
+            this.addResourceAsCard(dto, cardPool, chatId, messageId, fileManageBot);
         }
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
@@ -81,24 +82,24 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
      * 添加資源為卡牌
      */
     private void addResourceAsCard(AddCardToPoolDto dto, CardPool cardPool, String chatId, Integer messageId, Bot fileManageBot) {
-        Resource res = resourceService.findById(dto.getRId()).orElseThrow(() -> new IllegalArgumentException("Resource not found"));
-        res.setHasBeenCardBefore(true);
+        Resource res = resourceService.findById(dto.getRId())
+                .orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
+        super.markAsUsed(res);
+
         Card newCard = Card.builder()
                 .cardPool(cardPool)
                 .resource(res)
                 .dropRate(res.getRarityType().getDefaultDropRate())
                 .build();
-        resourceService.save(res);
         Card card = cardService.save(newCard);
 
-        EditMessageCaption editMessage = EditMessageCaption.builder()
-                .chatId(chatId)
-                .messageId(messageId)
-                .caption("已儲存卡牌: card id= " + card.getId())
-                .replyMarkup(null)
-                .build();
         telegramBotClient.send(
-                editMessage,
+                EditMessageCaption.builder()
+                        .chatId(chatId)
+                        .messageId(messageId)
+                        .caption("已儲存卡牌: card id= " + card.getId())
+                        .replyMarkup(null)
+                        .build(),
                 fileManageBot
         );
     }
@@ -151,7 +152,16 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
     private void createMediaMessageAndSendMedia(CardPool cardPool, Resource resource, String chatId, Bot fileManageBot) {
         var inputFile = new InputFile(resource.getFileIdManageBot());
         var replyMarkup = createResourceKeyboard(cardPool, resource);
-        var captionText = resource.getUniqueId();
+        String captionText = String.join("\n",
+                "圖片id : " + resource.getUniqueId(),
+                "資源tag : " + resource.getTags(),
+                "資源content : " + resource.getTexts().stream()
+                        .filter(text -> text.getLanguage().getLanguageCode().equals("zh-hant"))
+                        .findFirst()
+                        .map(Text::getContent)
+                        .orElse("N/A")
+        );
+
 
         switch (resource.getFileType()) {
             case PHOTO -> telegramBotClient.send(

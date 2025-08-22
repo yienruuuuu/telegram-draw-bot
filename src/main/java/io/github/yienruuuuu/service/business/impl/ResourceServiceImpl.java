@@ -24,26 +24,31 @@ public class ResourceServiceImpl implements ResourceService {
         this.resourceRepository = resourceRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Resource> findByUniqueId(String uniqueId) {
         return resourceRepository.findByUniqueId(uniqueId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Resource> findById(Integer id) {
         return resourceRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Resource> findAll() {
         return resourceRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<Resource> findAllByPage(Pageable pageable) {
-        return resourceRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public Page<Resource> findAllByInUsedAndPage(Pageable pageable, boolean isInUsed) {
+        return resourceRepository.findByInUsedOrderByCreatedAtDesc(isInUsed, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Resource> findAllByPageExcludingIds(Pageable pageable, List<Integer> excludedIds) {
         if (excludedIds.isEmpty()) {
@@ -52,11 +57,13 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceRepository.findAllByIdNotInOrderByCreatedAtDesc(excludedIds, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Resource> findByType(FileType type) {
         return resourceRepository.findByFileType(type);
     }
 
+    @Transactional
     @Override
     public Resource save(Resource resource) {
         return resourceRepository.save(resource);

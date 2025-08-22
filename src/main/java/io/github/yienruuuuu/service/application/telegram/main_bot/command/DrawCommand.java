@@ -75,7 +75,7 @@ public class DrawCommand extends BaseCommand implements MainBotCommand {
         deductPoints(user, userFreePoint, -pointUsed);
         // 取得卡池
         CardPool cardPool = cardPoolService.findByIdIsOpen(cardPoolId)
-                .orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_EXIST, "userId :" + userId));
+                .orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_FOUND, "userId :" + userId));
         // 確保用戶抽卡狀態存在
         UserDrawStatus drawStatus = queryOrCreateDrawStatus(user, cardPool);
         // 準備權重

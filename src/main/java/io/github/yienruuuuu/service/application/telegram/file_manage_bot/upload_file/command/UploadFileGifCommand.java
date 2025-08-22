@@ -39,7 +39,7 @@ public class UploadFileGifCommand extends UploadFileBaseCommand implements Uploa
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())
-                .hasBeenCardBefore(false)
+                .isInUsed(false)
                 .build();
         Resource newResource = resourceService.save(resource);
         SendAnimation sendAnimation = SendAnimation.builder()

@@ -23,8 +23,6 @@ import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * start指令處理器
- *
  * @author Eric.Lee
  * Date: 2024/11/8
  */
@@ -43,17 +41,17 @@ public class EditCardPool extends DataManageBaseCommand implements DataManageCom
         if (update.hasCallbackQuery()) {
             var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
             var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
-            checkUsersPermission(userId, chatId, fileManageBot);
+            super.checkUsersPermission(userId, chatId, fileManageBot);
 
             //處理callback
-            handleEditCardCallBack(chatId, update, fileManageBot);
+            this.handleEditCardCallBack(chatId, update, fileManageBot);
         } else if (update.hasMessage()) {
             var userId = String.valueOf(update.getMessage().getFrom().getId());
             var chatId = String.valueOf(update.getMessage().getChat().getId());
-            checkUsersPermission(userId, chatId, fileManageBot);
+            super.checkUsersPermission(userId, chatId, fileManageBot);
 
             //處理Text指令
-            handleEditCardCommand(chatId, update, fileManageBot);
+            this.handleEditCardCommand(chatId, update, fileManageBot);
         } else {
             log.error("Invalid update type");
         }
@@ -90,8 +88,12 @@ public class EditCardPool extends DataManageBaseCommand implements DataManageCom
         cardPool.setOpen(editCardPoolRequest.isOpen());
         cardPool.setTexts(super.convertToTextEntities(editCardPoolRequest.getTexts()));
         cardPoolService.save(cardPool);
+
         telegramBotClient.send(
-                SendMessage.builder().chatId(chatId).text("已儲存, 卡池 id = " + cardPool.getId()).build(),
+                SendMessage.builder()
+                        .chatId(chatId)
+                        .text("已儲存, 卡池 id = " + cardPool.getId())
+                        .build(),
                 fileManageBot
         );
     }

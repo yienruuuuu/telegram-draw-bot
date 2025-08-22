@@ -55,17 +55,17 @@ CREATE TABLE language
 DROP TABLE IF EXISTS resource;
 CREATE TABLE resource
 (
-    id                   INT PRIMARY KEY AUTO_INCREMENT,
-    file_type            VARCHAR(16) NOT NULL DEFAULT 'OTHER',
-    rarity_type          VARCHAR(16) NOT NULL DEFAULT 'NORMAL',
-    file_id_main_bot     VARCHAR(128),                       -- 主BOT的file_id
-    file_id_manage_bot   VARCHAR(128),                       -- 資源控管Bot的file_id
-    tags                 VARCHAR(255),                       -- 資源標籤
-    unique_id            VARCHAR(52) NOT NULL,               -- telegram資源的唯一識別碼
-    has_been_card_before boolean     NOT NULL DEFAULT FALSE, -- 是否已成為卡片過
-    created_at           TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
-    updated_at           TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY idx_unique_id (unique_id)                     -- 唯一索引
+    id                 INT PRIMARY KEY AUTO_INCREMENT,
+    file_type          VARCHAR(16) NOT NULL DEFAULT 'OTHER',
+    rarity_type        VARCHAR(16) NOT NULL DEFAULT 'NORMAL',
+    file_id_main_bot   VARCHAR(128),                       -- 主BOT的file_id
+    file_id_manage_bot VARCHAR(128),                       -- 資源控管Bot的file_id
+    tags               VARCHAR(255),                       -- 資源標籤
+    unique_id          VARCHAR(52) NOT NULL,               -- telegram資源的唯一識別碼
+    is_in_used         boolean     NOT NULL DEFAULT FALSE, -- 是否被使用中
+    created_at         TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY idx_unique_id (unique_id)                   -- 唯一索引
 );
 
 DROP TABLE IF EXISTS resource_text;

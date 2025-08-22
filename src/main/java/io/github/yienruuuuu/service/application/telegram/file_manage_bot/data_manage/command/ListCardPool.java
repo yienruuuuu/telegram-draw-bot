@@ -97,6 +97,7 @@ public class ListCardPool extends DataManageBaseCommand implements DataManageCom
         Resource cardPoolMedia = cardPool.getResource();
         String cardPoolDetail = String.join("\n",
                 "活動id : " + cardPool.getId(),
+                "活動類型 : " + cardPool.getCardPoolType(),
                 "開始於 : " + cardPool.getStartAt(),
                 "結束於 : " + cardPool.getEndAt(),
                 "啟用狀態 : " + cardPool.isOpen(),

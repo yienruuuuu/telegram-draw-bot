@@ -7,6 +7,7 @@ import io.github.yienruuuuu.service.business.CardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -22,37 +23,49 @@ public class CardServiceImpl implements CardService {
         this.cardRepository = cardRepository;
     }
 
+    @Transactional
     @Override
     public Card save(Card card) {
         return cardRepository.save(card);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Card> findAllByPage(Pageable pageable) {
         return cardRepository.findAllByOrderByIdDesc(pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Card> findAllByCardPool(CardPool cardPool, Pageable pageable) {
         return cardRepository.findAllByCardPoolOrderByIdDesc(cardPool, pageable);
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public Optional<Card> findById(Integer id) {
         return cardRepository.findById(id);
     }
 
+    @Transactional
     @Override
     public void deleteById(Integer id) {
         cardRepository.deleteById(id);
     }
 
+    @Transactional
+    @Override
+    public void delete(Card card) {
+        cardRepository.delete(card);
+    }
+
+    @Transactional
     @Override
     public void deleteByCardPoolId(Integer cardPoolId) {
         cardRepository.deleteAllByCardPool_Id(cardPoolId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public boolean existsByResourceId(Integer id) {
         return cardRepository.existsByResource_Id(id);

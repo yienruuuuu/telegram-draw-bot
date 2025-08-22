@@ -17,7 +17,6 @@ VALUES (1, 1, '
 有什麼我可以幫助你的嗎? 🤖🥰
 /start - 打印帮助信息
 /hint - 你好像有著什麼資訊?
-/hint_pool - ✨如有神助✨
 /invite - 邀請用戶，獲取積分
 /pool - 查看卡池
 /my_status - 查看你的帳號資訊
@@ -26,7 +25,6 @@ VALUES (1, 1, '
 How can I help you? 🤖🥰
 /start - Show help information
 /hint - It feels like you’re holding some information?
-/hint_pool - ✨Divine Assistance✨
 /invite - Invite users and earn points
 /pool - View the card pool
 /my_status - View your account information

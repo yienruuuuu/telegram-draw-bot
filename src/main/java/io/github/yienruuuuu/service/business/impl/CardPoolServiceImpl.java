@@ -25,7 +25,7 @@ public class CardPoolServiceImpl implements CardPoolService {
     }
 
     @Override
-    public List<CardPool> findOpenCardPools(CardPoolType cardPoolType) {
+    public List<CardPool> findOpenCardPoolsByPoolType(CardPoolType cardPoolType) {
         return cardPoolRepository.findOpenPoolsAfter(cardPoolType, Instant.now());
     }
 
@@ -42,6 +42,11 @@ public class CardPoolServiceImpl implements CardPoolService {
     @Override
     public Optional<CardPool> findById(Integer id) {
         return cardPoolRepository.findById(id);
+    }
+
+    @Override
+    public void delete(CardPool cardPool) {
+        cardPoolRepository.delete(cardPool);
     }
 
     @Override

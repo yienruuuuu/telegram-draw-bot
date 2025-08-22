@@ -17,11 +17,13 @@ public enum SysCode implements ErrorCode {
     NOT_REGISTER_ERROR(2003, "使用者尚未註冊"),
     PERMISSION_DENIED_ERROR(2004, "權限不足，禁止執行此操作"),
     RESOURCE_HAS_BEEN_CARD(2005, "資源已被卡牌或卡池使用"),
-    CARD_POOL_NOT_EXIST(2006, "卡池不存在"),
+    CARD_POOL_NOT_FOUND(2006, "卡池不存在"),
     CARD_NOT_FOUND(2007, "卡片不存在"),
     CHEAT_CODE_EXPIRED(2008, "作弊碼過期"),
     LANGUAGE_NOT_FOUND(2009, "語言不存在"),
     RESOURCE_NOT_FOUND(2010, "資源不存在"),
+    USER_NOT_FOUND(2011, "使用者不存在"),
+    HINT_IS_INCOMPLETE(2012, "提示的內容設定不完整，請檢查資源"),
 
     //3000 系統錯誤
     CREATE_TEMPLATE_ERROR(3000, "建立模板失敗"),

@@ -40,7 +40,7 @@ public class UploadFileVideoCommand extends UploadFileBaseCommand implements Upl
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())
-                .hasBeenCardBefore(false)
+                .isInUsed(false)
                 .build();
         Resource newResource = resourceService.save(resource);
         SendVideo sendVideo = SendVideo.builder()

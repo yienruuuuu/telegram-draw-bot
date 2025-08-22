@@ -7,12 +7,15 @@ import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import io.github.yienruuuuu.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -44,6 +47,7 @@ public class AddCardPoolPic extends DataManageBaseCommand implements DataManageC
         this.cardPoolService = cardPoolService;
     }
 
+    @Transactional
     @Override
     public void execute(Update update, Bot fileManageBot) {
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
@@ -53,16 +57,21 @@ public class AddCardPoolPic extends DataManageBaseCommand implements DataManageC
 
         AddCardPoolPicDto dto =
                 JsonUtils.parseJsonToTargetDto(update.getCallbackQuery().getData().substring(getCommandName().length()).trim(), AddCardPoolPicDto.class);
-        CardPool cardPool = cardPoolService.findById(dto.getCardPoolId()).orElseThrow(() -> new IllegalArgumentException("CardPool not found."));
+        CardPool cardPool = cardPoolService.findById(dto.getCardPoolId())
+                .orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_FOUND));
 
 
         if (StringUtils.isBlank(dto.getResourceUniqueId())) {
             this.listResourcesForChosen(dto, chatId, fileManageBot, cardPool);
         } else {
-            Resource resource = resourceService.findById(Integer.parseInt(dto.getResourceUniqueId())).orElseThrow(() -> new IllegalArgumentException("Resource not found."));
+            Resource resource = resourceService.findById(Integer.parseInt(dto.getResourceUniqueId()))
+                    .orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
+
+            super.markAsUsed(resource);
+            super.markAsUnused(cardPool.getResource());
             cardPool.setResource(resource);
             cardPoolService.save(cardPool);
-            createCardPoolMessageAndSend(cardPool, chatId, fileManageBot);
+            this.createCardPoolMessageAndSend(cardPool, chatId, fileManageBot);
         }
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(update.getCallbackQuery().getId()).build(), fileManageBot));
     }
@@ -81,7 +90,7 @@ public class AddCardPoolPic extends DataManageBaseCommand implements DataManageC
         int pageNumber = dto.getPage() - 1;
         int pageSize = 10;
 
-        Page<Resource> resourcePage = resourceService.findAllByPage(PageRequest.of(pageNumber, pageSize));
+        Page<Resource> resourcePage = resourceService.findAllByInUsedAndPage(PageRequest.of(pageNumber, pageSize), false);
 
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()

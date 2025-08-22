@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -27,7 +28,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -53,6 +53,7 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
         this.basicPicService = basicPicService;
     }
 
+    @Transactional
     @Override
     public void execute(Update update, Bot fileManageBot) {
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
@@ -70,10 +71,10 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
 
         if (dto.getRId() == null) {
             // 若沒有指定 resource id，則列出 resource 並分頁傳送
-            listResourcesByPage(dto.getT(), dto, chatId, fileManageBot);
+            this.listResourcesByPage(dto.getT(), dto, chatId, fileManageBot);
         } else {
             // 若有指定 resource id，則儲存為卡牌
-            addResourceAsCard(dto, dto.getT(), chatId, messageId, fileManageBot);
+            this.addResourceAsCard(dto, dto.getT(), chatId, messageId, fileManageBot);
         }
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
@@ -86,19 +87,29 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
     /**
      * 添加資源為卡牌
      */
-    private void addResourceAsCard(AddBasicPicDto dto, BasicPicType type, String chatId, Integer messageId, Bot fileManageBot) {
+    private void addResourceAsCard(
+            AddBasicPicDto dto,
+            BasicPicType type,
+            String chatId,
+            Integer messageId,
+            Bot fileManageBot
+    ) {
         Resource res = resourceService.findById(dto.getRId())
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found"));
+        super.markAsUsed(res);
 
-        BasicPic pic = Optional.ofNullable(basicPicService.findByType(type))
-                .orElse(
-                        BasicPic.builder()
-                                .resource(res)
-                                .type(type)
-                                .build()
-                );
-        basicPicService.save(pic);
+        BasicPic basicPic = basicPicService.findByType(type);
+        if (basicPic == null) {
+            basicPic = BasicPic.builder()
+                    .type(type)
+                    .resource(res)
+                    .build();
+        } else {
+            super.markAsUnused(basicPic.getResource());
+            basicPic.setResource(res);
+        }
 
+        basicPicService.save(basicPic);
         telegramBotClient.send(
                 EditMessageCaption.builder()
                         .chatId(chatId)
@@ -119,7 +130,7 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
         // 提取分頁參數，默認為第 1 頁
         int pageNumber = dto.getPg() - 1; // Pageable 的頁碼從 0 開始
         int pageSize = 10;
-        Page<Resource> resourcePage = resourceService.findAllByPageExcludingIds(PageRequest.of(pageNumber, pageSize), List.of());
+        Page<Resource> resourcePage = resourceService.findAllByInUsedAndPage(PageRequest.of(pageNumber, pageSize), false);
 
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()
@@ -223,4 +234,5 @@ public class AddBasicPic extends DataManageBaseCommand implements DataManageComm
         // 返回 InlineKeyboardMarkup
         return new InlineKeyboardMarkup(rows);
     }
+
 }

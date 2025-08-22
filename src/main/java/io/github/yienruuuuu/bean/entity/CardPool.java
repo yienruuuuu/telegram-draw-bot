@@ -42,7 +42,7 @@ public class CardPool extends BaseEntity {
     @JoinColumn(name = "resource_id")
     private Resource resource;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
             name = "card_pool_text",
             schema = "tg_draw_bot",

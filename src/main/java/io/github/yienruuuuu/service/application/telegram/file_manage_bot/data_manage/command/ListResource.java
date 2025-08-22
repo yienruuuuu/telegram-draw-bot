@@ -54,7 +54,7 @@ public class ListResource extends DataManageBaseCommand implements DataManageCom
         int pageNumber = super.extractPageNumber(update.getMessage().getText()) - 1; // Pageable 的頁碼從 0 開始
         int pageSize = 10;
 
-        Page<Resource> resourcePage = resourceService.findAllByPage(PageRequest.of(pageNumber, pageSize));
+        Page<Resource> resourcePage = resourceService.findAllByInUsedAndPage(PageRequest.of(pageNumber, pageSize), false);
 
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()
@@ -98,7 +98,7 @@ public class ListResource extends DataManageBaseCommand implements DataManageCom
                 "類型 : " + resource.getFileType(),
                 "稀有度 : " + resource.getRarityType().name(),
                 "tag : " + resource.getTags(),
-                "曾被作為卡片使用 : " + resource.isHasBeenCardBefore(),
+                "被使用中 : " + resource.isInUsed(),
                 "Texts :\n" + resource.getTexts().stream()
                         .map(Text::toString)
                         .collect(Collectors.joining("\n"))

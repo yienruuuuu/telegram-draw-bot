@@ -19,8 +19,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 新增卡池圖片指令處理器
- *
  * @author Eric.Lee
  * Date: 2024/11/8
  */

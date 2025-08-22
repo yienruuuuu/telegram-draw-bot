@@ -1,9 +1,14 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
+import io.github.yienruuuuu.bean.entity.Card;
+import io.github.yienruuuuu.bean.entity.CardPool;
+import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +16,9 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * 新增卡池圖片指令處理器
@@ -24,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 public class DeleteCardPool extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
     private final CardService cardService;
+    private final ResourceService resourceService;
 
     public DeleteCardPool(
             UserService userService,
@@ -32,11 +40,12 @@ public class DeleteCardPool extends DataManageBaseCommand implements DataManageC
             AnnouncementService announcementService,
             ResourceService resourceService,
             CardPoolService cardPoolService,
-            CardService cardService
+            CardService cardService, ResourceService resourceService1
     ) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
         this.cardService = cardService;
+        this.resourceService = resourceService1;
     }
 
     @Transactional
@@ -50,8 +59,18 @@ public class DeleteCardPool extends DataManageBaseCommand implements DataManageC
         super.checkUsersPermission(userId, chatId, fileManageBot);
 
         var cardPoolId = update.getCallbackQuery().getData().split(" ")[1];
-        cardPoolService.deleteById(Integer.valueOf(cardPoolId));
-        cardService.deleteByCardPoolId(Integer.valueOf(cardPoolId));
+        CardPool cardPool = cardPoolService.findById(Integer.valueOf(cardPoolId))
+                .orElseThrow(() -> new ApiException(SysCode.CARD_POOL_NOT_FOUND));
+
+        List<Resource> resources = Stream.concat(
+                Stream.of(cardPool.getResource()),
+                cardPool.getCards().stream().map(Card::getResource)
+        ).toList();
+
+        // 將 isInUsed 改為 false 並存回資料庫
+        resources.forEach(super::markAsUnused);
+
+        cardPoolService.delete(cardPool);
 
         //回傳訊息
         CompletableFuture.runAsync(() -> telegramBotClient.send(

@@ -19,7 +19,7 @@ public interface ResourceService {
 
     List<Resource> findAll();
 
-    Page<Resource> findAllByPage(Pageable pageable);
+    Page<Resource> findAllByInUsedAndPage(Pageable pageable, boolean isInUsed);
 
     Page<Resource> findAllByPageExcludingIds(Pageable pageable, List<Integer> excludedIds);
 

@@ -1,9 +1,12 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
 import io.github.yienruuuuu.bean.entity.Bot;
+import io.github.yienruuuuu.bean.entity.Card;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.*;
+import io.github.yienruuuuu.service.exception.ApiException;
+import io.github.yienruuuuu.service.exception.SysCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -46,7 +49,13 @@ public class DeleteCard extends DataManageBaseCommand implements DataManageComma
 
         //取得卡
         var cardId = Integer.parseInt(update.getCallbackQuery().getData().split(" ")[1]);
-        cardService.deleteById(cardId);
+        Card card = cardService.findById(cardId)
+                .orElseThrow(() -> new ApiException(SysCode.CARD_NOT_FOUND));
+
+        //刪除卡牌同時釋放資源
+        super.markAsUnused(card.getResource());
+        cardService.delete(card);
+
         CompletableFuture.runAsync(() -> telegramBotClient.send(
                 AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot)
         );

@@ -8,4 +8,6 @@ package io.github.yienruuuuu.bean.enums;
  */
 public enum BasicPicType {
     HINT_MSG_INTRO,
+    INVALID_HINT,
+    SUGGESTION_HINT,
 }

@@ -1,9 +1,6 @@
 package io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.command;
 
-import io.github.yienruuuuu.bean.entity.Bot;
-import io.github.yienruuuuu.bean.entity.Language;
-import io.github.yienruuuuu.bean.entity.Text;
-import io.github.yienruuuuu.bean.entity.User;
+import io.github.yienruuuuu.bean.entity.*;
 import io.github.yienruuuuu.bean.enums.AnnouncementType;
 import io.github.yienruuuuu.bean.enums.RoleType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
@@ -109,5 +106,23 @@ public class DataManageBaseCommand {
         return InlineKeyboardButton.builder()
                 .text(text)
                 .callbackData(callBackData).build();
+    }
+
+    /**
+     * 標記資源為使用中
+     */
+    protected void markAsUsed(Resource res) {
+        if (res == null) return;
+        res.setInUsed(true);
+        resourceService.save(res);
+    }
+
+    /**
+     * 標記資源為未使用
+     */
+    protected void markAsUnused(Resource res) {
+        if (res == null) return;
+        res.setInUsed(false);
+        resourceService.save(res);
     }
 }

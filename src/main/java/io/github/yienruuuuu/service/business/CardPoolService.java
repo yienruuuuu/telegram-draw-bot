@@ -13,7 +13,7 @@ import java.util.Optional;
  * Date: 2024/11/14
  */
 public interface CardPoolService {
-    List<CardPool> findOpenCardPools(CardPoolType cardPoolType);
+    List<CardPool> findOpenCardPoolsByPoolType(CardPoolType cardPoolType);
 
     CardPool save(CardPool cardPool);
 
@@ -22,6 +22,8 @@ public interface CardPoolService {
     Optional<CardPool> findById(Integer id);
 
     Optional<CardPool> findByIdIsOpen(Integer id);
+
+    void delete(CardPool cardPool);
 
     void deleteById(Integer id);
 

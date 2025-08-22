@@ -49,10 +49,10 @@ public class Resource extends BaseEntity {
     private String uniqueId;
 
     @NotNull
-    @Column(name = "has_been_card_before")
-    private boolean hasBeenCardBefore;
+    @Column(name = "is_in_used")
+    private boolean isInUsed;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
             name = "resource_text",
             schema = "tg_draw_bot",

@@ -45,7 +45,7 @@ public class PoolCommand extends BaseCommand implements MainBotCommand {
         User user = super.checkAndGetUserIfExists(userId, mainBotEntity, Long.parseLong(chatId), languageCode);
         //查詢必要資訊
         Language language = user.getLanguage();
-        List<CardPool> cardPools = cardPoolService.findOpenCardPools(CardPoolType.CARD);
+        List<CardPool> cardPools = cardPoolService.findOpenCardPoolsByPoolType(CardPoolType.CARD);
         //檢查是否有開放卡池
         if (checkOpenPool(chatId, mainBotEntity, language, cardPools)) return;
         //傳送卡池資訊

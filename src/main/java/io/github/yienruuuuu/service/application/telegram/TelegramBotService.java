@@ -118,7 +118,6 @@ public class TelegramBotService {
                 commands = Arrays.asList(
                         BotCommand.builder().command("start").description("開始").build(),
                         BotCommand.builder().command("hint").description("你...獲得了一些線索?").build(),
-                        BotCommand.builder().command("hint_pool").description("請神").build(),
                         BotCommand.builder().command("pool").description("卡池資訊").build(),
                         BotCommand.builder().command("invite").description("取得邀請連結").build(),
                         BotCommand.builder().command("my_status").description("玩家狀態").build(),

@@ -37,5 +37,9 @@ public enum AnnouncementType {
     CHEAT_CODE_ANNOUNCEMENT,
     //再抽一次
     PICK_AGAIN,
+    //猜測接近
+    HINT_SUSPECT,
+    //猜測失敗
+    HINT_FAIL,
     OTHER
 }
