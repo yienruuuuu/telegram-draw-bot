@@ -30,8 +30,6 @@ import java.util.stream.Stream;
 @Component
 public class DeleteCardPool extends DataManageBaseCommand implements DataManageCommand {
     private final CardPoolService cardPoolService;
-    private final CardService cardService;
-    private final ResourceService resourceService;
 
     public DeleteCardPool(
             UserService userService,
@@ -39,13 +37,10 @@ public class DeleteCardPool extends DataManageBaseCommand implements DataManageC
             TelegramBotClient telegramBotClient,
             AnnouncementService announcementService,
             ResourceService resourceService,
-            CardPoolService cardPoolService,
-            CardService cardService, ResourceService resourceService1
+            CardPoolService cardPoolService
     ) {
         super(userService, languageService, telegramBotClient, announcementService, resourceService);
         this.cardPoolService = cardPoolService;
-        this.cardService = cardService;
-        this.resourceService = resourceService1;
     }
 
     @Transactional
