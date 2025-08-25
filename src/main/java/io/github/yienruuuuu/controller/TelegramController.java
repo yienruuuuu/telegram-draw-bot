@@ -1,9 +1,12 @@
 package io.github.yienruuuuu.controller;
 
 import io.github.yienruuuuu.bean.entity.Bot;
+import io.github.yienruuuuu.bean.entity.Resource;
+import io.github.yienruuuuu.bean.entity.Text;
 import io.github.yienruuuuu.bean.enums.BotType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.business.BotService;
+import io.github.yienruuuuu.service.business.ResourceService;
 import io.github.yienruuuuu.utils.JsonUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,10 +39,16 @@ import java.io.FileNotFoundException;
 public class TelegramController {
     private final TelegramBotClient telegramBotClient;
     private final BotService botService;
+    private final ResourceService resourceService;
 
-    public TelegramController(TelegramBotClient telegramBotClient, BotService botService) {
+    public TelegramController(
+            TelegramBotClient telegramBotClient,
+            BotService botService,
+            ResourceService resourceService
+    ) {
         this.telegramBotClient = telegramBotClient;
         this.botService = botService;
+        this.resourceService = resourceService;
     }
 
     @Operation(summary = "測試下載檔案")
@@ -75,6 +84,32 @@ public class TelegramController {
                 .builder()
                 .chatId("1513052214")
                 .video(new InputFile("BAACAgUAAxkBAANzZzKtQwZwJDMu778Rsnu0qlXRNPIAAp8PAALpk5lVeS_ItzZZz402BA"))
+                .build();
+        Message res = telegramBotClient.send(msg, mainBotEntity);
+        System.out.println(JsonUtils.parseJson(res));
+    }
+
+    @Operation(summary = "測試傳送粗體媒體文字")
+    @PostMapping(value = "telegram/bot/send-video-text")
+    public void send() {
+        Bot mainBotEntity = botService.findByBotType(BotType.MAIN);
+        Resource rs = resourceService.findByUniqueId("AgADYwEAAisqSVQ")
+                .orElseThrow(() -> new RuntimeException("找不到資源"));
+
+        String fileId = rs.getFileIdMainBot();
+
+        String texts = rs.getTexts().stream()
+                .filter(text -> text.getLanguage().getLanguageCode().equals("zh-hant"))
+                .findFirst()
+                .map(Text::getContent)
+                .orElse("N/A");
+
+        SendVideo msg = SendVideo
+                .builder()
+                .chatId("1513052214")
+                .video(new InputFile(fileId))
+                .parseMode("MarkdownV2")
+                .caption(texts)
                 .build();
         Message res = telegramBotClient.send(msg, mainBotEntity);
         System.out.println(JsonUtils.parseJson(res));

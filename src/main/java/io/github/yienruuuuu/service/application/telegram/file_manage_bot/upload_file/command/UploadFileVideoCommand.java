@@ -5,6 +5,7 @@ import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.bean.enums.FileType;
 import io.github.yienruuuuu.bean.enums.RarityType;
+import io.github.yienruuuuu.bean.enums.SendTextType;
 import io.github.yienruuuuu.config.AppConfig;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.upload_file.UploadFileCommand;
@@ -40,7 +41,8 @@ public class UploadFileVideoCommand extends UploadFileBaseCommand implements Upl
                 .fileType(getFileType())
                 .fileIdManageBot(fileDataDto.fileId())
                 .uniqueId(fileDataDto.fileUniqueId())
-                .isInUsed(false)
+                .inUsed(false)
+                .sendTextType(SendTextType.TEXT)
                 .build();
         Resource newResource = resourceService.save(resource);
         SendVideo sendVideo = SendVideo.builder()

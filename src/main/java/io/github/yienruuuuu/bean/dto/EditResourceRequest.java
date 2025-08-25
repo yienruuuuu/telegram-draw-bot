@@ -14,5 +14,6 @@ public class EditResourceRequest {
     private String uniqueId;
     private String rarityType;
     private String tags;
+    private String sendTextType;
     private List<Map<String, String>> texts; // 對應多語言的內容
 }

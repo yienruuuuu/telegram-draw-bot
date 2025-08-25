@@ -120,7 +120,7 @@ public class AddCardToPool extends DataManageBaseCommand implements DataManageCo
         // 提取分頁參數，默認為第 1 頁
         int pageNumber = dto.getPg() - 1; // Pageable 的頁碼從 0 開始
         int pageSize = 10;
-        Page<Resource> resourcePage = resourceService.findAllByPageExcludingIds(PageRequest.of(pageNumber, pageSize), excludedResourceIds);
+        Page<Resource> resourcePage = resourceService.findAllByInUsedAndPage(PageRequest.of(pageNumber, pageSize), false);
 
         if (resourcePage.isEmpty()) {
             telegramBotClient.send(SendMessage.builder()

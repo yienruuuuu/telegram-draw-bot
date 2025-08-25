@@ -38,6 +38,8 @@ public class TemplateGenerator {
         template.put("uniqueId", resource.getUniqueId());
         template.put("rarityType", resource.getRarityType().name());
         template.put("tags", resource.getTags());
+        template.put("sendTextType", resource.getSendTextType().name());
+
 
         ArrayNode texts = template.putArray("texts");
 

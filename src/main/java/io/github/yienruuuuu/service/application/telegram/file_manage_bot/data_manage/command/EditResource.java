@@ -4,6 +4,7 @@ import io.github.yienruuuuu.bean.dto.EditResourceRequest;
 import io.github.yienruuuuu.bean.entity.Bot;
 import io.github.yienruuuuu.bean.entity.Resource;
 import io.github.yienruuuuu.bean.enums.RarityType;
+import io.github.yienruuuuu.bean.enums.SendTextType;
 import io.github.yienruuuuu.service.application.telegram.TelegramBotClient;
 import io.github.yienruuuuu.service.application.telegram.file_manage_bot.data_manage.DataManageCommand;
 import io.github.yienruuuuu.service.business.AnnouncementService;
@@ -61,12 +62,17 @@ public class EditResource extends DataManageBaseCommand implements DataManageCom
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
         //JSON 轉換為DTO
-        EditResourceRequest request = parseJsonToEditResourceRequest(update);
-        Resource resource = resourceService.findByUniqueId(request.getUniqueId()).orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
+        EditResourceRequest request = this.parseJsonToEditResourceRequest(update);
+
+        Resource resource = resourceService.findByUniqueId(request.getUniqueId())
+                .orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
         resource.setRarityType(RarityType.valueOf(request.getRarityType()));
         resource.setTags(request.getTags());
         resource.setTexts(super.convertToTextEntities(request.getTexts()));
+        resource.setSendTextType(SendTextType.valueOf(request.getSendTextType()));
+
         Resource res = resourceService.save(resource);
+
         telegramBotClient.send(
                 SendMessage.builder().chatId(chatId).text("已儲存, id = " + res.getId()).build(),
                 fileManageBot
@@ -85,8 +91,9 @@ public class EditResource extends DataManageBaseCommand implements DataManageCom
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
         var uniqueId = text.split(" ")[1];
-        Resource resource = resourceService.findByUniqueId(uniqueId).orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
-        sendEditResourceTemplate(resource, chatId, fileManageBot);
+        Resource resource = resourceService.findByUniqueId(uniqueId)
+                .orElseThrow(() -> new ApiException(SysCode.RESOURCE_NOT_FOUNT));
+        this.sendEditResourceTemplate(resource, chatId, fileManageBot);
         CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 

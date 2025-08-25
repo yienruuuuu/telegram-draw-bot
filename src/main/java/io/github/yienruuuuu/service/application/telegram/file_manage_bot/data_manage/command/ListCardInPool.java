@@ -50,7 +50,7 @@ public class ListCardInPool extends DataManageBaseCommand implements DataManageC
         var userId = String.valueOf(update.getCallbackQuery().getFrom().getId());
         var chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
         var callbackQueryId = update.getCallbackQuery().getId();
-
+        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
         //檢查操作權限
         checkUsersPermission(userId, chatId, fileManageBot);
         //取出參數
@@ -73,7 +73,6 @@ public class ListCardInPool extends DataManageBaseCommand implements DataManageC
         }
         // 發送卡牌資訊
         cardPage.getContent().forEach(card -> createMediaMessageAndSendMedia(card, chatId, fileManageBot));
-        CompletableFuture.runAsync(() -> telegramBotClient.send(AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).build(), fileManageBot));
     }
 
 

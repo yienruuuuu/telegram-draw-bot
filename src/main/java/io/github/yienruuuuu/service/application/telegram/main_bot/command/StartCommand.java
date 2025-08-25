@@ -98,7 +98,7 @@ public class StartCommand extends BaseCommand implements MainBotCommand {
 
         // 更新邀請者的積分
         userService.addPointAndSavePointLog(inviter, inviteRewardPoint, PointType.FREE, "邀請 " + newUserId, null, null);
-        log.info("邀請成功，邀請者 {} 增加 100 積分", inviter.getId());
+        log.info("邀請成功，邀請者id: {} 增加 100 積分", inviter.getId());
         return inviteRewardPoint + newUserFreePoint;
     }
 

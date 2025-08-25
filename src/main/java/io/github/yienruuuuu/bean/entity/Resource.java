@@ -2,6 +2,7 @@ package io.github.yienruuuuu.bean.entity;
 
 import io.github.yienruuuuu.bean.enums.FileType;
 import io.github.yienruuuuu.bean.enums.RarityType;
+import io.github.yienruuuuu.bean.enums.SendTextType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -50,7 +51,11 @@ public class Resource extends BaseEntity {
 
     @NotNull
     @Column(name = "is_in_used")
-    private boolean isInUsed;
+    private boolean inUsed;
+
+    @Column(name = "send_text_type")
+    @Enumerated(EnumType.STRING)
+    private SendTextType sendTextType;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
